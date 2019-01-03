@@ -15,7 +15,7 @@ Evaluation is also performed in scorer.py and it returns the following metrics
     
 
 # Scoring 
-The scorer.py loads the model and metadata and accepts the word embeddings for prediction. Note that it could accept the text and convert the text to the work embedding but this is typically performed by another service.  
+The [scoring.py](./scoring.py) loads the model and metadata and accepts the word embeddings for prediction. Note that it could accept the text and convert the text to the work embedding but this is typically performed by another service.  
 
 
 ## Sample Request

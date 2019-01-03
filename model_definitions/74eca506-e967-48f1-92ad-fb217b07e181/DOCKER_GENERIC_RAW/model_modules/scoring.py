@@ -7,7 +7,11 @@ from keras.datasets import imdb
 
 
 class ModelScorer(object):
-    def __init__(self, config):
+    def __init__(self, config=None):
+        if not config:
+            with open("config.json") as f:
+                config = json.load(f)
+
         self.model = load_model("models/model.h5")
         self.model._make_predict_function()
         self.graph = tf.get_default_graph()
