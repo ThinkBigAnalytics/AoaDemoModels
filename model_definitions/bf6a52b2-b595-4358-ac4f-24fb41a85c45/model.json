@@ -1,0 +1,22 @@
+{
+  "classificationPage": "raw-classifier",
+  "frameworkIncludeFileContents": {},
+  "frameworkIncludePaths": {},
+  "includeModuleContents" : "false",
+  "id": "bf6a52b2-b595-4358-ac4f-24fb41a85c45",
+  "inputShape": [8, 1],
+  "jsonConfiguration": {},
+  "jsonEnvDetails": {},
+  "modelConfigurations": {
+    "DOCKER_GENERIC_RAW": []
+  },
+  "name": "R GBM",
+  "supportedFrameworks": ["DOCKER_GENERIC_RAW"],
+  "language": "R",
+
+  "automation":{
+    "trainDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
+    "evaluateDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
+    "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
+  }
+}

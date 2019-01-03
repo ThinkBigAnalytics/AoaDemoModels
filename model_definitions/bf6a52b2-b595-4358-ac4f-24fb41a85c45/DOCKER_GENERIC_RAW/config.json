@@ -1,0 +1,11 @@
+{
+    "hyperParameters": {
+        "shrinkage": 0.005,
+        "interaction.depth": 3,
+        "bag.fraction": 0.5,
+        "train.fraction": 0.5,
+        "n.minobsinnode": 10,
+        "cv.folds": 10,
+        "n.trees": 2000
+    }
+}

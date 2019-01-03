@@ -1,0 +1,25 @@
+{
+  "id": "03c9a01f-bd46-4e7c-9a60-4282039094e6",
+  "name": "XGBoost Diabetes Prediction",
+  "classificationPage": "raw-classifier",
+  "frameworkIncludeFileContents": {},
+  "frameworkIncludePaths": {},
+  "includeModuleContents": "false",
+  "inputShape": [8, 1],
+  "jsonConfiguration": {},
+  "jsonEnvDetails": {},
+  "modelConfigurations": {
+    "DOCKER_GENERIC_RAW": []
+  },
+
+  "supportedFrameworks": [
+    "DOCKER_GENERIC_RAW"
+  ],
+  "language": "Python",
+
+  "automation": {
+    "trainDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
+    "evaluateDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
+    "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
+  }
+}
