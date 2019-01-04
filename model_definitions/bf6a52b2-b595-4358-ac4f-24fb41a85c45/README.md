@@ -13,7 +13,7 @@ Evaluation is also performed in [scoring.evluate](./DOCKER_GENERIC_RAW/model_mod
     accuracy: <acc>
 
 # Scoring 
-The [scoring.R](./DOCKER_GENERIC_RAW/model_modules/scorer.R) is responsible loads the model and metadata and accepts the dataframe for
+The [scoring.R](./DOCKER_GENERIC_RAW/model_modules/scoring.R) is responsible loads the model and metadata and accepts the dataframe for
 for prediction. 
 
 # Sample Request
