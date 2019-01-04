@@ -1,8 +1,8 @@
 {
   "resources": {
     "requests": {
-      "cpu": "10m",
-      "memory": "50m"
+      "cpu": "200m",
+      "memory": "100Mi"
     }
   }
 }
