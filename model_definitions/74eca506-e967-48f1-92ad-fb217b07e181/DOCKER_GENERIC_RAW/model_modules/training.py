@@ -8,9 +8,6 @@ from keras.layers import Conv1D, GlobalMaxPooling1D
 from keras.datasets import imdb
 
 
-#
-# Model output should be stored in /models.
-
 def train(data_conf, model_conf):
     hyper_params = model_conf["hyperParameters"]
 

@@ -2,6 +2,10 @@
 # Overview
 The model is based on the Keras IMDB sentiment analytis using a CNN (see [here](https://github.com/keras-team/keras/blob/master/examples/imdb_cnn.py)).
 
+# Datasets
+The dataset used is the IMDB sentiment analysis dataset that is freely available. As this is a demo model, it downloads the data automatically when running either training or evaluation. Therefore it doesn't expect any data information to be provided.
+
+
 # Training
 The [training.oy](./DOCKER_GENERIC_RAW/model_modules/training.py) produces the following artifacts in the artefact repository
 
@@ -12,6 +16,7 @@ The [training.oy](./DOCKER_GENERIC_RAW/model_modules/training.py) produces the f
 Evaluation is also performed in [scoring.evluate](./DOCKER_GENERIC_RAW/model_modules/scoring.py) and it returns the following metrics
 
     acc: <acc>
+    loss: <loss>
     
 
 # Scoring 

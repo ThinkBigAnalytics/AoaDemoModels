@@ -8,7 +8,7 @@ import pickle
 def train(data_conf, model_conf):
 
     # load data
-    dataset = loadtxt(data_conf['dataset_file_path'], delimiter=",")
+    dataset = loadtxt(data_conf['data_path'], delimiter=",")
 
     # split data into X and y
     X = dataset[:,0:8]
