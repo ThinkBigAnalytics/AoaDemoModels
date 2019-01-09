@@ -1,9 +1,7 @@
-# First XGBoost model for Pima Indians dataset
 from numpy import loadtxt
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 import pickle
-
 
 def train(data_conf, model_conf):
 

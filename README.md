@@ -29,7 +29,7 @@ Note that other files may be included under the model_modules folder and they wi
 
 # Shared Code
 
-To share common code between models, or between training and scoring, you should create a separate models util module that you can release and version. We should attempt to support relative files within the model_modules folder so that at the very least, training and scoring in the same packages can have common code in a shared file without the need for a library with additional release cycle and maintenance. 
+To share common code between models, or between training and scoring, you should create a separate models util module that you can release and version. It should be relatively easy to support relative files within the model_modules folder so that at the very least, training and scoring in the same packages can have common code in a shared file without the need for a library with additional release cycle and maintenance. It just needs some testing. 
 
 # Cli tools
 
