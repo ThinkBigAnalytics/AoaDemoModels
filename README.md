@@ -2,6 +2,10 @@
 
 This repository contains the sample models for the Caixa AI review project.
 
+The data science development perspective and process can be summarised by the following diagram
+
+<center><img src="./images/ds-perspective.png" style="width: 1024px"/></center>
+
 # Model Definitions
 
 The models are all defined under the directory [model_definitions](./model_definitions). The directory structure is as follows:
