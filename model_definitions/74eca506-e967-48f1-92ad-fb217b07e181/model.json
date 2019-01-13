@@ -15,8 +15,8 @@
     "language": "Python",
 
     "automation":{
-        "trainDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
-        "evaluateDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
+        "trainDatasetId": "563f84da-a2f7-4705-9c4a-552eb024abfa",
+        "evaluateDatasetId": "563f84da-a2f7-4705-9c4a-552eb024abfa",
         "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
     }
 }
