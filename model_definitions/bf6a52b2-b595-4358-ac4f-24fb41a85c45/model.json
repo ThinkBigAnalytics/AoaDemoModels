@@ -15,8 +15,8 @@
   "language": "R",
 
   "automation":{
-    "trainDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
-    "evaluateDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
+    "trainDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
+    "evaluateDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
     "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
   }
 }
