@@ -21,6 +21,11 @@ The models are all defined under the directory [model_definitions](./model_defin
                     requirements.txt
                     scoring.py
                     training.py
+
+The __init__.py must be defined in a specific way to import the training and scoring modules. This is important to support relative imports and shared code for a model.
+
+    from .training import train
+    from .scoring import evaluate
                 
 In the case of an R model, the model_modules folder is slightly different with
 
@@ -33,7 +38,7 @@ Note that other files may be included under the model_modules folder and they wi
 
 # Shared Code
 
-To share common code between models, or between training and scoring, you should create a separate models util module that you can release and version. It should be relatively easy to support relative files within the model_modules folder so that at the very least, training and scoring in the same packages can have common code in a shared file without the need for a library with additional release cycle and maintenance. It just needs some testing. 
+To share common code between models, you should create a separate models util module that you can release and version. To share code between the training and scoring of an individual model, you can follow the example code in the [tensorflow sample](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/model_modules). There you can see that the [preprocess.py](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/model_modules/preprocess.py) file has code that is used in both training.py and scoring.py. 
 
 # Cli tools
 
