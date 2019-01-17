@@ -28,13 +28,12 @@ def main():
     else:
         data_conf = {}
 
+    module = SourceFileLoader("model", model_dir + "/model_modules/__init__.py").load_module()
     if args.mode == "train":
-        training = SourceFileLoader("training", model_dir + "/model_modules/training.py").load_module()
-        training.train(data_conf, model_conf)
+        module.training.train(data_conf, model_conf)
 
     elif args.mode == "eval":
-        scoring = SourceFileLoader("scoring", model_dir + "/model_modules/scoring.py").load_module()
-        scoring.evaluate(data_conf, model_conf)
+        module.scoring.evaluate(data_conf, model_conf)
 
     else:
         raise Exception("Unsupported mode used: " + args.mode)
