@@ -1,11 +1,11 @@
 import logging
 
-from keras.preprocessing import sequence
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation
 from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D
 from keras.datasets import imdb
+from .preprocess import preprocess
 
 
 def train(data_conf, model_conf):
@@ -17,8 +17,8 @@ def train(data_conf, model_conf):
     logging.info('{} test sequences'.format(len(x_test)))
 
     logging.info('Pad sequences (samples x time)')
-    x_train = sequence.pad_sequences(x_train, maxlen=hyper_params["maxlen"])
-    x_test = sequence.pad_sequences(x_test, maxlen=hyper_params["maxlen"])
+    x_train = preprocess(x_train, maxlen=hyper_params["maxlen"])
+    x_test = preprocess(x_test, maxlen=hyper_params["maxlen"])
     logging.info('x_train shape: {}'.format(x_train.shape))
     logging.info('x_test shape: {}'.format(x_test.shape))
 
