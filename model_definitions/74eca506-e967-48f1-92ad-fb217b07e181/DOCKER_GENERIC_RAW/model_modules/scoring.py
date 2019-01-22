@@ -30,7 +30,7 @@ class ModelScorer(object):
         return {self.model.metrics_names[i]: v for i, v in enumerate(metrics)}
 
 
-def evaluate(data_conf, model_conf):
+def evaluate(data_conf, model_conf, **kwargs):
     (_, _), (x_test, y_test) = imdb.load_data(num_words=model_conf["hyperParameters"]["max_features"])
 
     scorer = ModelScorer(model_conf)
