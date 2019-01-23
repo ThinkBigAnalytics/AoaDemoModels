@@ -21,7 +21,7 @@ class ModelScorer(object):
         return {'accuracy': (accuracy * 100.0)}
 
 
-def evaluate(data_conf, model_conf):
+def evaluate(data_conf, model_conf, **kwargs):
 
     # load data
     dataset = loadtxt(data_conf['data_path'], delimiter=",")

@@ -3,7 +3,8 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 import pickle
 
-def train(data_conf, model_conf):
+
+def train(data_conf, model_conf, **kwargs):
 
     # load data
     dataset = loadtxt(data_conf['data_path'], delimiter=",")

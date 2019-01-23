@@ -5,11 +5,13 @@ from keras.layers import Dense, Dropout, Activation
 from keras.layers import Embedding
 from keras.layers import Conv1D, GlobalMaxPooling1D
 from keras.datasets import imdb
+from .callback import AoaKerasProgressCallback
 from .preprocess import preprocess
 
 
-def train(data_conf, model_conf):
+def train(data_conf, model_conf, **kwargs):
     hyper_params = model_conf["hyperParameters"]
+    progress_callback = kwargs.get("progress_callback_handler", lambda *args: None)
 
     logging.info('Loading data...')
     (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=hyper_params["max_features"])
@@ -27,7 +29,8 @@ def train(data_conf, model_conf):
     history = model.fit(x_train, y_train,
                         batch_size=hyper_params["batch_size"],
                         epochs=hyper_params["epochs"],
-                        validation_data=(x_test, y_test))
+                        validation_data=(x_test, y_test),
+                        callbacks=[AoaKerasProgressCallback(progress_callback)])
 
     model.save('models/model.h5')
 
