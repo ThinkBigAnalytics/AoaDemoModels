@@ -17,7 +17,7 @@ initialise_model <- function() {
 }
 
 
-evaluate <- function(data_conf, model_conf) {
+evaluate <- function(data_conf, model_conf, ...) {
     initialise_model()
 
     results <- list("accuracy" = "95")

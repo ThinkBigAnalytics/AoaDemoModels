@@ -29,7 +29,7 @@ load_data <- function() {
 }
 
 
-train <- function(data_conf, model_conf) {
+train <- function(data_conf, model_conf, ...) {
 
     data <- load_data()
     hyperparams <- model_conf[["hyperParameters"]]
