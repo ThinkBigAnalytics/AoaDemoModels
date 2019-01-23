@@ -51,12 +51,20 @@ The python train and evaluate functions are
        
     def evaluate(data_conf, model_conf, **kwargs):
        ...
+       
+If deploying behind a Restful scoring engine, the predict function is declared within a ModelScorer class
+       
+    class ModelScorer(object):
+        ...
+        
+        def predict(self, data):
+            ...
 
 Note that the `**kwargs` is used to ensure future extendibility of the model management framework and ensuring that models are backward compatible. For instance, we may pass new features such as callback handlers that the frameworks supports to newer models, but the old models can safely ignore such parameters.
 
 ### Python Training Progress Callback
 
-We have added an example of the training progress support in the AOA framework to the [Tensorflow Sentitment Analysis](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/model_modules/training.py). This works by sending progress messages via activemq which can in take whatever action it needs to based on the progress, update a UI for example or trigger some alert if a progress is stalled. The provided `AoaKerasProgressCallback` function should be located in an AOA python module whenever this is created and simply imported instead of being defined in the sample model.
+We have added an example of the training progress support in the AOA framework to the [Tensorflow Sentitment Analysis](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/model_modules/callback.py). This works by sending progress messages via activemq which can in take whatever action it needs to based on the progress, update a UI for example or trigger some alert if a progress is stalled. The provided `AoaKerasProgressCallback` function should be located in an AOA python module whenever this is created and simply imported instead of being defined in the sample model.
 
 ### Shared Code
 
@@ -73,6 +81,12 @@ The R model signatures are exactly the same as the python signatures, with the `
     
     evaluate <- function(data_conf, model_conf, ...) {
        ...
+    }
+    
+If deploying behind a Resful engine, the predict method should also be declared as follows
+
+    predict.model <- function(model, data) {
+    
     }
 
 # Cli tools
