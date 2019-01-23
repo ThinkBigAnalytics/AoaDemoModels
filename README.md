@@ -32,6 +32,10 @@ The __init__.py must be defined in a specific way to import the training and sco
 
     from .training import train
     from .scoring import evaluate
+    
+And if you want to deploy this behind a restful API add the ModelScorer abstraction for the REST engine
+
+    from .scoring import ModelScorer
                 
 In the case of an R model, the model_modules folder is slightly different with
 
