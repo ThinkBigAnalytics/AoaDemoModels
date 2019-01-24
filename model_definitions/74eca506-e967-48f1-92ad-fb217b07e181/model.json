@@ -1,18 +1,20 @@
 {
+    "id": "74eca506-e967-48f1-92ad-fb217b07e181",
+    "name": "Tensorflow IMDB Sentiment",
     "classificationPage": "raw-classifier",
+
     "frameworkIncludeFileContents": {},
     "frameworkIncludePaths": {},
     "includeModuleContents" : "false",
-    "id": "74eca506-e967-48f1-92ad-fb217b07e181",
     "inputShape": [8, 1],
     "jsonConfiguration": {},
     "jsonEnvDetails": {},
     "modelConfigurations": {
         "DOCKER_GENERIC_RAW": []
     },
-    "name": "Tensorflow IMDB Sentiment",
+
     "supportedFrameworks": ["DOCKER_GENERIC_RAW"],
-    "language": "Python",
+    "language": "python",
 
     "automation":{
         "trainDatasetId": "563f84da-a2f7-4705-9c4a-552eb024abfa",

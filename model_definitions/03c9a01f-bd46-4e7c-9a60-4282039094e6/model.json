@@ -2,6 +2,7 @@
   "id": "03c9a01f-bd46-4e7c-9a60-4282039094e6",
   "name": "XGBoost Diabetes Prediction",
   "classificationPage": "raw-classifier",
+
   "frameworkIncludeFileContents": {},
   "frameworkIncludePaths": {},
   "includeModuleContents": "false",
@@ -15,7 +16,7 @@
   "supportedFrameworks": [
     "DOCKER_GENERIC_RAW"
   ],
-  "language": "Python",
+  "language": "python",
 
   "automation": {
     "trainDatasetId": "0810428b-9555-4f5f-9e9d-6c78525593db",
