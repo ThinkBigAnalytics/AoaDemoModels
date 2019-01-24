@@ -62,3 +62,4 @@ def build_model_pipeline(hyper_params):
                   metrics=['accuracy'])
 
     return model
+
