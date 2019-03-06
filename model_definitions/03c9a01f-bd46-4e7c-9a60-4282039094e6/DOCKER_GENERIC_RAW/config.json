@@ -1,8 +1,14 @@
 {
-  "resources": {
-    "requests": {
-      "cpu": "200m",
-      "memory": "100Mi"
-    }
-  }
+
+	"hyperparameters": {
+		"eta": 0.2,
+		"max_depth": 6
+	},
+
+	"resources": {
+		"requests": {
+			"cpu": "200m",
+			"memory": "100Mi"
+		}
+	}
 }
