@@ -19,13 +19,13 @@ def train(data_conf, model_conf, **kwargs):
 
     print("Starting training...")
 
-    # fit model no training data
+    # fit model to training data
     model = XGBClassifier(eta=hyperparams["eta"], max_depth=hyperparams["max_depth"])
     model.fit(X_train, y_train)
 
     print("Finished training")
 
-    # save scaler & model to pickle file
+    # export model artefacts
     pickle.dump(scaler, open("models/scaler.pkl", "wb"))
     pickle.dump(model, open("models/model.pkl", "wb"))
 
