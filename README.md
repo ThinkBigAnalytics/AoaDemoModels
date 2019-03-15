@@ -9,7 +9,8 @@ The data science development perspective and process can be summarised by the fo
 # Available Models
 
 - [Tensorflow Sentitment Analysis](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/)
-- [PIMA (Diabetes) XGboost](./model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6/DOCKER_GENERIC_RAW)
+- [Python XGboost (Diabetes)](./model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6/DOCKER_GENERIC_RAW)
+- [Vantage XGboost (Diabetes)](./model_definitions/920ebf0e-1f0e-442a-94d1-214f63b8b820/DOCKER_GENERIC_RAW)
 - [Demo R GBM (Diabetes)](./model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45/DOCKER_GENERIC_RAW)
 
 # Adding new Models

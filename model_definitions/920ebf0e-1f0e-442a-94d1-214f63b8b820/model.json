@@ -1,0 +1,26 @@
+{
+  "id": "920ebf0e-1f0e-442a-94d1-214f63b8b820",
+  "name": "Vantage XGBoost Diabetes Prediction",
+  "classificationPage": "raw-classifier",
+
+  "frameworkIncludeFileContents": {},
+  "frameworkIncludePaths": {},
+  "includeModuleContents": "false",
+  "inputShape": [8, 1],
+  "jsonConfiguration": {},
+  "jsonEnvDetails": {},
+  "modelConfigurations": {
+    "DOCKER_GENERIC_RAW": []
+  },
+
+  "supportedFrameworks": [
+    "DOCKER_GENERIC_RAW"
+  ],
+  "language": "python",
+
+  "automation": {
+    "trainDatasetId": "e121401a-31fa-41d3-a555-fe8ee25e9cdf",
+    "evaluateDatasetId": "96a8167e-b29e-4c90-b2c1-cc708b1204d7",
+    "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
+  }
+}
