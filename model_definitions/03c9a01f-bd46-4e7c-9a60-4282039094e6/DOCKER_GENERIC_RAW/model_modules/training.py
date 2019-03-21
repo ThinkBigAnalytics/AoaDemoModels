@@ -2,8 +2,7 @@ from numpy import loadtxt
 from xgboost import XGBClassifier
 from sklearn.preprocessing import MinMaxScaler as Scaler
 import pickle
-from teradataml.dataframe.dataframe import DataFrame
-from teradataml.analytics.mle import XGBoost, XGBoostPredict
+
 
 def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperparameters"]
