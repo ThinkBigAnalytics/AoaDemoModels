@@ -1,19 +1,9 @@
 {
   "id": "bf6a52b2-b595-4358-ac4f-24fb41a85c45",
   "name": "R GBM",
+  "description": "Sample R GBM model",
 
-  "classificationPage": "raw-classifier",
-  "frameworkIncludeFileContents": {},
-  "frameworkIncludePaths": {},
-  "includeModuleContents" : "false",
-  "inputShape": [8, 1],
-  "jsonConfiguration": {},
-  "jsonEnvDetails": {},
-  "modelConfigurations": {
-    "DOCKER_GENERIC_RAW": []
-  },
-
-  "supportedFrameworks": ["DOCKER_GENERIC_RAW"],
+  "supportedFrameworks": ["DOCKER"],
   "language": "R",
 
   "automation":{
