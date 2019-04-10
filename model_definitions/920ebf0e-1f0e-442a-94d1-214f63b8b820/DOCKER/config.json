@@ -1,0 +1,15 @@
+{
+
+	"hyperparameters": {
+		"max_depth": 10,
+		"reg_lambda": 1.0,
+		"shrinkage_factor": 0.1
+	},
+
+	"resources": {
+		"requests": {
+			"cpu": "200m",
+			"memory": "100Mi"
+		}
+	}
+}
