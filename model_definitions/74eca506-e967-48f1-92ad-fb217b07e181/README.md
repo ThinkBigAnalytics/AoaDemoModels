@@ -7,20 +7,20 @@ The dataset used is the IMDB sentiment analysis dataset that is freely available
 
 
 # Training
-The [training.oy](./DOCKER_GENERIC_RAW/model_modules/training.py) produces the following artifacts in the artefact repository
+The [training.oy](DOCKER/model_modules/training.py) produces the following artifacts in the artefact repository
 
     model.h5      (architecture and weights file)
 
 
 # Evaluation
-Evaluation is also performed in [scoring.evluate](./DOCKER_GENERIC_RAW/model_modules/scoring.py) and it returns the following metrics
+Evaluation is also performed in [scoring.evluate](DOCKER/model_modules/scoring.py) and it returns the following metrics
 
     acc: <acc>
     loss: <loss>
     
 
 # Scoring 
-The [scoring.py](./DOCKER_GENERIC_RAW/model_modules/scoring.py) loads the model and metadata and accepts the word embeddings for prediction. Note that it could accept the text and convert the text to the work embedding but this is typically performed by another service.  
+The [scoring.py](DOCKER/model_modules/scoring.py) loads the model and metadata and accepts the word embeddings for prediction. Note that it could accept the text and convert the text to the work embedding but this is typically performed by another service.  
 
 
 ## Sample Request
