@@ -8,9 +8,10 @@ The data science development perspective and process can be summarised by the fo
 
 # Available Models
 
-- [Tensorflow Sentitment Analysis](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/)
-- [PIMA (Diabetes) XGboost](./model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6/DOCKER_GENERIC_RAW)
-- [Demo R GBM (Diabetes)](./model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45/DOCKER_GENERIC_RAW)
+- [Tensorflow Sentitment Analysis](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER/)
+- [Python XGboost (Diabetes)](model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6/DOCKER)
+- [Vantage XGboost (Diabetes)](model_definitions/920ebf0e-1f0e-442a-94d1-214f63b8b820/DOCKER)
+- [Demo R GBM (Diabetes)](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45/DOCKER)
 
 # Adding new Models
 
@@ -68,11 +69,11 @@ Note that the `**kwargs` is used to ensure future extendibility of the model man
 
 ### Python Training Progress Callback
 
-We have added an example of the training progress support in the AOA framework to the [Tensorflow Sentitment Analysis](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/model_modules/callback.py). This works by sending progress messages via activemq which can in take whatever action it needs to based on the progress, update a UI for example or trigger some alert if a progress is stalled. The provided `AoaKerasProgressCallback` function should be located in an AOA python module whenever this is created and simply imported instead of being defined in the sample model.
+We have added an example of the training progress support in the AOA framework to the [Tensorflow Sentitment Analysis](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER/model_modules/callback.py). This works by sending progress messages via activemq which can in take whatever action it needs to based on the progress, update a UI for example or trigger some alert if a progress is stalled. The provided `AoaKerasProgressCallback` function should be located in an AOA python module whenever this is created and simply imported instead of being defined in the sample model.
 
 ### Shared Code
 
-To share common code between models, you should create a separate models util module that you can release and version. To share code between the training and scoring of an individual model, you can follow the example code in the [tensorflow sample](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/model_modules). There you can see that the [preprocess.py](./model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER_GENERIC_RAW/model_modules/preprocess.py) file has code that is used in both training.py and scoring.py. 
+To share common code between models, you should create a separate models util module that you can release and version. To share code between the training and scoring of an individual model, you can follow the example code in the [tensorflow sample](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER/model_modules). There you can see that the [preprocess.py](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER/model_modules/preprocess.py) file has code that is used in both training.py and scoring.py. 
 
 
 ## R Model Signatures

@@ -1,19 +1,9 @@
 {
     "id": "74eca506-e967-48f1-92ad-fb217b07e181",
     "name": "Tensorflow IMDB Sentiment",
-    "classificationPage": "raw-classifier",
+    "description": "Sample Tensorflow CNN based sentiment analysis",
 
-    "frameworkIncludeFileContents": {},
-    "frameworkIncludePaths": {},
-    "includeModuleContents" : "false",
-    "inputShape": [8, 1],
-    "jsonConfiguration": {},
-    "jsonEnvDetails": {},
-    "modelConfigurations": {
-        "DOCKER_GENERIC_RAW": []
-    },
-
-    "supportedFrameworks": ["DOCKER_GENERIC_RAW"],
+    "supportedFrameworks": ["DOCKER"],
     "language": "python",
 
     "automation":{
