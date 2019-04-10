@@ -9,17 +9,17 @@ The dataset required to train or evaluate this model is the PIMA Indians Diabete
     }
 
 # Training
-The [training.R](./DOCKER_GENERIC_RAW/model_modules/training.py) produces the following artifacts
+The [training.R](DOCKER/model_modules/training.py) produces the following artifacts
 
 - model.pkl     (xgboost pikle file with mode)
 
 # Evaluation
-Evaluation is also performed in [scoring.evluate](./DOCKER_GENERIC_RAW/model_modules/scoring.py) and it returns the following metrics
+Evaluation is also performed in [scoring.evluate](DOCKER/model_modules/scoring.py) and it returns the following metrics
 
     accuracy: <acc>
 
 # Scoring 
-The [scoring.R](./DOCKER_GENERIC_RAW/model_modules/scoring.R) is responsible loads the model and metadata and accepts the dataframe for
+The [scoring.R](DOCKER/model_modules/scoring.R) is responsible loads the model and metadata and accepts the dataframe for
 for prediction. 
 
 # Sample Request

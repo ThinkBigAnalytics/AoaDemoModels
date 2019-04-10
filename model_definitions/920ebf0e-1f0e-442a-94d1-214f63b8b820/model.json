@@ -1,20 +1,10 @@
 {
   "id": "920ebf0e-1f0e-442a-94d1-214f63b8b820",
   "name": "Vantage XGBoost Diabetes Prediction",
-  "classificationPage": "raw-classifier",
-
-  "frameworkIncludeFileContents": {},
-  "frameworkIncludePaths": {},
-  "includeModuleContents": "false",
-  "inputShape": [8, 1],
-  "jsonConfiguration": {},
-  "jsonEnvDetails": {},
-  "modelConfigurations": {
-    "DOCKER_GENERIC_RAW": []
-  },
+  "description": "Sample model using Vantage XGBoost",
 
   "supportedFrameworks": [
-    "DOCKER_GENERIC_RAW"
+    "DOCKER"
   ],
   "language": "python",
 

@@ -1,20 +1,9 @@
 {
   "id": "03c9a01f-bd46-4e7c-9a60-4282039094e6",
   "name": "XGBoost Diabetes Prediction",
-  "classificationPage": "raw-classifier",
-
-  "frameworkIncludeFileContents": {},
-  "frameworkIncludePaths": {},
-  "includeModuleContents": "false",
-  "inputShape": [8, 1],
-  "jsonConfiguration": {},
-  "jsonEnvDetails": {},
-  "modelConfigurations": {
-    "DOCKER_GENERIC_RAW": []
-  },
-
+  "description": "Sample native XGBoost model",
   "supportedFrameworks": [
-    "DOCKER_GENERIC_RAW"
+    "DOCKER"
   ],
   "language": "python",
 
