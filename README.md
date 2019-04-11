@@ -1,6 +1,6 @@
-# CaixaModels
+# Models
 
-This repository contains the sample models for the Caixa AI review project.
+This repository contains demo models for the Teradata AOA.
 
 The data science development perspective and process can be summarised by the following diagram
 
