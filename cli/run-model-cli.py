@@ -5,8 +5,6 @@ import logging
 import sys
 import os
 
-from importlib.machinery import SourceFileLoader
-
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
@@ -15,8 +13,8 @@ def main():
 
     parser = ArgumentParser(description='Run model training or scoring locally')
     parser.add_argument('model_id', type=str, help='Which model_id to use')
-    parser.add_argument('mode', type=str, help='The model (train or eval)')
-    parser.add_argument('--data', type=str, help='Yaml file containing data configuration')
+    parser.add_argument('mode', type=str, help='The model (train or evaluate)')
+    parser.add_argument('-d', '--data', type=str, help='Yaml file containing data configuration')
 
     args = parser.parse_args()
 
@@ -34,12 +32,13 @@ def main():
     else:
         data_conf = {}
 
-    module = SourceFileLoader("model", model_dir + "/model_modules/__init__.py").load_module()
+    sys.path.append(model_dir)
+    import model_modules
     if args.mode == "train":
-        module.training.train(data_conf, model_conf)
+        model_modules.training.train(data_conf, model_conf)
 
-    elif args.mode == "eval":
-        module.scoring.evaluate(data_conf, model_conf)
+    elif args.mode == "evaluate":
+        model_modules.scoring.evaluate(data_conf, model_conf)
 
     else:
         raise Exception("Unsupported mode used: " + args.mode)
