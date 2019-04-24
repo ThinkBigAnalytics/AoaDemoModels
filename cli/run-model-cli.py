@@ -1,9 +1,13 @@
+#!/usr/bin/env python
+
 import json
 import logging
+import sys
+import os
 
 from importlib.machinery import SourceFileLoader
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 def main():
@@ -16,7 +20,9 @@ def main():
 
     args = parser.parse_args()
 
-    model_dir = "./model_definitions/" + args.model_id + "/DOCKER_GENERIC_RAW"
+    base_path = os.path.dirname(os.path.realpath(__file__)) + "/../"
+
+    model_dir = base_path + "./model_definitions/" + args.model_id + "/DOCKER"
 
     with open(model_dir + "/config.json", 'r') as f:
         model_conf = json.load(f)

@@ -100,7 +100,7 @@ To aid developing and testing the models setup in the AOA locally and in the dat
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
 Python
- - [local-model-cli.py](./cli/local-model-cli.py)
+ - [run-model-cli.py](cli/run-model-cli.py)
 
 R
  - TBC..
