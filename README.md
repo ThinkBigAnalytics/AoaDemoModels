@@ -96,11 +96,22 @@ If deploying behind a Resful engine, the predict method should also be declared 
 
 # Cli tools
 
+## Running Models Locally
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
 Python
- - [run-model-cli.py](cli/run-model-cli.py)
+
+    ./cli/run-model-cli.py
+ 
 
 R
- - TBC..
+
+    TBC..
+ 
+ 
+## Adding Models based on Templates
+
+You can add models based using a cli tool based on model templates defined in the [model_templates](./model_templates) folder. 
+
+    ./cli/repo-cli.py -a
