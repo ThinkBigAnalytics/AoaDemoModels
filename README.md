@@ -15,6 +15,12 @@ The data science development perspective and process can be summarised by the fo
 
 # Adding new Models
 
+To add a new model, simply use the repo cli tool which helps to create the structure necessary for the given model. See [here](#adding-models-based-on-templates). 
+
+    ./cli/repo-cli.py -a
+    
+Note that you should manually add the new model to the [Available Models](#available-models) table above so that you can quickly access it from the main repository page. The cli tool will eventually update this as part of the process of adding a new repo. 
+
 The models are all defined under the directory [model_definitions](./model_definitions). The directory structure is as follows:
 
     model_definitions/
