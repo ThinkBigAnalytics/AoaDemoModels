@@ -1,3 +1,17 @@
+- [Models](#models)
+- [Available Models](#available-models)
+- [Adding new Models](#adding-new-models)
+  * [Python Model Signatures](#python-model-signatures)
+    + [Python Training Progress Callback](#python-training-progress-callback)
+    + [Shared Code](#shared-code)
+  * [R Model Signatures](#r-model-signatures)
+- [Model Container and Resources Configuration](#model-container-and-resources-configuration)
+  * [Resource Requests](#resource-requests)
+  * [Configure Base Docker Image](#configure-base-docker-image)
+- [Cli tools](#cli-tools)
+  * [Running Models Locally](#running-models-locally)
+  * [Adding Models based on Templates](#adding-models-based-on-templates)
+
 # Models
 
 This repository contains demo models for the Teradata AOA.
@@ -99,6 +113,27 @@ If deploying behind a Resful engine, the predict method should also be declared 
     predict.model <- function(model, data) {
     
     }
+
+# Model Container and Resources Configuration
+
+## Resource Requests
+You can configure the kubernetes resources requested for each model on a per model basis. This allows to limit the resource usage but also to request things like gpus etc. If nothing is specified, then no limits are currently applied, however we will eventually apply defaults. To do this, just add the following to the model.json for the given model.
+
+    "resources": {
+        "requests": {
+          "cpu": "200m",
+          "memory": "100Mi",
+          "gpu": 1
+        }
+    }
+
+## Configure Base Docker Image
+We also support specifying per model base docker images to use in training and evaluate. Eventually this will also apply for scoring but for now, we only support specifying a base image per model for training and evaluation. This is very useful to have dependencies preinstalled for faster model training and also to have additional gpu drivers or dependencies installed in the case of using gpus. To do this, just add the following to the model.json for the given model. 
+
+    "docker": {
+        "trainerImage": "willfleury/r_trainer:2.9"
+    }
+
 
 # Cli tools
 
