@@ -2,12 +2,5 @@
 
   "hyperparameters": {
     "example_param": 0.1
-  },
-
-  "resources": {
-    "requests": {
-      "cpu": "200m",
-      "memory": "100Mi"
-    }
   }
 }
