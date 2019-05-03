@@ -8,12 +8,5 @@
         "kernel_size": 3,
         "hidden_dims": 250,
         "epochs": 1
-    },
-
-    "resources": {
-        "limits": {
-            "cpu": "1",
-            "memory": "2048Mi"
-        }
     }
 }
