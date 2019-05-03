@@ -10,5 +10,12 @@
         "trainDatasetId": "563f84da-a2f7-4705-9c4a-552eb024abfa",
         "evaluateDatasetId": "563f84da-a2f7-4705-9c4a-552eb024abfa",
         "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
+    },
+
+    "resources": {
+        "limits": {
+            "cpu": "1",
+            "memory": "2048Mi"
+        }
     }
 }
