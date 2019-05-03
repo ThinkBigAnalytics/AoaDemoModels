@@ -10,9 +10,5 @@
     "trainDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
     "evaluateDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
     "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
-  },
-
-  "docker": {
-    "trainerImage": "willfleury/r_trainer:2.9"
   }
 }
