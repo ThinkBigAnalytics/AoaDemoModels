@@ -120,11 +120,12 @@ If deploying behind a Resful engine, the predict method should also be declared 
 You can configure the kubernetes resources requested for each model on a per model basis. This allows to limit the resource usage but also to request things like gpus etc. If nothing is specified, then no limits are currently applied, however we will eventually apply defaults. To do this, just add the following to the model.json for the given model.
 
     "resources": {
-        "requests": {
+      "training": {
+        "limits": {
           "cpu": "200m",
-          "memory": "100Mi",
-          "gpu": 1
+          "memory": "100Mi"
         }
+      }
     }
 
 ## Configure Base Docker Image
