@@ -28,13 +28,8 @@ def main():
         model["supportedFrameworks"] = ["DOCKER"]
         model["language"] = input("Model Language: ")
 
-        if model["language"] == "python":
+        if model["language"] in ["python", "R", "pyspark"]:
             create_model_structure(model)
-        elif model["language"] == "R":
-            create_model_structure(model)
-        elif model["language"] == "pyspark":
-            create_model_structure(model)
-
         else:
             logging.error("Only python, R and pyspark models currently supported.")
             exit(1)

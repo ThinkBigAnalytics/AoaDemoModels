@@ -39,12 +39,11 @@ def main():
     if model_definition["language"] == "python":
         sys.path.append(model_dir + "/DOCKER")
         import model_modules
+
         if args.mode == "train":
             model_modules.training.train(data_conf, model_conf)
-
         elif args.mode == "evaluate":
             model_modules.scoring.evaluate(data_conf, model_conf)
-
         else:
             raise Exception("Unsupported mode used: " + args.mode)
 
@@ -59,12 +58,11 @@ def main():
 
         sys.path.append(model_dir + "/DOCKER")
         import model_modules
+
         if args.mode == "train":
             model_modules.training.train(spark, data_conf, model_conf)
-
         elif args.mode == "evaluate":
             model_modules.scoring.evaluate(spark, data_conf, model_conf)
-
         else:
             raise Exception("Unsupported mode used: " + args.mode)
 
