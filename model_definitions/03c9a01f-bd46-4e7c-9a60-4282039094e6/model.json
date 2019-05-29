@@ -14,9 +14,11 @@
   },
 
   "resources": {
-    "requests": {
-      "cpu": "200m",
-      "memory": "100Mi"
+    "training": {
+      "limits": {
+        "cpu": "200m",
+        "memory": "100Mi"
+      }
     }
   }
 }
