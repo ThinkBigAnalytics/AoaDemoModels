@@ -5,7 +5,7 @@ import pickle
 
 
 def train(data_conf, model_conf, **kwargs):
-    hyperparams = model_conf["hyperparameters"]
+    hyperparams = model_conf["hyperParameters"]
 
     dataset = loadtxt(data_conf['data_path'], delimiter=",")
 

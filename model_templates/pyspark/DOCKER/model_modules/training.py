@@ -1,7 +1,7 @@
 
 
-def train(data_conf, model_conf, **kwargs):
-    """Python train method called by AOA framework
+def train(spark, data_conf, model_conf, **kwargs):
+    """pySpark train method called by AOA framework
 
     Parameters:
     spark (SparkSession): The SparkSession created by the framework
@@ -11,7 +11,7 @@ def train(data_conf, model_conf, **kwargs):
     Returns:
     None:No return
 
-    """
+   """
 
     hyperparams = model_conf["hyperParameters"]
 
