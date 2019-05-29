@@ -16,8 +16,8 @@ def train(spark, data_conf, model_conf, **kwargs):
     lr_model = lr.fit(training)
 
     # Print the coefficients and intercept for logistic regression
-    print("Coefficients: " + str(lr_model.coefficients))
-    print("Intercept: " + str(lr_model.intercept))
+    print("Coefficients: {}".format(str(lr_model.coefficients)))
+    print("Intercept: {}".format(str(lr_model.intercept)))
 
     print("Finished training")
 

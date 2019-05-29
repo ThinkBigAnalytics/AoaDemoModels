@@ -48,8 +48,10 @@ def main():
             raise Exception("Unsupported mode used: " + args.mode)
 
     elif model_definition["language"] == "pyspark":
-        from pyspark import SparkContext, SparkConf
+        from pyspark import SparkConf
         from pyspark.sql import SparkSession
+
+        logging.getLogger("py4j").setLevel(logging.ERROR)
 
         spark = SparkSession.builder \
             .appName("spark-model-runner-cli") \
