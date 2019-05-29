@@ -5,6 +5,7 @@
     + [Python Training Progress Callback](#python-training-progress-callback)
     + [Shared Code](#shared-code)
   * [R Model Signatures](#r-model-signatures)
+  * [Pyspark Model Signatures](#pyspark-model-signatures)
 - [Model Container and Resources Configuration](#model-container-and-resources-configuration)
   * [Resource Requests](#resource-requests)
   * [Configure Base Docker Image](#configure-base-docker-image)
@@ -35,7 +36,29 @@ To add a new model, simply use the repo cli tool which helps to create the struc
     
 Note that you should manually add the new model to the [Available Models](#available-models) table above so that you can quickly access it from the main repository page. The cli tool will eventually update this as part of the process of adding a new repo. 
 
-The models are all defined under the directory [model_definitions](./model_definitions). The directory structure is as follows:
+The models are all defined under the directory [model_definitions](./model_definitions). 
+
+## Python Model Signatures
+
+The python train and evaluate functions are 
+
+    def train(data_conf, model_conf, **kwargs):
+       ...
+       
+    def evaluate(data_conf, model_conf, **kwargs):
+       ...
+       
+If deploying behind a Restful scoring engine, the predict function is declared within a ModelScorer class
+       
+    class ModelScorer(object):
+        ...
+        
+        def predict(self, data):
+            ...
+
+Note that the `**kwargs` is used to ensure future extendibility of the model management framework and ensuring that models are backward compatible. For instance, we may pass new features such as callback handlers that the frameworks supports to newer models, but the old models can safely ignore such parameters.
+
+The folder structure for a python model is 
 
     model_definitions/
         <model_id>/
@@ -57,35 +80,7 @@ The __init__.py must be defined in a specific way to import the training and sco
 And if you want to deploy this behind a restful API add the ModelScorer abstraction for the REST engine
 
     from .scoring import ModelScorer
-                
-In the case of an R model, the model_modules folder is slightly different with
-
-                model_modules/
-                    requirements.R
-                    scoring.R
-                    training.R
-
-Note that other files may be included under the model_modules folder and they will be added to the relevant containers during training, evaluation and scoring. Examples of this a common data prep classes etc.
-
-## Python Model Signatures
-
-The python train and evaluate functions are 
-
-    def train(data_conf, model_conf, **kwargs):
-       ...
-       
-    def evaluate(data_conf, model_conf, **kwargs):
-       ...
-       
-If deploying behind a Restful scoring engine, the predict function is declared within a ModelScorer class
-       
-    class ModelScorer(object):
-        ...
-        
-        def predict(self, data):
-            ...
-
-Note that the `**kwargs` is used to ensure future extendibility of the model management framework and ensuring that models are backward compatible. For instance, we may pass new features such as callback handlers that the frameworks supports to newer models, but the old models can safely ignore such parameters.
+    
 
 ### Python Training Progress Callback
 
@@ -113,6 +108,31 @@ If deploying behind a Resful engine, the predict method should also be declared 
     predict.model <- function(model, data) {
     
     }
+    
+In the case of an R model, the model_modules folder is slightly different with
+
+    model_modules/
+        requirements.R
+        scoring.R
+        training.R
+
+Note that other files may be included under the model_modules folder and they will be added to the relevant containers during training, evaluation and scoring. Examples of this a common data prep classes etc.
+    
+## Pyspark Model Signatures
+
+The pyspark train and evaluate functions are almost identical to the native python signatures except the have the SparkSession as the first argument
+
+    def train(spark, data_conf, model_conf, **kwargs):
+       ...
+       
+    def evaluate(spark, data_conf, model_conf, **kwargs):
+       ...
+       
+
+Note that the `**kwargs` is used to ensure future extendibility of the model management framework and ensuring that models are backward compatible. For instance, we may pass new features such as callback handlers that the frameworks supports to newer models, but the old models can safely ignore such parameters.
+
+The folder structure and the use of the __init__.py is the exact same for pyspark as it is for native python.
+
 
 # Model Container and Resources Configuration
 
@@ -126,6 +146,15 @@ You can configure the kubernetes resources requested for each model on a per mod
           "memory": "100Mi"
         }
       }
+    }
+    
+If your model is a spark model, things change slightly. You simply specify the args you want to pass to spark as follows. Note that the master option allows testing locally but should be set to yarn in a deployment setup. 
+
+    "resources": {
+        "training": {
+            "master": "local[1]",
+            "args": "--num-executors 1 --executor-cores 1 --driver-memory 1G --executor-memory 1G"
+        }
     }
 
 ## Configure Base Docker Image
@@ -142,7 +171,7 @@ We also support specifying per model base docker images to use in training and e
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
-Python
+Python / pyspark
 
     ./cli/run-model-cli.py
  
