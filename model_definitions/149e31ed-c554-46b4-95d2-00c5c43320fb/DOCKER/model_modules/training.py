@@ -24,4 +24,4 @@ def train(spark, data_conf, model_conf, **kwargs):
     # export model artefacts to models/ folder
 
     print("Saved trained model")
-    lr_model.save("file://./models")
+    lr_model.save("file:///models")
