@@ -13,9 +13,11 @@
     },
 
     "resources": {
-        "limits": {
-            "cpu": "1",
-            "memory": "2048Mi"
+        "training": {
+            "limits": {
+                "cpu": "1",
+                "memory": "2048Mi"
+            }
         }
     }
 }

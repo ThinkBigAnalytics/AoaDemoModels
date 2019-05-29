@@ -9,7 +9,7 @@ display.print_sqlmr_query = True
 
 
 def train(data_conf, model_conf, **kwargs):
-    hyperparams = model_conf["hyperparameters"]
+    hyperparams = model_conf["hyperParameters"]
 
     create_context(host=data_conf["hostname"],
                    username=os.environ["USERNAME"],

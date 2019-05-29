@@ -1,7 +1,7 @@
 
 
-def evaluate(data_conf, model_conf, **kwargs):
-    """Python evaluate method called by AOA framework
+def evaluate(spark, data_conf, model_conf, **kwargs):
+    """pySpark evaluate method called by AOA framework
 
     Parameters:
     spark (SparkSession): The SparkSession created by the framework
