@@ -27,6 +27,7 @@ The data science development perspective and process can be summarised by the fo
 - [Python XGboost (Diabetes)](model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6/DOCKER)
 - [Vantage XGboost (Diabetes)](model_definitions/920ebf0e-1f0e-442a-94d1-214f63b8b820/DOCKER)
 - [Demo R GBM (Diabetes)](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45/DOCKER)
+- [PySpark Logistic Regression](model_definitions/149e31ed-c554-46b4-95d2-00c5c43320fb/DOCKER)
 
 # Adding new Models
 
