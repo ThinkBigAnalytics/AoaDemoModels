@@ -12,5 +12,7 @@ __pycache__
 venv/
 mvn-cache.yaml
 
-
 models/
+
+metastore_db/
+*.log
