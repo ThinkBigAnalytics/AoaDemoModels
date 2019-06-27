@@ -25,7 +25,7 @@ def train(data_conf, model_conf, **kwargs):
     xgb = XGBoost(formula=formula,
                   data=dataset,
                   id_column='idx',
-                  reg_lambda=hyperparams["reg_lambda"],
+                  reg_lambda=float(hyperparams["reg_lambda"]),
                   shrinkage_factor=hyperparams["shrinkage_factor"],
                   iter_num=10,
                   min_node_size=1,
