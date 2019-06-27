@@ -12,8 +12,8 @@ def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
     create_context(host=data_conf["hostname"],
-                   username=os.environ["USERNAME"],
-                   password=os.environ["PASSWORD"])
+                   username=os.environ["TD_USERNAME"],
+                   password=os.environ["TD_PASSWORD"])
 
     dataset = DataFrame(data_conf['data_table'])
     dataset = dataset[dataset['idx'] < 600]
@@ -34,7 +34,7 @@ def train(data_conf, model_conf, **kwargs):
     print("Finished training")
 
     # export model artefacts
-    xgb.model_table.to_sql(table_name="pima_model", if_exists="replace")
+    xgb.model_table.to_sql(table_name=data_conf["model_table"], if_exists="replace")
 
     model = xgb.model_table.to_pandas()
     model.to_hdf("models/model.h5", key="model", mode="w")

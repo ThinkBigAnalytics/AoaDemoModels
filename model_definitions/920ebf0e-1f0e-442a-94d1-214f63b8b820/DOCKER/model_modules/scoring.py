@@ -13,8 +13,8 @@ display.print_sqlmr_query = True
 
 def evaluate(data_conf, model_conf, **kwargs):
     create_context(host=data_conf["hostname"],
-                   username=os.environ["USERNAME"],
-                   password=os.environ["PASSWORD"])
+                   username=os.environ["TD_USERNAME"],
+                   password=os.environ["TD_PASSWORD"])
 
     # minor bug in python lib that doesn't allow creating large columns as CLOB etc.
     # model = pd.read_hdf('models/model.h5', 'model')
