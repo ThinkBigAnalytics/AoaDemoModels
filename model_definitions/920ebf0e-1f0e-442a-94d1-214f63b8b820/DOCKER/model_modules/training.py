@@ -40,3 +40,5 @@ def train(data_conf, model_conf, **kwargs):
     model.to_hdf("models/model.h5", key="model", mode="w")
 
     print("Saved trained model")
+    
+    
