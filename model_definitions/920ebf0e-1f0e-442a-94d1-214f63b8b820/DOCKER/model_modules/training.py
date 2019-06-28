@@ -36,8 +36,8 @@ def train(data_conf, model_conf, **kwargs):
     # export model artefacts
     xgb.model_table.to_sql(table_name=data_conf["model_table"], if_exists="replace")
 
-    model = xgb.model_table.to_pandas()
-    model.to_hdf("models/model.h5", key="model", mode="w")
+    #model = xgb.model_table.to_pandas()
+    #model.to_hdf("models/model.h5", key="model", mode="w")
 
     print("Saved trained model")
     
