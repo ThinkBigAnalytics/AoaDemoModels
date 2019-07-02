@@ -2,9 +2,9 @@ import os
 
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
+from teradataml.context.context import get_connection
 from teradataml.analytics.mle import XGBoost
 from teradataml.options.display import display
-from teradataml.context.context import get_connection
 
 display.print_sqlmr_query = True
 
@@ -17,7 +17,6 @@ def train(data_conf, model_conf, **kwargs):
                    password=os.environ["TD_PASSWORD"])
 
     dataset = DataFrame(data_conf['data_table'])
-    dataset = dataset[dataset['idx'] < 600]
 
     print("Starting training...")
 
@@ -31,20 +30,19 @@ def train(data_conf, model_conf, **kwargs):
                   iter_num=10,
                   min_node_size=1,
                   max_depth=hyperparams["max_depth"])
-
-    # force evaluation as its lazy otherwise
-    xgb.model_table.head(1)
     
+    print(xgb.model_table)
+
     print("Finished training")
 
-    # export model artefacts. work around bug in data frame code
+    # export model artefacts
     # xgb.model_table.to_sql(table_name=data_conf["model_table"], if_exists="replace")
-    get_connection().execute("CREATE TABLE {} AS (SELECT * FROM {}) WITH DATA"
-                             .format(data_conf['model_table'], xgb.model_table._table_name))
-    
+    get_connection().execute("INSERT INTO {} SELECT {}, T.* FROM {} T"
+                             .format(data_conf["model_table"], '1', xgb.model_table._table_name))
 
     # model = xgb.model_table.to_pandas()
     # model.to_hdf("models/model.h5", key="model", mode="w")
 
     print("Saved trained model")
+
     
