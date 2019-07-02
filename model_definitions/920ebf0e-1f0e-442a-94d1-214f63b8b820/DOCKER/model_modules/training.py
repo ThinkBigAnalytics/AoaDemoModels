@@ -35,8 +35,8 @@ def train(data_conf, model_conf, **kwargs):
 
     # export model artefacts
     # xgb.model_table.to_sql(table_name=data_conf["model_table"], if_exists="replace")
-    get_connection().execute("INSERT INTO aoa_models SELECT {}, T.* FROM {} T"
-                             .format('1', xgb.model_table._table_name))
+    get_connection().execute("INSERT INTO {} SELECT {}, T.* FROM {} T"
+                             .format(data_conf["model_table"], '1', xgb.model_table._table_name))
 
     # model = xgb.model_table.to_pandas()
     # model.to_hdf("models/model.h5", key="model", mode="w")

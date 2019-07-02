@@ -8,7 +8,7 @@ In the AOA you will need to define the dataset metadata which is
 
     {
         "hostname": "<vantage-db-url>",
-        "data_tabe": "<the table with PIMA data>",
+        "data_table": "<the table with PIMA data>",
         "model_table": "<the table to write the model to>"
     }
     
@@ -23,9 +23,22 @@ The [training.py](DOCKER/model_modules/training.py)
 
 
 # Evaluation
-Evaluation is also performed in [scoring.evluate](DOCKER/model_modules/scoring.py) and
+Evaluation is also performed in [scoring.evluate](DOCKER/model_modules/scoring.py) in the evaluate method. Currently we only return accuracy but we could update it to do a confusion matrix also.
+
+Due to a big with the teradataml library support for CLOBs, we currently only store the model in a models table in the database. The code to support exporting it and uploading to the model artefact repository of choice is also present, just disabled until this bug is resolved. The table schema required by the aoa is as follows and it inserts new records for every model version.
+
+    CREATE SET TABLE aoa_models, NO FALLBACK
+         (
+          model_version VARCHAR(36) CHARACTER SET UNICODE,
+          tree_id INTEGER,
+          iter INTEGER,
+          class_num INTEGER,
+          tree CLOB(10485760) CHARACTER SET UNICODE,
+          region_prediction CLOB(10485760) CHARACTER SET UNICODE)
+    PRIMARY INDEX ( model_version );
+
     
 
 # Scoring 
-The [scoring.py](DOCKER/model_modules/scoring.py) 
+TBD what we want for scoring with Vantage models. Simply run the scoring on deploy or something else? 
 
