@@ -31,6 +31,9 @@ def train(data_conf, model_conf, **kwargs):
                   min_node_size=1,
                   max_depth=hyperparams["max_depth"])
 
+    # forces creation of model
+    print(xgb.model_table)
+
     print("Finished training")
 
     # export model artefacts
