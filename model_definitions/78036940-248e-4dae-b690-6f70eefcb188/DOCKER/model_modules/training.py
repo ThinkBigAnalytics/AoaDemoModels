@@ -1,28 +1,25 @@
+import os
+
+from teradataml import create_context
+from teradataml.context.context import get_connection
+from .util import execute_sql_script
 
 
 def train(data_conf, model_conf, **kwargs):
-    """Python train method called by AOA framework
-
-    Parameters:
-    spark (SparkSession): The SparkSession created by the framework
-    data_conf (dict): The dataset metadata
-    model_conf (dict): The model configuration to use
-
-    Returns:
-    None:No return
-
-    """
-
     hyperparams = model_conf["hyperParameters"]
 
-    # load data & engineer
+    create_context(host=data_conf["hostname"],
+                   username=os.environ["TD_USERNAME"],
+                   password=os.environ["TD_PASSWORD"])
 
     print("Starting training...")
 
-    # fit model to training data
-
+    execute_sql_script(get_connection(), "training.sql")
+    
     print("Finished training")
 
-    # export model artefacts to models/ folder
+    # save model 
+    #get_connection().execute("INSERT INTO {} SELECT {}, T.* FROM {} T"
+    #                         .format(data_conf["model_table"], '1', "csi_telco_churn_model"))
 
     print("Saved trained model")
