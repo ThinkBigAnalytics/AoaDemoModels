@@ -23,11 +23,11 @@ The data science development perspective and process can be summarised by the fo
 
 # Available Models
 
-- [Tensorflow Sentitment Analysis](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER/)
-- [Python XGboost (Diabetes)](model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6/DOCKER)
-- [Vantage XGboost (Diabetes)](model_definitions/920ebf0e-1f0e-442a-94d1-214f63b8b820/DOCKER)
-- [Demo R GBM (Diabetes)](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45/DOCKER)
-- [PySpark Logistic Regression](model_definitions/149e31ed-c554-46b4-95d2-00c5c43320fb/DOCKER)
+- [Tensorflow Sentitment Analysis](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181)
+- [Python XGboost (Diabetes)](model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6)
+- [Python MLE XGboost (Diabetes)](model_definitions/920ebf0e-1f0e-442a-94d1-214f63b8b820)
+- [Demo R GBM](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45)
+- [PySpark Logistic Regression](model_definitions/149e31ed-c554-46b4-95d2-00c5c43320fb)
 
 # Adding new Models
 
@@ -179,7 +179,7 @@ Python / pyspark
 
 R
 
-    TBC..
+    ./cli/run-model-cli.R
  
  
 ## Adding Models based on Templates

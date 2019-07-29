@@ -1,2 +1,3 @@
 pandas
+tables
 teradataml
