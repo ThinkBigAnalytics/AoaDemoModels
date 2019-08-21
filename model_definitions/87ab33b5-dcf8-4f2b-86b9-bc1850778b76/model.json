@@ -1,0 +1,9 @@
+{
+    "id": "87ab33b5-dcf8-4f2b-86b9-bc1850778b76",
+    "name": "My first model",
+    "description": "My first model using AnalyticOpsAccelerator",
+    "supportedFrameworks": [
+        "DOCKER"
+    ],
+    "language": "python"
+}
