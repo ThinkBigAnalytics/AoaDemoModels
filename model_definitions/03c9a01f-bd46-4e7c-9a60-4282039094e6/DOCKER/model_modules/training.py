@@ -1,17 +1,22 @@
-from numpy import loadtxt
 from xgboost import XGBClassifier
 from sklearn.preprocessing import MinMaxScaler as Scaler
+from sklearn.model_selection import train_test_split
+
 import pickle
+import pandas as pd
 
 
 def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
-    dataset = loadtxt(data_conf['data_path'], delimiter=",")
+    dataset = pd.read_csv(data_conf['url'], header=None).values
+
+    # split into test and train
+    train, _ = train_test_split(dataset, test_size=data_conf["test_split"])
 
     # split data into X and y
-    X_train = dataset[:, 0:8]
-    y_train = dataset[:, 8]
+    X_train = train[:, 0:8]
+    y_train = train[:, 8]
     
     scaler = Scaler()
     scaler.fit(X_train)

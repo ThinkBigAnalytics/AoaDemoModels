@@ -2,16 +2,18 @@
 Simple xgboost model python model based on the medical records for Pima Indians and whether or not each patient will have an onset of diabetes within ve years.
 
 # Datasets
-The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](https://raw.githubusercontent.com/jbrownlee/Datasets/master/pima-indians-diabetes.data.csv). The dataset descriptor is 
+The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The dataset descriptor is 
 
     {
-        "data_path": "<path to csv>"
+        "url": "http://nrvis.com/data/mldata/pima-indians-diabetes.csv",
+        "test_split": 0.2
     }
 
 # Training
-The [training.R](DOCKER/model_modules/training.py) produces the following artifacts
+The [training.py](DOCKER/model_modules/training.py) produces the following artifacts
 
-- model.pkl     (xgboost pikle file with mode)
+- model.pkl     (xgboost pickle file with mode)
+- scaler.pkl    (the scaler file)
 
 # Evaluation
 Evaluation is also performed in [scoring.evluate](DOCKER/model_modules/scoring.py) and it returns the following metrics
@@ -19,7 +21,7 @@ Evaluation is also performed in [scoring.evluate](DOCKER/model_modules/scoring.p
     accuracy: <acc>
 
 # Scoring 
-The [scoring.R](DOCKER/model_modules/scoring.R) is responsible loads the model and metadata and accepts the dataframe for
+The [scoring.py](DOCKER/model_modules/scoring.R) is responsible loads the model and metadata and accepts the dataframe for
 for prediction. 
 
 # Sample Request
