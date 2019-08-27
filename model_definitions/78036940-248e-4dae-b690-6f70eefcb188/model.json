@@ -1,9 +1,0 @@
-{
-    "id": "78036940-248e-4dae-b690-6f70eefcb188",
-    "name": "SQL MLE Naive Bayes",
-    "description": "Naive Bayes classification demo for Vantage",
-    "supportedFrameworks": [
-        "DOCKER"
-    ],
-    "language": "python"
-}
