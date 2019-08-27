@@ -5,7 +5,6 @@
     + [Python Training Progress Callback](#python-training-progress-callback)
     + [Shared Code](#shared-code)
   * [R Model Signatures](#r-model-signatures)
-  * [Pyspark Model Signatures](#pyspark-model-signatures)
 - [Model Container and Resources Configuration](#model-container-and-resources-configuration)
   * [Resource Requests](#resource-requests)
   * [Configure Base Docker Image](#configure-base-docker-image)
@@ -120,21 +119,6 @@ In the case of an R model, the model_modules folder is slightly different with
         training.R
 
 Note that other files may be included under the model_modules folder and they will be added to the relevant containers during training, evaluation and scoring. Examples of this a common data prep classes etc.
-    
-## Pyspark Model Signatures
-
-The pyspark train and evaluate functions are almost identical to the native python signatures except the have the SparkSession as the first argument
-
-    def train(spark, data_conf, model_conf, **kwargs):
-       ...
-       
-    def evaluate(spark, data_conf, model_conf, **kwargs):
-       ...
-       
-
-Note that the `**kwargs` is used to ensure future extendibility of the model management framework and ensuring that models are backward compatible. For instance, we may pass new features such as callback handlers that the frameworks supports to newer models, but the old models can safely ignore such parameters.
-
-The folder structure and the use of the __init__.py is the exact same for pyspark as it is for native python.
 
 
 # Model Container and Resources Configuration
@@ -174,7 +158,7 @@ We also support specifying per model base docker images to use in training and e
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
-Python / pyspark
+Python
 
     ./cli/run-model-cli.py
  

@@ -47,27 +47,6 @@ def main():
         else:
             raise Exception("Unsupported mode used: " + args.mode)
 
-    elif model_definition["language"] == "pyspark":
-        from pyspark import SparkConf
-        from pyspark.sql import SparkSession
-
-        logging.getLogger("py4j").setLevel(logging.ERROR)
-
-        spark = SparkSession.builder \
-            .appName("spark-model-runner-cli") \
-            .config(conf=SparkConf()) \
-            .getOrCreate()
-
-        sys.path.append(model_dir + "/DOCKER")
-        import model_modules
-
-        if args.mode == "train":
-            model_modules.training.train(spark, data_conf, model_conf)
-        elif args.mode == "evaluate":
-            model_modules.scoring.evaluate(spark, data_conf, model_conf)
-        else:
-            raise Exception("Unsupported mode used: " + args.mode)
-
     else:
         raise Exception("Unsupported cli language: {}".format(model_definition["language"]))
 
