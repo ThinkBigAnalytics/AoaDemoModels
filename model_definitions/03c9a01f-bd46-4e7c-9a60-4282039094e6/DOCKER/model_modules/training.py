@@ -36,4 +36,3 @@ def train(data_conf, model_conf, **kwargs):
     pickle.dump(model, open("models/model.pkl", "wb"))
 
     print("Saved trained model")
-
