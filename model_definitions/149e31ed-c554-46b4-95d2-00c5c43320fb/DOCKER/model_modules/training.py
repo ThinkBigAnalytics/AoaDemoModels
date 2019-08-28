@@ -13,7 +13,7 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 
-def train(spark, data_conf, model_conf, **kwargs):
+def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
     # for this demo we're downloading the dataset locally and then reading it. This is obviously not production setting
