@@ -1,6 +1,8 @@
 # Overview
 Simple xgboost model python model based on the medical records for Pima Indians and whether or not each patient will have an onset of diabetes within ve years.
 
+A sample notebook is located [here](./DOCKER/notebooks/Explore%20Diabetes.ipynb).
+
 # Datasets
 The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The dataset descriptor is 
 

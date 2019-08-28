@@ -27,19 +27,20 @@ class ModelScorer(object):
 
 def evaluate(data_conf, model_conf, **kwargs):
 
-    dataset = pd.read_csv(data_conf['url'], header=None).values
+    dataset = pd.read_csv(data_conf['url'], header=None)
 
     # split into test and train
-    _, test = train_test_split(dataset, test_size=data_conf["test_split"])
+    _, test = train_test_split(dataset, test_size=data_conf["test_split"], random_state=42)
+
+    print(test.shape)
 
     # split data into X and y
+    test = test.values
     X_test = test[:, 0:8]
     y_test = test[:, 8]
 
     scorer = ModelScorer(model_conf)
     scores = scorer.evaluate(X_test, y_test)
-
-    print(scores)
 
     with open("models/evaluation.json", "w+") as f:
         json.dump(scores, f)

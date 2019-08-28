@@ -3,7 +3,7 @@
 The model is based on the Keras IMDB sentiment analytis using a CNN (see [here](https://github.com/keras-team/keras/blob/master/examples/imdb_cnn.py)).
 
 # Datasets
-The dataset used is the IMDB sentiment analysis dataset that is freely available. As this is a demo model, it downloads the data automatically when running either training or evaluation. Therefore it doesn't expect any data information to be provided.
+The dataset used is the IMDB sentiment analysis dataset that is freely available. As this is a demo model, it downloads the data automatically when running either training or evaluation. Therefore it doesn't expect any data information to be provided but we can't provide an empty dataset metadata value so add this. 
 
 
 # Training
