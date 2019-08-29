@@ -71,6 +71,7 @@ The folder structure for a python model is
                     requirements.txt
                     scoring.py
                     training.py
+                notebooks/
 
 The __init__.py must be defined in a specific way to import the training and scoring modules. This is important to support relative imports and shared code for a model.
 
