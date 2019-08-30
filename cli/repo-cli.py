@@ -28,10 +28,10 @@ def main():
         model["supportedFrameworks"] = ["DOCKER"]
         model["language"] = input("Model Language: ")
 
-        if model["language"] in ["python", "R"]:
+        if model["language"] in ["python", "R", "sql"]:
             create_model_structure(model)
         else:
-            logging.error("Only python, R and pyspark models currently supported.")
+            logging.error("Only python, R and sql models currently supported.")
             exit(1)
 
     else:
