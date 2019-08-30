@@ -1,0 +1,9 @@
+{
+    "id": "78036940-248e-4dae-b690-6f70eefcb188",
+    "name": "SQL Telco Churn",
+    "description": "Telco Churn prediction using MLE",
+    "supportedFrameworks": [
+        "DOCKER"
+    ],
+    "language": "python"
+}

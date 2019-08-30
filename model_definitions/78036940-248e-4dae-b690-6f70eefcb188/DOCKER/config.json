@@ -1,0 +1,6 @@
+{
+  "hyperParameters": {
+    "type": "Naive Bayes",
+    "model_type": "BERNOULLI"
+  }
+}
