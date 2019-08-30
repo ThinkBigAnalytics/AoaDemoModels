@@ -3,7 +3,8 @@
     "name": "Pyspark Logistic Regression",
     "description": "Sample Spark ML Model using Logistic Regression",
     "supportedFrameworks": ["DOCKER"],
-    "language": "pyspark",
+    "language": "python",
+    "launcher": "pyspark",
 
     "resources": {
         "training": {

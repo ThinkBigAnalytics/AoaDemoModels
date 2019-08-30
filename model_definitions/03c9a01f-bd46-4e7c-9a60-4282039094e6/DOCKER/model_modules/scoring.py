@@ -1,7 +1,9 @@
-from numpy import loadtxt
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
 import pickle
 import json
+import pandas as pd
 
 
 class ModelScorer(object):
@@ -25,16 +27,20 @@ class ModelScorer(object):
 
 def evaluate(data_conf, model_conf, **kwargs):
 
-    dataset = loadtxt(data_conf['data_path'], delimiter=",")
+    dataset = pd.read_csv(data_conf['url'], header=None)
+
+    # split into test and train
+    _, test = train_test_split(dataset, test_size=data_conf["test_split"], random_state=42)
+
+    print(test.shape)
 
     # split data into X and y
-    X_test = dataset[:, 0:8]
-    y_test = dataset[:, 8]
+    test = test.values
+    X_test = test[:, 0:8]
+    y_test = test[:, 8]
 
     scorer = ModelScorer(model_conf)
     scores = scorer.evaluate(X_test, y_test)
-
-    print(scores)
 
     with open("models/evaluation.json", "w+") as f:
         json.dump(scores, f)
