@@ -41,7 +41,10 @@ We are starting in AoaDemoModels root directory.
 # ./cli/repo-cli.py -a
 Model Name: My first model
 Model Description: My first model using AnalyticOpsAccelerator
+These languages are supported:  python, R
 Model Language: python
+These templates are available for python:  empty, sklearn
+Template type (leave blank for the empty one):
 INFO:root:Creating model structure for model: <your-model-uuid>
 # cd ./model_definitions/<your-model-uuid>/DOCKER
 ```
