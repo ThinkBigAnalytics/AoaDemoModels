@@ -8,12 +8,6 @@
   ],
   "language": "python",
 
-  "automation": {
-    "trainDatasetId": "1e28bdb9-0a2c-46d0-ad50-480922cc381a",
-    "evaluateDatasetId": "1e28bdb9-0a2c-46d0-ad50-480922cc381a",
-    "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
-  },
-
   "resources": {
     "training": {
       "limits": {
