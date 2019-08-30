@@ -164,7 +164,7 @@ Python
 
 R
 
-    TBC..
+    ./cli/run-model-cli.R
  
  
 ## Adding Models based on Templates

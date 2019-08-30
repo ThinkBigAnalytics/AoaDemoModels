@@ -30,7 +30,8 @@ def train(data_conf, model_conf, **kwargs):
                   iter_num=10,
                   min_node_size=1,
                   max_depth=hyperparams["max_depth"])
-    
+
+    # forces creation of model
     print(xgb.model_table)
 
     print("Finished training")
@@ -44,5 +45,3 @@ def train(data_conf, model_conf, **kwargs):
     # model.to_hdf("models/model.h5", key="model", mode="w")
 
     print("Saved trained model")
-
-    

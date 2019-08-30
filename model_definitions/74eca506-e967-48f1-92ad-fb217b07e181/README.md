@@ -7,7 +7,7 @@ The dataset used is the IMDB sentiment analysis dataset that is freely available
 
 
 # Training
-The [training.oy](DOCKER/model_modules/training.py) produces the following artifacts in the artefact repository
+The [training.py](DOCKER/model_modules/training.py) produces the following artifacts in the artefact repository
 
     model.h5      (architecture and weights file)
 

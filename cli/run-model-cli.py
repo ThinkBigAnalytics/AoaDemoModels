@@ -14,7 +14,7 @@ def main():
     parser = ArgumentParser(description='Run model training or scoring locally')
     parser.add_argument('model_id', type=str, help='Which model_id to use')
     parser.add_argument('mode', type=str, help='The model (train or evaluate)')
-    parser.add_argument('-d', '--data', type=str, help='Yaml file containing data configuration')
+    parser.add_argument('-d', '--data', type=str, help='Json file containing data configuration')
 
     args = parser.parse_args()
 
