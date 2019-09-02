@@ -35,17 +35,17 @@ def main():
         model["name"] = input("Model Name: ")
         model["description"] = input("Model Description: ")
         model["supportedFrameworks"] = ["DOCKER"]
-        print("These languages are supported: ",", ".join(str(x) for x in catalog.keys()))
+        print("These languages are supported: {0}".format(", ".join(str(x) for x in catalog.keys())))
         model_lang = input("Model Language: ")
         if model_lang not in catalog.keys():
-            logging.error("Only %s models currently supported." % ", ".join(str(x) for x in catalog.keys()))
+            logging.error("Only {0} model languages currently supported.".format(", ".join(str(x) for x in catalog.keys())))
             exit(1)
-        print("These templates are available for %s: " % model_lang,", ".join(str(x) for x in catalog[model_lang]))
+        print("These templates are available for {0}: {1}".format(model_lang,", ".join(str(x) for x in catalog[model_lang])))
         model_template = input("Template type (leave blank for the empty one): ")
         if not model_template:
             model_template = "empty"
         if model_template not in catalog[model_lang]:
-            logging.error("Only %s templates currently supported." % ", ".join(str(x) for x in catalog[model_lang]))
+            logging.error("Only {0} templates currently supported.".format(", ".join(str(x) for x in catalog[model_lang])))
             exit(1)
         
         model["language"] = model_lang
@@ -57,7 +57,7 @@ def main():
         exit(1)
 
 def create_model_structure(model):
-    logging.info("Creating model structure for model: {}".format(model["id"]))
+    logging.info("Creating model structure for model: {0}".format(model["id"]))
 
     model_dir = model_catalog + model["id"]
     template_dir = template_catalog + model["language"] + "/" + model["template"]
