@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import json
 import logging
@@ -38,6 +38,7 @@ def main():
 
     if model_definition["language"] == "python":
         sys.path.append(model_dir + "/DOCKER")
+        os.chdir(model_dir + "/DOCKER")
         import model_modules
 
         if args.mode == "train":
