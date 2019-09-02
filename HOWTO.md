@@ -11,12 +11,15 @@ import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.externals import joblib
 from sklearn import metrics
+from sklearn.model_selection import train_test_split
 
 # load data & engineer
-train_df = pd.read_csv('iris_train1.csv')
-features = 'SepalLengthCm,SepalWidthCm,PetalLengthCm,PetalWidthCm'.split(',')
+df = pd.read_csv('https://datahub.io/machine-learning/iris/r/iris.csv')
+# split dataset
+train_df, predict_df = train_test_split(df, test_size = 0.5) 
+features = 'sepallength,sepalwidth,petallength,petalwidth'.split(',')
 X_train = train_df.loc[:, features]
-y_train = train_df.Species
+y_train = train_df['class']
 
 print("Starting training...")
 # fit model to training data
@@ -25,9 +28,8 @@ knn.fit(X_train,y_train)
 print("Finished training")
 
 # evaluate model against test dataset
-predict_df = pd.read_csv('iris_evaluate.csv')
 X_predict = predict_df.loc[:, features]
-y_test = predict_df.Species
+y_test = predict_df['class']
 y_predict = knn.predict(X_predict)
 print("model accuracy is ", metrics.accuracy_score(y_test, y_predict))
 
@@ -87,10 +89,10 @@ def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
     # load data & engineer
-    train_df = pd.read_csv(data_conf['data_table'])
-    features = 'SepalLengthCm,SepalWidthCm,PetalLengthCm,PetalWidthCm'.split(',')
+    train_df = pd.read_csv(data_conf['location'])
+    features = 'sepallength,sepalwidth,petallength,petalwidth'.split(',')
     X = train_df.loc[:, features]
-    y = train_df.Species
+    y = train_df['class']
 
     print("Starting training...")
     # fit model to training data
@@ -105,7 +107,7 @@ def train(data_conf, model_conf, **kwargs):
     print("Saved trained model")
 ```
 Notice the parameters:
-- `data_conf['data_table']` used to provide path to data
+- `data_conf['location']` used to provide path to data
 - `hyperparams['n_neighbors']` used to provide classifier config
 
 Let's add model parameters to config.json:
@@ -116,16 +118,14 @@ Let's add model parameters to config.json:
   }
 }
 ```
-We shall test this method with local CLI client, but we need some data first:
-- Make sure your training dataset is available in `model_modules/data/iris_train1.csv`
-- define data configuration file `examples/train_dataset1.json`
+We shall test this method with local CLI client, but we need some data first, so we need to create data configuration file `examples/dataset.json`
 ```console
-# cat > examples/train_dataset1.json <<EOF
+# cat > examples/dataset.json <<EOF
 {
-  "data_table": "./model_modules/data/iris_train1.csv"
+  "location": "https://datahub.io/machine-learning/iris/r/iris.csv"
 }
 EOF
-# ../../../cli/run-model-cli.py -d examples/train_dataset1.json <your-model-uuid> train
+# ../../../cli/run-model-cli.py -d examples/dataset.json <your-model-uuid> train
 Starting training...
 Finished training
 Saved trained model
@@ -151,10 +151,10 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     """
 
-    predict_df = pd.read_csv(data_conf['data_table'])
-    features = 'SepalLengthCm,SepalWidthCm,PetalLengthCm,PetalWidthCm'.split(',')
+    predict_df = pd.read_csv(data_conf['location'])
+    features = 'sepallength,sepalwidth,petallength,petalwidth'.split(',')
     X_predict = predict_df.loc[:, features]
-    y_test = predict_df.Species
+    y_test = predict_df['class']
     knn = joblib.load('models/iris_knn.joblib')
 
     y_predict = knn.predict(X_predict)
@@ -167,14 +167,9 @@ def evaluate(data_conf, model_conf, **kwargs):
         json.dump(scores, f)
     print("Evaluation complete...")
 ```
-In order to evaluate this model we would need evaluation dataset (make sure it exists in this path):
+In order to evaluate this model we would need evaluation dataset, but we will use the same dataset at the moment:
 ```console
-# cat > examples/evaluate_dataset.json <<EOF
-{
-  "data_table": "./model_modules/data/iris_evaluate.csv"
-}
-EOF
-# ../../../cli/run-model-cli.py -d examples/evaluate_dataset.json <your-model-uuid> evaluate
+# ../../../cli/run-model-cli.py -d examples/dataset.json <your-model-uuid> evaluate
 model accuracy is  0.96
 Evaluation complete...
 ```
@@ -185,8 +180,6 @@ Depending on your demo setup you either need to:
 - commit and push the model to git; 
 - or just make sure your demo AoaCore service runs against your models directory
 
-In order to run demo training and evaluation you must include data inside model_modules/data directory in your commit.
-
-To train and evaluate models you would need to register datasets, you could do that manually using metadata in train/evaluate_dataset json files, or you could use script `examples/register_datasets.sh`
+To train and evaluate models you would need to register datasets, you could do that manually using metadata in train/dataset json file, or you could use script `examples/register_dataset.sh`
 
 Once datasets are registered feel free to train this model in API/UI against different datasets, evaluate and compare results.

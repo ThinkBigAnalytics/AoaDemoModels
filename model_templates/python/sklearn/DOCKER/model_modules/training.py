@@ -18,10 +18,10 @@ def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
     # load data & engineer
-    iris_df = pd.read_csv(data_conf['data_table'])
-    features = 'SepalLengthCm,SepalWidthCm,PetalLengthCm,PetalWidthCm'.split(',')
+    iris_df = pd.read_csv(data_conf['location'])
+    features = 'sepallength,sepalwidth,petallength,petalwidth'.split(',')
     X = iris_df.loc[:, features]
-    y = iris_df.Species
+    y = iris_df['class']
 
     print("Starting training...")
     # fit model to training data

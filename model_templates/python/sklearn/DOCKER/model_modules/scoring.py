@@ -15,10 +15,10 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     """
 
-    predict_df = pd.read_csv(data_conf['data_table'])
-    features = 'SepalLengthCm,SepalWidthCm,PetalLengthCm,PetalWidthCm'.split(',')
+    predict_df = pd.read_csv(data_conf['location'])
+    features = 'sepallength,sepalwidth,petallength,petalwidth'.split(',')
     X_predict = predict_df.loc[:, features]
-    y_test = predict_df.Species
+    y_test = predict_df['class']
     knn = joblib.load('models/iris_knn.joblib')
 
     y_predict = knn.predict(X_predict)
