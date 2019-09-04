@@ -2,7 +2,6 @@ import os
 
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
-from teradataml.context.context import get_connection
 from teradataml.analytics.mle import XGBoost
 from teradataml.options.display import display
 
@@ -35,11 +34,6 @@ def train(data_conf, model_conf, **kwargs):
     print(xgb.model_table)
 
     print("Finished training")
-
-    # export model artefacts
-    # xgb.model_table.to_sql(table_name=data_conf["model_table"], if_exists="replace")
-    get_connection().execute("INSERT INTO {} SELECT {}, T.* FROM {} T"
-                             .format(data_conf["model_table"], '1', xgb.model_table._table_name))
 
     # model = xgb.model_table.to_pandas()
     # model.to_hdf("models/model.h5", key="model", mode="w")
