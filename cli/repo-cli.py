@@ -25,7 +25,6 @@ def main():
         model["id"] = str(uuid.uuid4())
         model["name"] = input("Model Name: ")
         model["description"] = input("Model Description: ")
-        model["supportedFrameworks"] = ["DOCKER"]
         model["language"] = input("Model Language: ")
 
         if model["language"] in ["python", "R", "sql"]:

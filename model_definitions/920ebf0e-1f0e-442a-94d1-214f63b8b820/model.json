@@ -2,10 +2,6 @@
   "id": "920ebf0e-1f0e-442a-94d1-214f63b8b820",
   "name": "Vantage Diabetes Prediction",
   "description": "Vantage XGBoost for Diabetes Prediction",
-
-  "supportedFrameworks": [
-    "DOCKER"
-  ],
   "language": "python",
 
   "resources": {

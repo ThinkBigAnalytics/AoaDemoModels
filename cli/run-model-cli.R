@@ -15,7 +15,7 @@ model_id <- args$model_id
 mode <- tolower(args$mode)
 
 # direction of model, obtained form args[1]
-model_dir <- paste("./model_definitions/",model_id,"/DOCKER", sep = "")
+model_dir <- paste("./model_definitions/",model_id, sep = "")
 
 # get the configuration of the model
 model_conf_dir <- paste(model_dir, "/config.json", sep = "")

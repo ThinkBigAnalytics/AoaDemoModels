@@ -13,7 +13,7 @@
     
 ## Training 
 
-Define the [training.sql](./DOCKER/model_modules/training.sql).
+Define the [training.sql](model_modules/training.sql).
 
 Note that you can add DROP TABLE statements which will not cause an exception if the table doesn't exist. Instead it will log the failure to drop but continue executing.
 

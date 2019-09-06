@@ -2,15 +2,11 @@
   "id": "03c9a01f-bd46-4e7c-9a60-4282039094e6",
   "name": "Diabetes Prediction",
   "description": "Python XGBoost for Diabetes Prediction",
-  "supportedFrameworks": [
-    "DOCKER"
-  ],
   "language": "python",
 
   "automation": {
     "trainDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
-    "evaluateDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
-    "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
+    "evaluateDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c"
   },
 
   "resources": {
