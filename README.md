@@ -14,11 +14,7 @@
 
 # Models
 
-This repository contains demo models for the Teradata AOA.
-
-The data science development perspective and process can be summarised by the following diagram
-
-<center><img src="./images/ds-perspective.png" style="width: 1024px"/></center>
+This repository contains demo models for the Teradata AOA. See the [HowTo](./HOWTO.md) guide for a brief tutorial on how to add new models.
 
 # Available Models
 

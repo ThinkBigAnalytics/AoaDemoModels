@@ -16,3 +16,4 @@ models/
 
 metastore_db/
 *.log
+.vscode/
