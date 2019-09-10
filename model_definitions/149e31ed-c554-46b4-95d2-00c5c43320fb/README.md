@@ -15,14 +15,14 @@ The dataset we're using is the standard libsvm dataset from spark. To prevent lo
 
 
 # Training
-The [training.oy](model_modules/training.py) produces the following artifacts in the artefact repository
+The [training.py](model_modules/training.py) produces the following artifacts in the artefact repository
 
     lr/data/part-*****          (partition files for the lreg model parameters)
     lr/metadata/part-00000      (metadata file for the lreg model structure)
 
 
 # Evaluation
-Evaluation is also performed in [scoring.evluate](model_modules/scoring.py) and it returns the following metrics
+Evaluation is also performed in [scoring.evaluate](model_modules/scoring.py) and it returns the following metrics
 
     roc: <roc>
     
