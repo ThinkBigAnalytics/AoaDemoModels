@@ -27,10 +27,10 @@ def main():
         model["description"] = input("Model Description: ")
         model["language"] = input("Model Language: ")
 
-        if model["language"] in ["python", "R", "sql"]:
+        if model["language"] in ["python", "R"]:
             create_model_structure(model)
         else:
-            logging.error("Only python, R and sql models currently supported.")
+            logging.error("Only python, R models currently supported.")
             exit(1)
 
     else:
