@@ -19,20 +19,7 @@ Note the credentials are passed via environment variables which aligns with secu
 
 
 # Training
-The [training.py](model_modules/training.py) is a simple XGBoost MLE model. 
-
-
-Due to a big with the teradataml library support for CLOBs, we currently only store the model in a models table in the database. The code to support exporting it and uploading to the model artefact repository of choice is also present, just disabled until this bug is resolved. The table schema required by the aoa is as follows and it inserts new records for every model version.
-
-    CREATE SET TABLE aoa_models, NO FALLBACK
-         (
-          model_version VARCHAR(36) CHARACTER SET UNICODE,
-          tree_id INTEGER,
-          iter INTEGER,
-          class_num INTEGER,
-          tree CLOB(10485760) CHARACTER SET UNICODE,
-          region_prediction CLOB(10485760) CHARACTER SET UNICODE)
-    PRIMARY INDEX ( model_version );
+The [training.py](model_modules/training.py) is a simple XGBoost MLE model. Due to a big with the teradataml library support for CLOBs, we currently only store the model in a models table in the database. The code to support exporting it and uploading to the model artefact repository of choice is also present, just disabled until this bug is resolved. The table schema required by the aoa is as follows and it inserts new records for every model version.
 
 
 # Evaluation

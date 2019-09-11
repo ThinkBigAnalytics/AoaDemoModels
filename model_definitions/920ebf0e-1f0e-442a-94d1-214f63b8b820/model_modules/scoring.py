@@ -17,8 +17,7 @@ def evaluate(data_conf, model_conf, **kwargs):
     # bug in python lib that doesn't allow creating large columns as CLOB etc. there must be way to specify schema..
     # model = pd.read_hdf('models/model.h5', 'model')
     # copy_to_sql(df=model, table_name="pima_model", index=True, index_label="idx", if_exists="replace")
-    model = DataFrame.from_query("SELECT tree_id, iter, class_num, tree, region_prediction "
-                                 "FROM {} WHERE model_version = {}".format(data_conf["model_table"], '1'))
+    model = DataFrame(data_conf["model_table"])
 
     dataset = DataFrame(data_conf['data_table'])
 

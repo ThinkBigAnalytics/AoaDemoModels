@@ -21,4 +21,6 @@ for prediction.
 
 # Sample Request
 
-    curl -X POST -H "Content-Type: application/json" -d "@data.json" http://<service-name>/predict
+    curl -X POST -H "Content-Type: application/json" \
+        -d '{"data":{"names":["Y","X1","X2","X3","X4","X5","X6"],"ndarray":[[0,0.8545,0.0037,"d","d","a",2.6062]]}}' \
+        http://<service-name>/predict
