@@ -1,0 +1,9 @@
+{
+    "id": "db1399f2-3b78-49a3-b95e-d9cf9f740717",
+    "name": "MLE Decision Forest",
+    "description": "MLE Decision Forest",
+    "supportedFrameworks": [
+        "DOCKER"
+    ],
+    "language": "python"
+}
