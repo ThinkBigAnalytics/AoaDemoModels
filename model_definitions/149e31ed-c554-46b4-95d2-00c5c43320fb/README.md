@@ -15,7 +15,7 @@ for evaluation (and scoring) - note the url and test_split is only for this demo
 
     data_conf = {
         "url": "https://raw.githubusercontent.com/apache/spark/branch-2.4/data/mllib/sample_libsvm_data.txt",
-        "predictions": 
+        "predictions": "<predictions-output>"
     }
 
 # Training

@@ -23,21 +23,20 @@ def score(data_conf, model_conf, **kwargs):
     # we need to ensure that test has an id for comparison (almost all datasets will already have a primary key!!)
     test = test.select("*").withColumn("id", monotonically_increasing_id())
 
-    predictions = lr_model.transform(test).select("id", "rawPrediction")
+    predictions = lr_model.transform(test).select("id", "rawPrediction", "prediction", "probability")
 
-    predictions.write.format("csv").save(data_conf["predictions"])
+    predictions.write.mode("overwrite").save(data_conf["predictions"])
     logging.info("Finished scoring")
 
 
 def evaluate(data_conf, model_conf, **kwargs):
 
-    score(data_conf, model_conf, kwargs)
+    score(data_conf, model_conf, **kwargs)
 
     test = read_dataset_from_url(spark, data_conf["url"])
-    test = test.select("*").withColumn("id", monotonically_increasing_id())
 
-    expected = test.select("id", "prediction")
-    actual = spark.read.format("csv").load(data_conf["predictions"])
+    expected = test.select("*").withColumn("id", monotonically_increasing_id())
+    actual = spark.read.load(data_conf["predictions"])
 
     evaluator = BinaryClassificationEvaluator()
     roc = evaluator.evaluate(expected.join(actual, expected.id == actual.id))
