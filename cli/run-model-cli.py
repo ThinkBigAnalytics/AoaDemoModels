@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import json
 import logging
@@ -25,7 +25,7 @@ def main():
     with open(model_dir + "/model.json", 'r') as f:
         model_definition = json.load(f)
 
-    with open(model_dir + "/DOCKER/config.json", 'r') as f:
+    with open(model_dir + "/config.json", 'r') as f:
         model_conf = json.load(f)
 
     if args.data:
@@ -37,8 +37,7 @@ def main():
         data_conf = {}
 
     if model_definition["language"] == "python":
-        sys.path.append(model_dir + "/DOCKER")
-        os.chdir(model_dir + "/DOCKER")
+        sys.path.append(model_dir)
         import model_modules
 
         if args.mode == "train":

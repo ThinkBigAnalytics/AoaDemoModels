@@ -2,9 +2,12 @@
     "id": "149e31ed-c554-46b4-95d2-00c5c43320fb",
     "name": "Pyspark Logistic Regression",
     "description": "Sample Spark ML Model using Logistic Regression",
-    "supportedFrameworks": ["DOCKER"],
     "language": "python",
     "launcher": "pyspark",
+
+    "automation": {
+        "trainingEngine": "pyspark"
+    },
 
     "resources": {
         "training": {

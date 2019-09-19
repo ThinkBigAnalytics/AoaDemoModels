@@ -2,13 +2,10 @@
   "id": "bf6a52b2-b595-4358-ac4f-24fb41a85c45",
   "name": "R GBM",
   "description": "Sample R GBM model",
-
-  "supportedFrameworks": ["DOCKER"],
   "language": "R",
 
   "automation":{
     "trainDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
-    "evaluateDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
-    "trainerId": "d8d5b0e3-0e4c-4689-830b-da8ab85ffc15"
+    "evaluateDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c"
   }
 }
