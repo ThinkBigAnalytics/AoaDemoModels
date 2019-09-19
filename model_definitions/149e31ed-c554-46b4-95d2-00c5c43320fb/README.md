@@ -5,14 +5,18 @@ Sample pyspark model using spark mlib LogisticRegressionModel algorithm.
 # Datasets
 The dataset we're using is the standard libsvm dataset from spark. To prevent local path issues we download this file from a url and then load it into spark. We also set the test / train split.
  
-*Temporarily with spark jobs we need to store the model in some path where it can be later moved to the correct model artefact repository location. As spark is distributed, this must be a distributed store and so we can't ask it to store them directly in the "models" folder where the driver is running. Therefore, as a temporary solution to this, we pass the model_path attribute which specifies where to store it. In the example below it is local as in the demo we are runnning spark embedded mode but in a real scenario this must be a distributed store like hdfs or s3.*
+*Temporarily with spark jobs we need to store the model in some path where it can be later moved to the correct model artefact repository location. As spark is distributed, this must be a distributed store and so we can't ask it to store them directly in the "models" folder where the driver is running. In the example below it is local as in the demo we are runnning spark embedded mode but in a real scenario this must be a distributed store like hdfs or s3.*
+
+    data_conf = {
+        "url": "https://raw.githubusercontent.com/apache/spark/branch-2.4/data/mllib/sample_libsvm_data.txt"
+    }
+
+for evaluation (and scoring) - note the url and test_split is only for this demo model and in a normal scenario you would have a different evaluation dataset completely
 
     data_conf = {
         "url": "https://raw.githubusercontent.com/apache/spark/branch-2.4/data/mllib/sample_libsvm_data.txt",
-        "test_split": 0.2,
-        "model_path": "file:///tmp/lr"
+        "predictions": "<predictions-output>"
     }
-
 
 # Training
 The [training.py](model_modules/training.py) produces the following artifacts in the artefact repository

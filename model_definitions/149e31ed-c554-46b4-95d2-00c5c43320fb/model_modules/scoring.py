@@ -1,11 +1,12 @@
 import json
 import logging
-import urllib.request
 
 from pyspark.ml.classification import LogisticRegressionModel
 from pyspark.ml.evaluation import BinaryClassificationEvaluator
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import monotonically_increasing_id
+from .util import read_dataset_from_url
 
 logging.getLogger("py4j").setLevel(logging.ERROR)
 
@@ -15,20 +16,33 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 
+def score(data_conf, model_conf, **kwargs):
+    lr_model = LogisticRegressionModel.load(spark.conf.get("spark.aoa.modelPath"))
+
+    test = read_dataset_from_url(spark, data_conf["url"])
+    # we need to ensure that test has an id for comparison (almost all datasets will already have a primary key!!)
+    test = test.select("*").withColumn("id", monotonically_increasing_id())
+
+    predictions = lr_model.transform(test).select("id", "rawPrediction", "prediction", "probability")
+
+    predictions.write.mode("overwrite").save(data_conf["predictions"])
+    logging.info("Finished scoring")
+
+
 def evaluate(data_conf, model_conf, **kwargs):
-    lr_model = LogisticRegressionModel.load(data_conf["model_path"])
 
-    # for this demo we're downloading the dataset locally and then reading it. This is obviously not production setting
-    # https://raw.githubusercontent.com/apache/spark/branch-2.4/data/mllib/sample_libsvm_data.txt
-    urllib.request.urlretrieve(data_conf["url"], "/tmp/data.txt")
+    score(data_conf, model_conf, **kwargs)
 
-    test = spark.read.format("libsvm").load("/tmp/data.txt")
+    test = read_dataset_from_url(spark, data_conf["url"])
 
-    predictions = lr_model.transform(test)
+    expected = test.select("*").withColumn("id", monotonically_increasing_id())
+    actual = spark.read.load(data_conf["predictions"])
 
     evaluator = BinaryClassificationEvaluator()
-    roc = evaluator.evaluate(predictions)
-    print('Test Area Under ROC: {}'.format(roc))
+    roc = evaluator.evaluate(expected.join(actual, expected.id == actual.id))
+    logging.info('Test Area Under ROC: {}'.format(roc))
 
     with open("models/evaluation.json", "w+") as f:
         json.dump({'roc': roc}, f)
+
+    logging.info("Finished Evaluation")
