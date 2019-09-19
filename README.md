@@ -14,11 +14,7 @@
 
 # Models
 
-This repository contains demo models for the Teradata AOA.
-
-The data science development perspective and process can be summarised by the following diagram
-
-<center><img src="./images/ds-perspective.png" style="width: 1024px"/></center>
+This repository contains demo models for the Teradata AOA. See the [HowTo](./HOWTO.md) guide for a brief tutorial on how to add new models.
 
 # Available Models
 
@@ -64,14 +60,13 @@ The folder structure for a python model is
         <model_id>/
             README.md
             model.json
-            <aoa-trainer-framework>/
-                config.json
-                model_modules/
-                    __init__.py
-                    requirements.txt
-                    scoring.py
-                    training.py
-                notebooks/
+            config.json
+            model_modules/
+                __init__.py
+                requirements.txt
+                scoring.py
+                training.py
+            notebooks/
 
 The __init__.py must be defined in a specific way to import the training and scoring modules. This is important to support relative imports and shared code for a model.
 
@@ -85,11 +80,11 @@ And if you want to deploy this behind a restful API add the ModelScorer abstract
 
 ### Python Training Progress Callback
 
-We have added an example of the training progress support in the AOA framework to the [Tensorflow Sentitment Analysis](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER/model_modules/callback.py). This works by sending progress messages via activemq which can in take whatever action it needs to based on the progress, update a UI for example or trigger some alert if a progress is stalled. The provided `AoaKerasProgressCallback` function should be located in an AOA python module whenever this is created and simply imported instead of being defined in the sample model.
+We have added an example of the training progress support in the AOA framework to the [Tensorflow Sentitment Analysis](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/model_modules/callback.py). This works by sending progress messages via activemq which can in take whatever action it needs to based on the progress, update a UI for example or trigger some alert if a progress is stalled. The provided `AoaKerasProgressCallback` function should be located in an AOA python module whenever this is created and simply imported instead of being defined in the sample model.
 
 ### Shared Code
 
-To share common code between models, you should create a separate models util module that you can release and version. To share code between the training and scoring of an individual model, you can follow the example code in the [tensorflow sample](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER/model_modules). There you can see that the [preprocess.py](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/DOCKER/model_modules/preprocess.py) file has code that is used in both training.py and scoring.py. 
+To share common code between models, you should create a separate models util module that you can release and version. To share code between the training and scoring of an individual model, you can follow the example code in the [tensorflow sample](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/model_modules). There you can see that the [preprocess.py](model_definitions/74eca506-e967-48f1-92ad-fb217b07e181/model_modules/preprocess.py) file has code that is used in both training.py and scoring.py. 
 
 
 ## R Model Signatures
@@ -132,15 +127,6 @@ You can configure the kubernetes resources requested for each model on a per mod
           "memory": "100Mi"
         }
       }
-    }
-    
-If your model is a spark model, things change slightly. You simply specify the args you want to pass to spark as follows. Note that the master option allows testing locally but should be set to yarn in a deployment setup. 
-
-    "resources": {
-        "training": {
-            "master": "local[1]",
-            "args": "--num-executors 1 --executor-cores 1 --driver-memory 1G --executor-memory 1G"
-        }
     }
 
 ## Configure Base Docker Image
