@@ -39,7 +39,7 @@ We could easily add code to copy the model to a general models table which is ke
 
 
 # Evaluation
-Evaluation is also performed in [scoring.evluate](model_modules/scoring.py) in the evaluate method. Currently we only return accuracy but we could update it to do a confusion matrix also.
+Evaluation is also performed in the [evaluation code](model_modules/scoring.py) in the evaluate method. We record the statistics from the confusion matrix support in the MLE. You could store more statistics but this is all we store at the moment. Note that you can store any key-value pairs you want. We would like to add support to the UI to display the actual confusion matrix correctly. 
 
 # Scoring 
 As mentioned in the training section, we are evaluating the possibility to export the MLE models in a teradata supported format (AML) and score them in RESTful APIs. This will allow for low latency use cases such as Next Best Offer. We are also evaluating if the 4 supported model types in the SQLE are capable of this individual offer prediction at a low latency high QPS.
