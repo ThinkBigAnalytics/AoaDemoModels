@@ -2,7 +2,7 @@
 Implement XGBoost algo for diabetes classification using Vantage ML engine via the teradataml python library.
 
 # Datasets
-The Dataset used is the PIMA diabestes dataset which can be downloaded from the internet. However, as the sample dataset is so small, we include it in this notesbooks/sample-data folder. The [sample notebook](model_modules/notebooks/Explore%20Diabetes%20Vantage.ipynb) will even import the dataset into Vantage for you so if you haven't setup the dataset before, start the notebook and import it.
+The Dataset used is the PIMA diabestes dataset which can be downloaded from the internet. However, as the sample dataset is so small, we include it in this notesbooks/sample-data folder. The [sample notebook](notebooks/Explore%20Diabetes%20Vantage.ipynb) will even import the dataset into Vantage for you so if you haven't setup the dataset before, start the notebook and import it.
 
 In the AOA you will need to define the dataset metadata which is 
 
