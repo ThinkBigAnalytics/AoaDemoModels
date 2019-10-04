@@ -20,7 +20,7 @@ def train(data_conf, model_conf, **kwargs):
     print("Starting training...")
 
     # fit model to training data
-    formula = "HasDiabetes ~ NumTimesPrg + PlGlcConc + BloodP + SkinThick + TwoHourSerIns + BMI + DiPedFunc + Age"
+    formula = "hasdiabetes ~ numtimesprg + plglcconc + bloodp + skinthick + twohourserins + bmi + dipedfunc + age"
     xgb = XGBoost(formula=formula,
                   data=dataset,
                   id_column='idx',
