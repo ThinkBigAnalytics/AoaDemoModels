@@ -4,12 +4,24 @@ Implement XGBoost algo for diabetes classification using Vantage ML engine via t
 # Datasets
 The Dataset used is the PIMA diabestes dataset which can be downloaded from the internet. However, as the sample dataset is so small, we include it in this notesbooks/sample-data folder. The [sample notebook](notebooks/Explore%20Diabetes%20Vantage.ipynb) will even import the dataset into Vantage for you so if you haven't setup the dataset before, start the notebook and import it.
 
-In the AOA you will need to define the dataset metadata which is 
+In the AOA you will need to define two datasets. One for training and evaluation.
+
+Training
 
     {
         "hostname": "<vantage-db-url>",
-        "data_table": "<the table with PIMA data>",
+        "data_table": "<the table with training PIMA data>",
         "model_table": "<the table to write the model to>"
+    }
+    
+
+Evaluation 
+  
+    {
+        "hostname":  "<vantage-db-url>",
+        "data_table": "<the table with testing/hold-out PIMA data>",
+        "model_table": "<the table to read the model from>"
+        "predictions_table": "<the table to store the predictions>"
     }
     
 Note the credentials are passed via environment variables which aligns with security on Kubernetes and other environments like this. This is of course configurable and depends on the organisations security requirements. If running in local mode, make sure the set the env variables. The two environment variables are 

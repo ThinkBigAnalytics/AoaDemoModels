@@ -3,7 +3,7 @@ import json
 
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
-from teradataml.analytics.mle import XGBoostPredict
+from teradataml.analytics.mle import XGBoostPredict, ConfusionMatrix
 from teradataml.options.display import display
 
 display.print_sqlmr_query = True
@@ -30,7 +30,7 @@ def score(data_conf, model_conf, **kwargs):
                                terms=["hasdiabetes"])
 
     # lazy evaluation so trigger it. export evaluation results (temporary=True causes issue)
-    predicted.result.to_sql("pima_predictions", if_exists="replace")
+    predicted.result.to_sql(data_conf["predictions_table"], if_exists="replace")
 
     print("Finished Scoring")
 
@@ -41,15 +41,16 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     print("Starting Comparison")
 
-    dataset = DataFrame(data_conf['data_table'])
+    cm = ConfusionMatrix(data=DataFrame(data_conf["predictions_table"]),
+                         reference='hasdiabetes',
+                         prediction='prediction')
 
-    summary = DataFrame.from_query(
-        "SELECT count(*) as match FROM pima_predictions WHERE hasdiabetes = CAST(prediction AS BIGINT)")
-    matches = summary.to_pandas()["match"].values[0]
-    accuracy = matches / dataset.shape[0]
-    print("Accuracy: {}".format(accuracy))
+    print("Confusion Matrix Stats: {}".format(cm.stattable))
 
     with open("models/evaluation.json", "w+") as f:
-        json.dump({'accuracy': (accuracy * 100.0)}, f)
+        metrics = cm.stattable.to_pandas()
+        metrics = dict(zip(metrics.key, metrics.value))
+
+        json.dump(metrics, f)
 
     print("Finished Comparison")
