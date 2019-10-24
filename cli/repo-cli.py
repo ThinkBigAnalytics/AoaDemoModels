@@ -17,7 +17,7 @@ model_catalog = base_path + "./model_definitions/"
 
 def main():
 
-    if os.path.isdir(template_catalog) == False:
+    if not os.path.isdir(template_catalog):
         logging.error("Template directory is missing")
         exit(1)
     from argparse import ArgumentParser
@@ -56,6 +56,7 @@ def main():
         logging.error("Only --add option is currently supported")
         exit(1)
 
+
 def create_model_structure(model):
     logging.info("Creating model structure for model: {0}".format(model["id"]))
 
@@ -67,6 +68,7 @@ def create_model_structure(model):
     with open(model_dir + "/model.json", 'w') as f:
         json.dump(model, f, indent=4)
 
+
 def get_template_catalog():
     catalog = {}
     for language in os.listdir(template_catalog):
@@ -76,5 +78,6 @@ def get_template_catalog():
             catalog[language].append(template_type)
     return catalog
 
-if __name__== "__main__":
+
+if __name__ == "__main__":
     main()

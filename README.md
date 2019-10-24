@@ -128,6 +128,15 @@ You can configure the kubernetes resources requested for each model on a per mod
         }
       }
     }
+    
+If your model is a spark model, things change slightly. You simply specify the args you want to pass to spark as follows. Note that the master option allows testing locally but should be set to yarn in a deployment setup. 
+
+    "resources": {
+        "training": {
+            "master": "local[1]",
+            "args": "--num-executors 1 --executor-cores 1 --driver-memory 1G --executor-memory 1G"
+        }
+    }
 
 ## Configure Base Docker Image
 We also support specifying per model base docker images to use in training and evaluate. Eventually this will also apply for scoring but for now, we only support specifying a base image per model for training and evaluation. This is very useful to have dependencies preinstalled for faster model training and also to have additional gpu drivers or dependencies installed in the case of using gpus. To do this, just add the following to the model.json for the given model. 
@@ -143,14 +152,13 @@ We also support specifying per model base docker images to use in training and e
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
-Python
 
-    ./cli/run-model-cli.py
- 
+| Language   |      Cmd      |
+|----------|:-------------:|
+| python |  ./cli/run-model-cli.py |
+| R | ./cli/run-model-cli.R |
+| sql | ./cli/run-model-cli.py |
 
-R
-
-    ./cli/run-model-cli.R
  
  
 ## Adding Models based on Templates
