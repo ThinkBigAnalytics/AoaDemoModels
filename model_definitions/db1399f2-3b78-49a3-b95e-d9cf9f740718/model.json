@@ -1,0 +1,9 @@
+{
+    "id": "db1399f2-3b78-49a3-b95e-d9cf9f740718",
+    "name": "MLE GLM",
+    "description": "MLE GLM",
+    "supportedFrameworks": [
+        "DOCKER"
+    ],
+    "language": "python"
+}

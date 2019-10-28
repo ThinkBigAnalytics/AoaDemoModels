@@ -1,0 +1,5 @@
+pandas
+teradataml==16.20.0.2
+teradatasql==16.20.0.43
+teradatasqlalchemy==16.20.0.7
+tables==3.5.1

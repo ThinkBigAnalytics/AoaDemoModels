@@ -1,0 +1,12 @@
+{
+	"hyperParameters": {
+   		"threshold": 0.01,
+   		"maxit": 25,
+   		"step": 0,
+   		"intercept": 1
+ 	},
+ 	"terms": "no2",
+ 	"formula": "no2 ~ hr + luftdruck + luftfeuchtigkeit + temperatur + dayofweek_3 + dayofweek_1 + dayofweek_4 + dayofweek_2 + dayofweek_7 + dayofweek_6 + dayofweek_5",
+ 	"family": "gaussian",
+ 	"linkfunction": "CANONICAL"
+}

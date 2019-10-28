@@ -1,0 +1,14 @@
+{
+  "hyperParameters": {
+    "ntree": 0,
+    "nodesize": 0,
+    "max_depth": 0,
+    "mtry": 0,
+    "tree_type": "regression"
+  },
+  "formula": "y ~ x",
+  "tree_type": "regression",
+  "idcolumn": "datetime",
+  "detailed": "False",
+  "terms": "x"
+}
