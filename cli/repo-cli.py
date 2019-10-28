@@ -31,15 +31,17 @@ def main():
 
         model = collections.OrderedDict()
         catalog = get_template_catalog()
+
         model["id"] = str(uuid.uuid4())
         model["name"] = input("Model Name: ")
         model["description"] = input("Model Description: ")
-        model["supportedFrameworks"] = ["DOCKER"]
+
         print("These languages are supported: {0}".format(", ".join(str(x) for x in catalog.keys())))
         model_lang = input("Model Language: ")
         if model_lang not in catalog.keys():
             logging.error("Only {0} model languages currently supported.".format(", ".join(str(x) for x in catalog.keys())))
             exit(1)
+
         print("These templates are available for {0}: {1}".format(model_lang,", ".join(str(x) for x in catalog[model_lang])))
         model_template = input("Template type (leave blank for the empty one): ")
         if not model_template:
@@ -47,14 +49,24 @@ def main():
         if model_template not in catalog[model_lang]:
             logging.error("Only {0} templates currently supported.".format(", ".join(str(x) for x in catalog[model_lang])))
             exit(1)
-        
+
         model["language"] = model_lang
         model["template"] = model_template
+
+        add_framework_specific_attributes(model)
+
         create_model_structure(model)
                 
     else:
         logging.error("Only --add option is currently supported")
         exit(1)
+
+
+def add_framework_specific_attributes(model):
+    if model["template"] == "pyspark":
+        model["automation"] = {
+            "trainingEngine": "pyspark"
+        }
 
 
 def create_model_structure(model):
