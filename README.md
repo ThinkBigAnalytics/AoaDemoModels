@@ -23,6 +23,8 @@ This repository contains demo models for the Teradata AOA. See the [HowTo](./HOW
 - [Python MLE XGboost (Diabetes)](model_definitions/920ebf0e-1f0e-442a-94d1-214f63b8b820)
 - [Demo R GBM](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45)
 - [PySpark Logistic Regression](model_definitions/149e31ed-c554-46b4-95d2-00c5c43320fb)
+- [Vantage MLE DecisionForest (teradataml)](model_definitions/347ccad1-75de-4faa-9325-7fe6e0dd8a2a)
+- [Vantage MLE GLM (teradataml)](model_definitions/db1399f2-3b78-49a3-b95e-d9cf9f740718)
 
 # Adding new Models
 
