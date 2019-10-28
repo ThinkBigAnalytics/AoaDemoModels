@@ -7,9 +7,14 @@ import json
 import logging
 import sys
 import os
+import shutil
 from jinja2 import Template
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
+
+mpl_logger = logging.getLogger("matplotlib")
+mpl_logger.setLevel(logging.WARNING)
 
 
 def main():
@@ -32,13 +37,19 @@ def main():
     with open(model_dir + "/config.json", 'r') as f:
         model_conf = json.load(f)
 
-    if args.data:
-        with open(args.data, 'r') as f:
-            data_conf = json.load(f)
+    if not args.data:
+        raise Exception("Dataset metadata must be specified.")
+
+    with open(args.data, 'r') as f:
+        data_conf = json.load(f)
+
+    if os.path.exists('models'):
+        logging.info("Cleaning directory {} to store test model artefacts".format(os.getcwd() + "/models"))
+        shutil.rmtree("path_to_dir")
 
     else:
-        logging.info("Using empty dataset definition")
-        data_conf = {}
+        logging.info("Creating directory {} to store test model artefacts".format(os.getcwd() + "/models"))
+        os.makedirs("models")
 
     if model_definition["language"] == "python":
         sys.path.append(model_dir)
@@ -53,9 +64,9 @@ def main():
 
     elif model_definition["language"] == "sql":
         if args.mode == "train":
-            train_sql(data_conf, model_conf)
+            train_sql(model_dir, data_conf, model_conf)
         elif args.mode == "evaluate":
-            evaluate_sql(data_conf, model_conf)
+            evaluate_sql(model_dir, data_conf, model_conf)
         else:
             raise Exception("Unsupported mode used: " + args.mode)
 
@@ -63,7 +74,7 @@ def main():
         raise Exception("Unsupported cli language: {}".format(model_definition["language"]))
 
 
-def evaluate_sql(data_conf, model_conf):
+def evaluate_sql(model_dir, data_conf, model_conf):
     from teradataml import create_context
     from teradataml.dataframe.dataframe import DataFrame
     from teradataml.context.context import get_connection
@@ -74,21 +85,21 @@ def evaluate_sql(data_conf, model_conf):
 
     print("Starting evaluation...")
 
-    sql_file = os.path.dirname(os.path.realpath(__file__)) +"/scoring.sql"
+    sql_file = model_dir + "/model_modules/scoring.sql"
     jinja_ctx = {"data_conf": data_conf, "model_conf": model_conf}
 
     execute_sql_script(get_connection(), sql_file, jinja_ctx)
 
     print("Finished evaluation")
 
-    stats = DataFrame(data_conf["results_table"]).to_pandas()
+    stats = DataFrame(data_conf["metrics_table"]).to_pandas()
     metrics = dict(zip(stats.key, stats.value))
 
     with open("models/evaluation.json", "w+") as f:
         json.dump(metrics, f)
 
 
-def train_sql(data_conf, model_conf):
+def train_sql(model_dir, data_conf, model_conf):
     from teradataml import create_context
     from teradataml.context.context import get_connection
 
@@ -98,7 +109,7 @@ def train_sql(data_conf, model_conf):
 
     print("Starting training...")
 
-    sql_file = os.path.dirname(os.path.realpath(__file__)) +"/training.sql"
+    sql_file = model_dir + "/model_modules/training.sql"
     jinja_ctx = {"data_conf": data_conf, "model_conf": model_conf}
 
     execute_sql_script(get_connection(), sql_file, jinja_ctx)
@@ -129,10 +140,9 @@ def execute_sql_script(conn, filename, jinja_ctx):
                 conn.execute(stm)
             except Exception as e:
                 if stm.startswith("DROP"):
-                    logging.warn("Ignoring DROP statement exception")
+                    logging.warning("Ignoring DROP statement exception")
                 else:
                     raise e
-
 
 if __name__ == "__main__":
     main()

@@ -46,7 +46,7 @@ def main():
             exit(1)
 
         print("These templates are available for {0}: {1}".format(model_lang,", ".join(str(x) for x in catalog[model_lang])))
-        model_template = input("Template type (leave blank for the empty one): ")
+        model_template = input("Template type (leave blank for the default one): ")
         if not model_template:
             model_template = "empty"
         if model_template not in catalog[model_lang]:
@@ -54,29 +54,28 @@ def main():
             exit(1)
 
         model["language"] = model_lang
-        model["template"] = model_template
 
-        add_framework_specific_attributes(model)
+        add_framework_specific_attributes(model, model_template)
 
-        create_model_structure(model)
+        create_model_structure(model, model_template)
                 
     else:
         logging.error("Only --add option is currently supported")
         exit(1)
 
 
-def add_framework_specific_attributes(model):
-    if model["template"] == "pyspark":
+def add_framework_specific_attributes(model, model_template):
+    if model_template == "pyspark":
         model["automation"] = {
             "trainingEngine": "pyspark"
         }
 
 
-def create_model_structure(model):
+def create_model_structure(model, model_template):
     logging.info("Creating model structure for model: {0}".format(model["id"]))
 
     model_dir = model_catalog + model["id"]
-    template_dir = template_catalog + model["language"] + "/" + model["template"]
+    template_dir = template_catalog + model["language"] + "/" + model_template
 
     shutil.copytree(template_dir, model_dir)
 
