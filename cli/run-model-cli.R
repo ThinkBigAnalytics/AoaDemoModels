@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+# https://github.com/ThinkBigAnalytics/AoaCoreService/issues/78
+# Code to be moved into centralised aoa cli
+
 library("jsonlite")
 library("argparse")
 

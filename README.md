@@ -5,6 +5,7 @@
     + [Python Training Progress Callback](#python-training-progress-callback)
     + [Shared Code](#shared-code)
   * [R Model Signatures](#r-model-signatures)
+  * [SQL Model Signatures](#sql-model-signatures)
 - [Model Container and Resources Configuration](#model-container-and-resources-configuration)
   * [Resource Requests](#resource-requests)
   * [Configure Base Docker Image](#configure-base-docker-image)
@@ -33,6 +34,15 @@ To add a new model, simply use the repo cli tool which helps to create the struc
 Note that you should manually add the new model to the [Available Models](#available-models) table above so that you can quickly access it from the main repository page. The cli tool will eventually update this as part of the process of adding a new repo. 
 
 The models are all defined under the directory [model_definitions](./model_definitions). 
+
+Supported model types are 
+
+| Language   |      Description      |
+|----------|:-------------:|
+| python |  [Python Model Signatures](#python-model-signatures) |
+| R | [R Model Signatures](#r-model-signatures) |
+| sql | [SQL Model Signatures](#sql-model-signatures) |
+
 
 ## Python Model Signatures
 
@@ -115,6 +125,31 @@ In the case of an R model, the model_modules folder is slightly different with
 Note that other files may be included under the model_modules folder and they will be added to the relevant containers during training, evaluation and scoring. Examples of this a common data prep classes etc.
 
 
+## SQL Model Signatures
+
+SQL Models obviously don't have a function signature. Instead, we approach the sql models slightly differently. You define training.sql and scoring.sql files where you place your sql logic for calling the Vantage training and evaluation functions. To support using different dataset metadata, different model configuration etc, we use templating. So, the data_conf argument that is available to the python and R models can be used in sql as 
+
+    CREATE TABLE {{ data_conf.data_table }}
+    AS (
+    ...
+    
+and the model_conf can be used in a similar way,
+
+    SELECT * FROM XGBoostPredict(
+        	...
+        	ON "{{ data_conf.model_table }}" AS ModelTable
+        	DIMENSION
+        	ORDER BY "tree_id","iter","class_num"
+        	USING
+        	IdColumn('idx')
+        	Accumulate('hasdiabetes')
+        ) as sqlmr
+
+This gives the required flexibility to create sql templates flexible enough to be retrained and evaluated with different datasets and configuration. 
+
+One nice add on we provide is the ability to ignore DROP TABLE errors. This works around the Teradata SQL issue of not supporting DROP TABLE IF EXISTS. 
+
+
 # Model Container and Resources Configuration
 
 ## Resource Requests
@@ -147,6 +182,9 @@ We also support specifying per model base docker images to use in training and e
 
 
 # Cli tools
+
+Currently the cli tools are included in each repository which means you need to include in the repository creation (forking is the easiest). This is not desirable for many reasons. Instead, we should have all of these included in an aoa module in the relevant language which you can install and use the cli tools from there. This is tracked in [issue-78](https://github.com/ThinkBigAnalytics/AoaCoreService/issues/78).
+
 
 ## Running Models Locally
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# https://github.com/ThinkBigAnalytics/AoaCoreService/issues/78
+# Code to be moved into centralised aoa cli
+
 import json
 import logging
 import sys
