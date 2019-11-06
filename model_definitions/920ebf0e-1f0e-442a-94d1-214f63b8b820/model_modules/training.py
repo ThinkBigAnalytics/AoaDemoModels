@@ -25,10 +25,10 @@ def train(data_conf, model_conf, **kwargs):
                   data=dataset,
                   id_column='idx',
                   reg_lambda=float(hyperparams["reg_lambda"]),
-                  shrinkage_factor=hyperparams["shrinkage_factor"],
+                  shrinkage_factor=float(hyperparams["shrinkage_factor"]),
                   iter_num=10,
                   min_node_size=1,
-                  max_depth=hyperparams["max_depth"])
+                  max_depth=int(hyperparams["max_depth"]))
 
     # forces creation of model
     print(xgb.model_table)
