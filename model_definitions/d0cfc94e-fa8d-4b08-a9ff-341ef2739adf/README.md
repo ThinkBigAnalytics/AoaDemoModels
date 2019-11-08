@@ -10,8 +10,7 @@ Training
 
     {
         "hostname": "<vantage-db-url>",
-        "data_table": "<the table with training PIMA data>",
-        "model_table": "<the table to write the model to>"
+        "data_table": "<the table with training PIMA data>"
     }
     
 
@@ -20,7 +19,6 @@ Evaluation
     {
         "hostname":  "<vantage-db-url>",
         "data_table": "<the table with testing/hold-out PIMA data>",
-        "model_table": "<the table to read the model from>",
         "metrics_table": "<the table the evaluation metrics will be in>",
         "predictions_table": "<the table to store the predictions>"
     }
@@ -32,11 +30,13 @@ Note the credentials are passed via environment variables which aligns with secu
 
 
 # Training
-The [training.py](model_modules/training.sql) is a simple XGBoost MLE model. 
+The [training.sql](model_modules/training.sql) is a simple XGBoost MLE model. 
 
-Due to a big with the teradataml library support for CLOBs, we currently only store the model in a models table in the database instead of exporting it and uploading to the model artefact repository. The code to support exporting it and uploading to the model artefact repository of choice is also present, just disabled until this bug is resolved. 
+Due to a bug with the teradataml library support for CLOBs, we currently only store the model in a models table in the database instead of exporting it and uploading to the model artefact repository.
 
-We could easily add code to copy the model to a general models table which is keyed by the model version, however we prefer the approach of exporting as this allows us to convert to the AML format and score MLE models behind low latency RESTful APIs. This is something we are evaluating with the product team. 
+We store the models in a unique table for each model version. It is based on the first part of the model version id and we prepend the string `AOA_MODELS_` to make it clear the table is a model version managed by the AOA. An example table name is `AOA_MODELS_ba80ac47` where the model version is `ba80ac47-f868-449d-93e8-abf601fce8aa`. Evaluations and subsequent scoring in the MLE can use this table name then as it is associated with the trained model version. For the sql code, we provide the following variable which manages this name. 
+
+    {{ model_table }}
 
 
 # Evaluation
