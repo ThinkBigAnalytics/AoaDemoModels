@@ -14,8 +14,7 @@ def score(data_conf, model_conf, **kwargs):
                    username=os.environ["TD_USERNAME"],
                    password=os.environ["TD_PASSWORD"])
 
-    model_table = "AOA_MODELS_{}".format(kwargs.get("model_version").split("-", 1)[0])
-    model = DataFrame(model_table)
+    model = DataFrame(kwargs.get("model_table"))
 
     dataset = DataFrame(data_conf['data_table'])
 
