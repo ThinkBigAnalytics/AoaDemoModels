@@ -63,22 +63,28 @@ def main():
         logging.info("Creating directory {} to store test model artefacts".format(os.getcwd() + "/models"))
         os.makedirs("models")
 
+    cli_model_kargs = {
+        "model_id": model_id,
+        "model_version": "cli",
+        "model_table": "AOA_MODELS_cli"
+    }
+
     if model_definition["language"] == "python":
         sys.path.append(model_dir)
         import model_modules
 
         if mode == "train":
-            model_modules.training.train(data_conf, model_conf)
+            model_modules.training.train(data_conf, model_conf, **cli_model_kargs)
         elif mode == "evaluate":
-            model_modules.scoring.evaluate(data_conf, model_conf)
+            model_modules.scoring.evaluate(data_conf, model_conf, **cli_model_kargs)
         else:
             raise Exception("Unsupported mode used: " + mode)
 
     elif model_definition["language"] == "sql":
         if mode == "train":
-            train_sql(model_dir, data_conf, model_conf)
+            train_sql(model_dir, data_conf, model_conf, **cli_model_kargs)
         elif mode == "evaluate":
-            evaluate_sql(model_dir, data_conf, model_conf)
+            evaluate_sql(model_dir, data_conf, model_conf, **cli_model_kargs)
         else:
             raise Exception("Unsupported mode used: " + mode)
 
@@ -128,7 +134,7 @@ def get_dataset_metadata(model_dir):
     return base_path + catalog[int(index)]
 
 
-def evaluate_sql(model_dir, data_conf, model_conf):
+def evaluate_sql(model_dir, data_conf, model_conf, **kwargs):
     from teradataml import create_context
     from teradataml.dataframe.dataframe import DataFrame
     from teradataml.context.context import get_connection
@@ -140,7 +146,13 @@ def evaluate_sql(model_dir, data_conf, model_conf):
     print("Starting evaluation...")
 
     sql_file = model_dir + "/model_modules/scoring.sql"
-    jinja_ctx = {"data_conf": data_conf, "model_conf": model_conf}
+    jinja_ctx = {
+        "data_conf": data_conf,
+        "model_conf": model_conf,
+        "model_table": kwargs.get("model_table"),
+        "model_version": kwargs.get("model_version"),
+        "model_id": kwargs.get("model_id")
+    }
 
     execute_sql_script(get_connection(), sql_file, jinja_ctx)
 
@@ -153,13 +165,17 @@ def evaluate_sql(model_dir, data_conf, model_conf):
         json.dump(metrics, f)
 
 
-def train_sql(model_dir, data_conf, model_conf):
+def train_sql(model_dir, data_conf, model_conf, **kwargs):
     from teradataml import create_context
     from teradataml.context.context import get_connection
 
-    create_context(host=data_conf["hostname"],
-                   username=os.environ["TD_USERNAME"],
-                   password=os.environ["TD_PASSWORD"])
+    jinja_ctx = {
+        "data_conf": data_conf,
+        "model_conf": model_conf,
+        "model_table": kwargs.get("model_table"),
+        "model_version": kwargs.get("model_version"),
+        "model_id": kwargs.get("model_id")
+    }
 
     print("Starting training...")
 
