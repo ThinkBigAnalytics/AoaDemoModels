@@ -25,18 +25,16 @@ def train(data_conf, model_conf, **kwargs):
                   data=dataset,
                   id_column='idx',
                   reg_lambda=float(hyperparams["reg_lambda"]),
-                  shrinkage_factor=hyperparams["shrinkage_factor"],
+                  shrinkage_factor=float(hyperparams["shrinkage_factor"]),
                   iter_num=10,
                   min_node_size=1,
-                  max_depth=hyperparams["max_depth"])
+                  max_depth=int(hyperparams["max_depth"]))
 
     # forces creation of model
     print(xgb.model_table)
 
     print("Finished training")
 
-    # model = xgb.model_table.to_pandas()
-    # model.to_hdf("models/model.h5", key="model", mode="w")
-    xgb.model_table.to_sql(table_name=data_conf["model_table"], if_exists="replace")
+    xgb.model_table.to_sql(table_name=kwargs.get("model_table"))
 
-    print("Saved trained model")
+    print("Saved model to table {}".format("model_table"))
