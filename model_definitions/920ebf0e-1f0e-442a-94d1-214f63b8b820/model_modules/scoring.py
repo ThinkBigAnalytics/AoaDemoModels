@@ -14,10 +14,7 @@ def score(data_conf, model_conf, **kwargs):
                    username=os.environ["TD_USERNAME"],
                    password=os.environ["TD_PASSWORD"])
 
-    # bug in python lib that doesn't allow creating large columns as CLOB etc. there must be way to specify schema..
-    # model = pd.read_hdf('models/model.h5', 'model')
-    # copy_to_sql(df=model, table_name="pima_model", index=True, index_label="idx", if_exists="replace")
-    model = DataFrame(data_conf["model_table"])
+    model = DataFrame(kwargs.get("model_table"))
 
     dataset = DataFrame(data_conf['data_table'])
 

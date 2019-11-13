@@ -1,0 +1,4 @@
+{
+  "url": "http://nrvis.com/data/mldata/pima-indians-diabetes.csv",
+  "test_split": 0.2
+}

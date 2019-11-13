@@ -6,6 +6,7 @@
     + [Shared Code](#shared-code)
   * [R Model Signatures](#r-model-signatures)
   * [SQL Model Signatures](#sql-model-signatures)
+  * [Additional Variables](#additional-variables)
 - [Model Container and Resources Configuration](#model-container-and-resources-configuration)
   * [Resource Requests](#resource-requests)
   * [Configure Base Docker Image](#configure-base-docker-image)
@@ -56,6 +57,9 @@ The python train and evaluate functions are
        
     def evaluate(data_conf, model_conf, **kwargs):
        ...
+
+To know what values are passed in the varargs, see [Additional Variables](#additional-variables).
+
        
 If deploying behind a Restful scoring engine, the predict function is declared within a ModelScorer class
        
@@ -112,6 +116,8 @@ The R model signatures are exactly the same as the python signatures, with the `
        ...
     }
     
+To know what values are passed in the varargs, see [Additional Variables](#additional-variables).
+
 If deploying behind a Resful engine, the predict method should also be declared as follows
 
     predict.model <- function(model, data) {
@@ -151,6 +157,19 @@ and the model_conf can be used in a similar way,
 This gives the required flexibility to create sql templates flexible enough to be retrained and evaluated with different datasets and configuration. 
 
 One nice add on we provide is the ability to ignore DROP TABLE errors. This works around the Teradata SQL issue of not supporting DROP TABLE IF EXISTS. 
+
+To know what values are passed in the varargs, see [Additional Variables](#additional-variables).
+
+
+## Additional Variables
+
+The following additional variables are passed in the varargs support for each language 
+
+| Name   |      Description      |
+|----------|:-------------:|
+| model_version |  The model version (trainedModel.id) for this model execution. |
+| model_id | The model id of the model definition being executed. |
+| model_table | For MLE models. It is based on the first part of the model version id and we prepend the string `AOA_MODELS_` to make it clear the table is a model version managed by the AOA. An example table name is `AOA_MODELS_ba80ac47` where the model version is `ba80ac47-f868-449d-93e8-abf601fce8aa`. Evaluations and subsequent scoring in the MLE can use this table name then as it is associated with the trained model version.|
 
 
 # Model Container and Resources Configuration
@@ -197,8 +216,10 @@ run the model training and evaluation using the config and data that you expect 
 | Language   |      Cmd      |
 |----------|:-------------:|
 | python |  ./cli/run-model-cli.py |
-| R | ./cli/run-model-cli.R |
+| R | ./cli/run-model-cli.py |
 | sql | ./cli/run-model-cli.py |
+
+Note that the R model is also launched using the python cli. That is because the python cli will prompt the user for required details and then execute the R logic.
 
  
  

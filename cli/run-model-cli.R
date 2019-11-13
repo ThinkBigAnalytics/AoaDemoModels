@@ -11,7 +11,7 @@ parser <- ArgumentParser()
 
 parser$add_argument("model_id",  help="The Model Id to run")
 parser$add_argument("mode", help="The mode (train or evaluate)")
-parser$add_argument('data', help="Json file containing data configuration")
+parser$add_argument("data", help="Json file containing data configuration")
 args <- parser$parse_args()
 
 model_id <- args$model_id
@@ -26,7 +26,6 @@ model_conf <- jsonlite::read_json(model_conf_dir)
 
 # get the json file to get the data
 data_conf <- read_json(args$data)
-
 
 
 # define the path of model modules
