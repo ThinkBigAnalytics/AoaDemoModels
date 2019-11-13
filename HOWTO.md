@@ -1,7 +1,6 @@
 # Overview
 This example shows step-by-step scenario to add a simple model to AOA service. We are using Pandas dataframes here, so it could be easily adopted to use Teradata or Spark dataframes.
-# Datasets
-We would need training and evaluation datasets, you could find some examples in `model_modules/data` directory.
+
 # Walkthrough
 This walkthrough illustrates adding new model to framework, starting with local development and moving to the service for training and evaluation
 ## 0. Prototype script
@@ -118,14 +117,17 @@ Let's add model parameters to config.json:
   }
 }
 ```
-We shall test this method with local CLI client, but we need some data first, so we need to create data configuration file `examples/dataset.json`
+We shall test this method with local CLI client, but we need some data first, so we need to create data configuration file `.cli/datasets/train.json`. 
+
+*Note that you can use the cli without specifying modelid, mode and dataset and it will prompt you to select between the available options.*
+
 ```console
-# cat > examples/dataset.json <<EOF
+# cat > .cli/datasets/train.json <<EOF
 {
   "location": "https://datahub.io/machine-learning/iris/r/iris.csv"
 }
 EOF
-# ../../../cli/run-model-cli.py -d examples/dataset.json <your-model-uuid> train
+# ../../../cli/run-model-cli.py -d examples/dataset.json -id <your-model-uuid> -m train
 Starting training...
 Finished training
 Saved trained model
@@ -169,7 +171,7 @@ def evaluate(data_conf, model_conf, **kwargs):
 ```
 In order to evaluate this model we would need evaluation dataset, but we will use the same dataset at the moment:
 ```console
-# ../../../cli/run-model-cli.py -d examples/dataset.json <your-model-uuid> evaluate
+# ../../../cli/run-model-cli.py -d examples/dataset.json -id <your-model-uuid> -m evaluate
 model accuracy is  0.96
 Evaluation complete...
 ```

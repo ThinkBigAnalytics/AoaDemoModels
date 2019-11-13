@@ -10,7 +10,7 @@ AS (
     SELECT * FROM XGBoostPredict(
     	ON "{{ data_conf.data_table }}" AS "input"
     	PARTITION BY ANY
-    	ON "{{ data_conf.model_table }}" AS ModelTable
+    	ON "{{ model_table }}" AS ModelTable
     	DIMENSION
     	ORDER BY "tree_id","iter","class_num"
     	USING
