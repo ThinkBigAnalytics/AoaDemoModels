@@ -1,5 +1,4 @@
 {
   "hostname": "tddb-env-d-425.vantage.demo.intellicloud.teradata.com",
-  "data_table": "PIMA_TRAIN",
-  "model_table": "PIMA_MODEL"
+  "data_table": "PIMA_TRAIN"
 }

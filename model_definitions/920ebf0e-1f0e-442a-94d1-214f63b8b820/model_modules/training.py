@@ -35,8 +35,6 @@ def train(data_conf, model_conf, **kwargs):
 
     print("Finished training")
 
-    # model = xgb.model_table.to_pandas()
-    # model.to_hdf("models/model.h5", key="model", mode="w")
-    xgb.model_table.to_sql(table_name=data_conf["model_table"], if_exists="replace")
+    xgb.model_table.to_sql(table_name=kwargs.get("model_table"))
 
-    print("Saved trained model")
+    print("Saved model to table {}".format("model_table"))
