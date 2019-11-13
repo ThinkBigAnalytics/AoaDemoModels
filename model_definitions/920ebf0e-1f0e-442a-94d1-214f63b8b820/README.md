@@ -6,7 +6,7 @@ The Dataset used is the PIMA diabestes dataset which can be downloaded from the 
 
 In the AOA you will need to define two datasets. One for training and evaluation.
 
-Training
+Training (see [sample](.cli/datasets/train.json))
 
     {
         "hostname": "<vantage-db-url>",
@@ -14,7 +14,7 @@ Training
     }
     
 
-Evaluation 
+Evaluation (see [sample](.cli/datasets/evaluate.json))
   
     {
         "hostname":  "<vantage-db-url>",

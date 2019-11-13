@@ -8,6 +8,7 @@ import logging
 import sys
 import os
 import shutil
+import subprocess
 from jinja2 import Template
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -87,6 +88,10 @@ def main():
             evaluate_sql(model_dir, data_conf, model_conf, **cli_model_kargs)
         else:
             raise Exception("Unsupported mode used: " + mode)
+
+    elif model_definition["language"] == "R":
+        cmd = base_path + "/cli/run-model-cli.R {} {} {}".format(model_id, mode, data)
+        subprocess.check_call(cmd, shell=True)
 
     else:
         raise Exception("Unsupported cli language: {}".format(model_definition["language"]))
