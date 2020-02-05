@@ -216,7 +216,7 @@ run the model training and evaluation using the config and data that you expect 
 | Language   |      Cmd      |
 |----------|:-------------:|
 | python |  ./cli/run-model-cli.py |
-| R | ./cli/run-model-cli.py |
+| R | ./cli/run-model-cli.R |
 | sql | ./cli/run-model-cli.py |
 
 Note that the R model is also launched using the python cli. That is because the python cli will prompt the user for required details and then execute the R logic.

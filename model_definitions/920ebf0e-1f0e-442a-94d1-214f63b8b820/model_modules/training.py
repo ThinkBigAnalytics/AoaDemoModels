@@ -13,7 +13,8 @@ def train(data_conf, model_conf, **kwargs):
 
     create_context(host=data_conf["hostname"],
                    username=os.environ["TD_USERNAME"],
-                   password=os.environ["TD_PASSWORD"])
+                   password=os.environ["TD_PASSWORD"],
+                   logmech=os.getenv("TD_LOGMECH", "TDNEGO"))
 
     dataset = DataFrame(data_conf['data_table'])
 
