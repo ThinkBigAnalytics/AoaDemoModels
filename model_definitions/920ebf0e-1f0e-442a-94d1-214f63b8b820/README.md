@@ -26,6 +26,7 @@ Note the credentials are passed via environment variables which aligns with secu
 
     TD_USERNAME
     TD_PASSWORD
+    TD_LOGMECH (defaults to TDNEGO)
 
 
 # Training
