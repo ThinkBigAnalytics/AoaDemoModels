@@ -212,17 +212,11 @@ Currently the cli tools are included in each repository which means you need to 
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
+    ./cli/run-model-cli.py
 
-| Language   |      Cmd      |
-|----------|:-------------:|
-| python |  ./cli/run-model-cli.py |
-| R | ./cli/run-model-cli.py |
-| sql | ./cli/run-model-cli.py |
+Note that R and SQL models are also launched using the python cli. That is because the python cli will prompt the user for required details and then execute R or SQL logic.
 
-Note that the R model is also launched using the python cli. That is because the python cli will prompt the user for required details and then execute the R logic.
 
- 
- 
 ## Adding Models based on Templates
 
 You can add models based using a cli tool based on model templates defined in the [model_templates](./model_templates) folder. 
