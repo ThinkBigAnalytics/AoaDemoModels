@@ -56,13 +56,13 @@ def main():
     with open(model_dir + "/config.json", 'r') as f:
         model_conf = json.load(f)
 
-    if os.path.exists("models"):
-        logging.info("Cleaning directory {} to store test model artefacts".format(os.getcwd() + "/models"))
-        shutil.rmtree("models")
-
-    else:
-        logging.info("Creating directory {} to store test model artefacts".format(os.getcwd() + "/models"))
-        os.makedirs("models")
+    if mode == "train":
+        if os.path.exists("models"):
+            logging.info("Cleaning directory {} to store test model artefacts".format(os.getcwd() + "/models"))
+            shutil.rmtree("models")
+        else:
+            logging.info("Creating directory {} to store test model artefacts".format(os.getcwd() + "/models"))
+            os.makedirs("models")
 
     cli_model_kargs = {
         "model_id": model_id,
