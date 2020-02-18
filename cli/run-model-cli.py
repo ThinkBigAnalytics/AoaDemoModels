@@ -167,7 +167,7 @@ def evaluate_sql(model_dir, data_conf, model_conf, **kwargs):
     stats = DataFrame(data_conf["metrics_table"]).to_pandas()
     metrics = dict(zip(stats.key, stats.value))
 
-    with open("models/evaluation.json", "w+") as f:
+    with open("models/metrics.json", "w+") as f:
         json.dump(metrics, f)
 
 

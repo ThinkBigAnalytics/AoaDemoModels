@@ -21,5 +21,5 @@ evaluate <- function(data_conf, model_conf, ...) {
     initialise_model()
 
     results <- list("accuracy" = "95")
-    write(jsonlite::toJSON(results, auto_unbox = TRUE, null = "null"), "models/evaluation.json")
+    write(jsonlite::toJSON(results, auto_unbox = TRUE, null = "null"), "models/metrics.json")
 }

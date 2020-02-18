@@ -42,5 +42,5 @@ def evaluate(data_conf, model_conf, **kwargs):
     scorer = ModelScorer(model_conf)
     scores = scorer.evaluate(X_test, y_test)
 
-    with open("models/evaluation.json", "w+") as f:
+    with open("models/metrics.json", "w+") as f:
         json.dump(scores, f)
