@@ -27,6 +27,6 @@ def evaluate(data_conf, model_conf, **kwargs):
     print("model accuracy is ", scores['accuracy'])
 
     # dump results as json file metrics.json to models/ folder
-    with open("models/metric.json", "w+") as f:
+    with open("models/metrics.json", "w+") as f:
         json.dump(scores, f)
     print("Evaluation complete...")

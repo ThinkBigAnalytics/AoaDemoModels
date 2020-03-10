@@ -12,5 +12,5 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     """
 
-    # dump results as json file metric.json to models/ folder
+    # dump results as json file metrics.json to models/ folder
     print("Evaluation complete...")

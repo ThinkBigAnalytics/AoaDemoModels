@@ -45,7 +45,7 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     print("Confusion Matrix Stats: {}".format(cm.stattable))
 
-    with open("models/metric.json", "w+") as f:
+    with open("models/metrics.json", "w+") as f:
         metrics = cm.stattable.to_pandas()
         metrics = dict(zip(metrics.key, metrics.value))
 
