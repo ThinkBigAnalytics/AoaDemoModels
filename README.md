@@ -15,6 +15,8 @@
     - [Install from Python Package Index](#install-from-python-package-index)
     - [Install from Source Code](#install-from-source-code)
   - [Running Models Locally](#running-models-locally)
+    - [Train](#train)
+    - [Evaluate](#evaluate)
   - [Adding Models based on Templates](#adding-models-based-on-templates)
 
 # Models
@@ -34,9 +36,9 @@ More human friendly folder names for each model under model_definitions is track
 
 # Adding new Models
 
-To add a new model, simply use the aoa python package cli tool which helps to create the structure necessary for the given model. See [here](#adding-models-based-on-templates). Install aoa python package cli following the instructions specified [here](#install-aoa-python-package)
+To add a new model, simply use the aoa python package cli tool which helps to create the structure necessary for the given model, see [here](#adding-models-based-on-templates).  You can install aoa python cli following the instructions specified [here](#install-aoa-python-package)
 
-    ./cli/repo-cli.py -a
+    aoa --add
     
 Note that you should manually add the new model to the [Available Models](#available-models) table above so that you can quickly access it from the main repository page. The cli tool will eventually update this as part of the process of adding a new repo. 
 
@@ -229,7 +231,22 @@ We also support specifying per model base docker images to use in training and e
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
-    ./cli/run-model-cli.py
+### Train
+
+```console
+# aoa --run --model_id <your-model-uuid> --mode train
+Starting training...
+Finished training
+Saved trained model
+```
+
+### Evaluate
+
+```console
+# aoa --run --model_id <your-model-uuid> --mode evaluate
+model accuracy is  0.96
+Evaluation complete...
+```
 
 Note that R and SQL models are also launched using the python cli. That is because the python cli will prompt the user for required details and then execute R or SQL logic.
 
@@ -238,4 +255,13 @@ Note that R and SQL models are also launched using the python cli. That is becau
 
 You can add models based using a cli tool based on model templates defined in the [model_templates](./model_templates) folder. 
 
-    ./cli/repo-cli.py -a
+```console
+# aoa --add
+Model Name: My first model
+Model Description: My first model using AnalyticOpsAccelerator
+These languages are supported:  python, R
+Model Language: python
+These templates are available for python:  empty, sklearn
+Template type (leave blank for the empty one):
+INFO:root:Creating model structure for model: <your-model-uuid>
+```
