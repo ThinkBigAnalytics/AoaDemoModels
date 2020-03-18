@@ -1,18 +1,21 @@
 - [Models](#models)
 - [Available Models](#available-models)
 - [Adding new Models](#adding-new-models)
-  * [Python Model Signatures](#python-model-signatures)
-    + [Python Training Progress Callback](#python-training-progress-callback)
-    + [Shared Code](#shared-code)
-  * [R Model Signatures](#r-model-signatures)
-  * [SQL Model Signatures](#sql-model-signatures)
-  * [Additional Variables](#additional-variables)
+  - [Python Model Signatures](#python-model-signatures)
+    - [Python Training Progress Callback](#python-training-progress-callback)
+    - [Shared Code](#shared-code)
+  - [R Model Signatures](#r-model-signatures)
+  - [SQL Model Signatures](#sql-model-signatures)
+  - [Additional Variables](#additional-variables)
 - [Model Container and Resources Configuration](#model-container-and-resources-configuration)
-  * [Resource Requests](#resource-requests)
-  * [Configure Base Docker Image](#configure-base-docker-image)
-- [Cli tools](#cli-tools)
-  * [Running Models Locally](#running-models-locally)
-  * [Adding Models based on Templates](#adding-models-based-on-templates)
+  - [Resource Requests](#resource-requests)
+  - [Configure Base Docker Image](#configure-base-docker-image)
+- [CLI tools](#cli-tools)
+  - [Install AOA Python Package](#install-aoa-python-package)
+    - [Install from Python Package Index](#install-from-python-package-index)
+    - [Install from Source Code](#install-from-source-code)
+  - [Running Models Locally](#running-models-locally)
+  - [Adding Models based on Templates](#adding-models-based-on-templates)
 
 # Models
 
@@ -31,7 +34,7 @@ More human friendly folder names for each model under model_definitions is track
 
 # Adding new Models
 
-To add a new model, simply use the repo cli tool which helps to create the structure necessary for the given model. See [here](#adding-models-based-on-templates). 
+To add a new model, simply use the aoa python package cli tool which helps to create the structure necessary for the given model. See [here](#adding-models-based-on-templates). Install aoa python package cli following the instructions specified [here](#install-aoa-python-package)
 
     ./cli/repo-cli.py -a
     
@@ -203,12 +206,26 @@ We also support specifying per model base docker images to use in training and e
     }
 
 
-# Cli tools
+# CLI tools
 
-Currently the cli tools are included in each repository which means you need to include in the repository creation (forking is the easiest). This is not desirable for many reasons. Instead, we should have all of these included in an aoa module in the relevant language which you can install and use the cli tools from there. This is tracked in [issue-78](https://github.com/ThinkBigAnalytics/AoaCoreService/issues/78).
+## Install AOA Python Package
 
+### Install from Python Package Index
+
+```console
+# pip install aoa
+```
+
+### Install from Source Code
+
+```console
+# git clone https://github.com/ThinkBigAnalytics/AoaPythonClient.git
+# cd AoaPythonClient
+# pip install .
+```
 
 ## Running Models Locally
+
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
