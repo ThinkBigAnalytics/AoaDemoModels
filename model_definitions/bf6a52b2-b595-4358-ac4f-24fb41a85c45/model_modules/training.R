@@ -55,5 +55,5 @@ train <- function(data_conf, model_conf, ...) {
     light$trees <- light$trees[best.iter]
     light$data <- list()
 
-    saveRDS(light, "models/model.rds")
+    saveRDS(light, "artifacts/output/model.rds")
 }

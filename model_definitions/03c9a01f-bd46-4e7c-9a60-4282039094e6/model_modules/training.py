@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 
 import pickle
 import pandas as pd
+import json
 
 
 def train(data_conf, model_conf, **kwargs):
@@ -32,7 +33,10 @@ def train(data_conf, model_conf, **kwargs):
     print("Finished training")
 
     # export model artefacts
-    pickle.dump(scaler, open("models/scaler.pkl", "wb"))
-    pickle.dump(model, open("models/model.pkl", "wb"))
+    pickle.dump(scaler, open("artifacts/output/scaler.pkl", "wb"))
+    pickle.dump(model, open("artifacts/output/model.pkl", "wb"))
+
+    with open("metrics/metrics.json", "w+") as f:
+        json.dump({"shape": "test"}, f)
 
     print("Saved trained model")

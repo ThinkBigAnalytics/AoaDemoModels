@@ -13,7 +13,7 @@ new_gbm <- function(filename) {
 
 initialise_model <- function() {
     print("loading model")
-    new_gbm("models/model.rds")
+    new_gbm("artifacts/input/model.rds")
 }
 
 
@@ -21,5 +21,5 @@ evaluate <- function(data_conf, model_conf, ...) {
     initialise_model()
 
     results <- list("accuracy" = "95")
-    write(jsonlite::toJSON(results, auto_unbox = TRUE, null = "null"), "models/metrics.json")
+    write(jsonlite::toJSON(results, auto_unbox = TRUE, null = "null"), "metrics/metrics.json")
 }

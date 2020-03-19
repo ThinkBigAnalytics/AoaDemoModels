@@ -8,8 +8,8 @@ import pandas as pd
 
 class ModelScorer(object):
     def __init__(self, config=None):
-        self.scaler = pickle.load(open("models/scaler.pkl", 'rb'))
-        self.model = pickle.load(open("models/model.pkl", 'rb'))
+        self.scaler = pickle.load(open("artifacts/input/scaler.pkl", 'rb'))
+        self.model = pickle.load(open("artifacts/input/model.pkl", 'rb'))
 
     def predict(self, data):
         data = self.scaler.transform([data])
@@ -42,5 +42,9 @@ def evaluate(data_conf, model_conf, **kwargs):
     scorer = ModelScorer(model_conf)
     scores = scorer.evaluate(X_test, y_test)
 
-    with open("models/metrics.json", "w+") as f:
+    with open("metrics/metrics.json", "w+") as f:
         json.dump(scores, f)
+
+    model = pickle.load(open("input/model.pkl", 'rb'))
+    pickle.dump(model, open("artifacts/output/eval.pkl", "wb"))
+
