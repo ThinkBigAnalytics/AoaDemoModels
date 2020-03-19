@@ -12,8 +12,6 @@
   - [Configure Base Docker Image](#configure-base-docker-image)
 - [CLI tools](#cli-tools)
   - [Install AOA Python Package](#install-aoa-python-package)
-    - [Install from Python Package Index](#install-from-python-package-index)
-    - [Install from Source Code](#install-from-source-code)
   - [Running Models Locally](#running-models-locally)
     - [Train](#train)
     - [Evaluate](#evaluate)
@@ -212,18 +210,8 @@ We also support specifying per model base docker images to use in training and e
 
 ## Install AOA Python Package
 
-### Install from Python Package Index
-
 ```console
 # pip install aoa
-```
-
-### Install from Source Code
-
-```console
-# git clone https://github.com/ThinkBigAnalytics/AoaPythonClient.git
-# cd AoaPythonClient
-# pip install .
 ```
 
 ## Running Models Locally
