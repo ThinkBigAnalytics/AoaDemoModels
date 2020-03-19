@@ -222,7 +222,7 @@ run the model training and evaluation using the config and data that you expect 
 ### Train
 
 ```console
-# aoa --run --model_id <your-model-uuid> --mode train
+# aoa --run --model_id <your-model-uuid> --mode train --data <path-to-dataset-file>
 Starting training...
 Finished training
 Saved trained model
@@ -231,7 +231,7 @@ Saved trained model
 ### Evaluate
 
 ```console
-# aoa --run --model_id <your-model-uuid> --mode evaluate
+# aoa --run --model_id <your-model-uuid> --mode evaluate --data <path-to-dataset-file>
 model accuracy is  0.96
 Evaluation complete...
 ```
