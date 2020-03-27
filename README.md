@@ -1,18 +1,21 @@
 - [Models](#models)
 - [Available Models](#available-models)
 - [Adding new Models](#adding-new-models)
-  * [Python Model Signatures](#python-model-signatures)
-    + [Python Training Progress Callback](#python-training-progress-callback)
-    + [Shared Code](#shared-code)
-  * [R Model Signatures](#r-model-signatures)
-  * [SQL Model Signatures](#sql-model-signatures)
-  * [Additional Variables](#additional-variables)
+  - [Python Model Signatures](#python-model-signatures)
+    - [Python Training Progress Callback](#python-training-progress-callback)
+    - [Shared Code](#shared-code)
+  - [R Model Signatures](#r-model-signatures)
+  - [SQL Model Signatures](#sql-model-signatures)
+  - [Additional Variables](#additional-variables)
 - [Model Container and Resources Configuration](#model-container-and-resources-configuration)
-  * [Resource Requests](#resource-requests)
-  * [Configure Base Docker Image](#configure-base-docker-image)
-- [Cli tools](#cli-tools)
-  * [Running Models Locally](#running-models-locally)
-  * [Adding Models based on Templates](#adding-models-based-on-templates)
+  - [Resource Requests](#resource-requests)
+  - [Configure Base Docker Image](#configure-base-docker-image)
+- [CLI tools](#cli-tools)
+  - [Install AOA Python Package](#install-aoa-python-package)
+  - [Running Models Locally](#running-models-locally)
+    - [Train](#train)
+    - [Evaluate](#evaluate)
+  - [Adding Models based on Templates](#adding-models-based-on-templates)
 
 # Models
 
@@ -31,9 +34,9 @@ More human friendly folder names for each model under model_definitions is track
 
 # Adding new Models
 
-To add a new model, simply use the repo cli tool which helps to create the structure necessary for the given model. See [here](#adding-models-based-on-templates). 
+To add a new model, simply use the aoa python package cli tool which helps to create the structure necessary for the given model, see [here](#adding-models-based-on-templates).  You can install aoa python cli following the instructions specified [here](#install-aoa-python-package)
 
-    ./cli/repo-cli.py -a
+    aoa --add
     
 Note that you should manually add the new model to the [Available Models](#available-models) table above so that you can quickly access it from the main repository page. The cli tool will eventually update this as part of the process of adding a new repo. 
 
@@ -203,16 +206,35 @@ We also support specifying per model base docker images to use in training and e
     }
 
 
-# Cli tools
+# CLI tools
 
-Currently the cli tools are included in each repository which means you need to include in the repository creation (forking is the easiest). This is not desirable for many reasons. Instead, we should have all of these included in an aoa module in the relevant language which you can install and use the cli tools from there. This is tracked in [issue-78](https://github.com/ThinkBigAnalytics/AoaCoreService/issues/78).
+## Install AOA Python Package
 
+```console
+# pip install aoa
+```
 
 ## Running Models Locally
+
 To aid developing and testing the models setup in the AOA locally and in the datalab, we provide some useful cli tools to 
 run the model training and evaluation using the config and data that you expect to be passed during automation.
 
-    ./cli/run-model-cli.py
+### Train
+
+```console
+# aoa --run --model_id <your-model-uuid> --mode train --data <path-to-dataset-file>
+Starting training...
+Finished training
+Saved trained model
+```
+
+### Evaluate
+
+```console
+# aoa --run --model_id <your-model-uuid> --mode evaluate --data <path-to-dataset-file>
+model accuracy is  0.96
+Evaluation complete...
+```
 
 Note that R and SQL models are also launched using the python cli. That is because the python cli will prompt the user for required details and then execute R or SQL logic.
 
@@ -221,4 +243,13 @@ Note that R and SQL models are also launched using the python cli. That is becau
 
 You can add models based using a cli tool based on model templates defined in the [model_templates](./model_templates) folder. 
 
-    ./cli/repo-cli.py -a
+```console
+# aoa --add
+Model Name: My first model
+Model Description: My first model using AnalyticOpsAccelerator
+These languages are supported:  python, R
+Model Language: python
+These templates are available for python:  empty, sklearn
+Template type (leave blank for the empty one):
+INFO:root:Creating model structure for model: <your-model-uuid>
+```
