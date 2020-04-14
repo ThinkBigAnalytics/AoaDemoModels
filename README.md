@@ -1,9 +1,3 @@
-- [Models](#models)
-- [Available Models](#available-models)
-- [Adding new Models](#adding-new-models)
-- [Running Models Locally](#running-models-locally)
-- [Detailed Documentation](#detailed-documentation)
-
 # Models
 
 This repository contains demo models for the Teradata AOA. See the [HowTo](./HOWTO.md) guide for a brief tutorial on how to add new models.
