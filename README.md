@@ -17,13 +17,17 @@ More human friendly folder names for each model under model_definitions is track
 
 Use the aoa cli (see [here](https://pypi.org/project/aoa/))
 
-    aoa add
+```
+aoa add
+```
 
 ## Running Models Locally
 
 Use the aoa cli (see [here](https://pypi.org/project/aoa/))
 
-    aoa run -h
+```
+aoa run -h
+```
     
 ## Detailed Documentation
 

@@ -65,7 +65,7 @@ We are starting in model root directory.
 ## 1. Add new model
 
 ```console
-# aoa --add
+# aoa add
 Model Name: My first model
 Model Description: My first model using AnalyticOpsAccelerator
 These languages are supported:  python, R
@@ -164,7 +164,7 @@ EOF
 ```
 Train model locally
 ```console
-# aoa --run --model_id <your-model-uuid> --mode train
+# aoa run --model_id <your-model-uuid> --mode train --local-dataset model_definitions/<your-model-uuid>/.cli/datasets/train.json
 Starting training...
 Finished training
 Saved trained model
@@ -212,7 +212,7 @@ def evaluate(data_conf, model_conf, **kwargs):
 ```
 In order to evaluate this model we would need evaluation dataset, but we will use the same dataset at the moment:
 ```console
-# aoa --run --model_id <your-model-uuid> --mode evaluate
+# aoa run --model_id <your-model-uuid> --mode evaluate --local-dataset model_definitions/<your-model-uuid>/.cli/datasets/train.json
 model accuracy is  0.96
 Evaluation complete...
 ```
