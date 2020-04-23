@@ -2,3 +2,4 @@ numpy==1.16.1
 pandas==0.24.2
 xgboost==0.90
 scikit-learn==0.21.3
+sklearn2pmml==0.55.4
