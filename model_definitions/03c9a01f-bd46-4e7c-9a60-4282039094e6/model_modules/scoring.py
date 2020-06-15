@@ -36,6 +36,20 @@ class ModelScorer(object):
         self.scaler = pickle.load(open("models/scaler.pkl", 'rb'))
         self.model = pickle.load(open("models/model.pkl", 'rb'))
 
+        from prometheus_client import Counter
+        self.pred_class_counter = Counter('model_prediction_classes',
+                                          'Model Prediction Classes', ['model', 'version', 'clazz'])
+
+    def record_prediction_stats(self, pred):
+        import os
+        self.pred_class_counter.labels(model=os.environ["MODEL_NAME"],
+                                       version=os.environ.get("MODEL_VERSION", "1.0"),
+                                       clazz=str(int(pred))).inc()
+
     def predict(self, data):
         data = self.scaler.transform([data])
-        return self.model.predict(data)
+        pred = self.model.predict(data)
+
+        self.record_prediction_stats(pred)
+
+        return pred
