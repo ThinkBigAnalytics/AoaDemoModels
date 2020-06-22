@@ -18,7 +18,7 @@ The [training.py](model_modules/training.py) produces the following artifacts
 - scaler.pkl    (the scaler file)
 
 # Evaluation
-Evaluation is also performed in [scoring.evluate](model_modules/scoring.py) and it returns the following metrics
+Evaluation is also performed in [scoring.evaluate](model_modules/scoring.py) and it returns the following metrics
 
     accuracy: <acc>
 
@@ -28,4 +28,19 @@ for prediction.
 
 # Sample Request
 
-    curl -X POST -H "Content-Type: application/json" -d "@data.json" http://<service-name>/predict
+    curl -X POST http://<service-name>/predict \
+    -H "Content-Type: application/json" \
+    -d '{
+        "data": {
+            "ndarray": [
+                    6,
+                    148,
+                    72,
+                    35,
+                    0,
+                    33.6,
+                    0.627,
+                    50
+            ]
+        }
+    }' 
