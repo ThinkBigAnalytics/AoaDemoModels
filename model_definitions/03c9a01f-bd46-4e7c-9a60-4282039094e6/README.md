@@ -35,8 +35,21 @@ This demo mode supports two types of scoring
  
 Batch Scoring is supported via the `score` method  [scoring.py](model_modules/scoring.py). As Evaluation is batch score + compare, the scoring logic is alreayd validated with the evaluation step. As batch scoring is run by a scheduler, the scheduler must know how to tell it what dataset (`data_conf`) it should execute on. It does this by using the `scheduler/dataset_template.json` which is templated by the scheudler (airflow in the demo) with things such as dates which are necessary. This will not be necessary anymore after 2.7+ of the AOA as the user will select the dataset template when deploying.
 
-RESTful scoring is supported via the `ModelScorer` class which implements a predict method which is called by the RESTful Serving Engine. 
+RESTful scoring is supported via the `ModelScorer` class which implements a predict method which is called by the RESTful Serving Engine. An example request is  
 
-# Sample Request
-
-    curl -X POST -H "Content-Type: application/json" -d "@data.json" http://<service-name>/predict
+    curl -X POST http://<service-name>/predict \
+        -H "Content-Type: application/json" \
+        -d '{
+            "data": {
+                "ndarray": [
+                        6,
+                        148,
+                        72,
+                        35,
+                        0,
+                        33.6,
+                        0.627,
+                        50
+                ]
+            }
+        }' 
