@@ -1,9 +1,10 @@
 from xgboost import XGBClassifier
-from sklearn.preprocessing import MinMaxScaler as Scaler
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 
-import pickle
 import pandas as pd
+import joblib
 
 
 def train(data_conf, model_conf, **kwargs):
@@ -19,20 +20,18 @@ def train(data_conf, model_conf, **kwargs):
     X_train = train[:, 0:8]
     y_train = train[:, 8]
 
-    scaler = Scaler()
-    scaler.fit(X_train)
-    X_train = scaler.transform(X_train)
-
     print("Starting training...")
 
     # fit model to training data
-    model = XGBClassifier(eta=hyperparams["eta"], max_depth=hyperparams["max_depth"])
-    model.fit(X_train, y_train)
+    clf = Pipeline([('scaler', MinMaxScaler()),
+                     ('xgb', XGBClassifier(eta=hyperparams["eta"],
+                                           max_depth=hyperparams["max_depth"]))])
+
+    clf.fit(X_train, y_train)
 
     print("Finished training")
 
     # export model artefacts
-    pickle.dump(scaler, open("models/scaler.pkl", "wb"))
-    pickle.dump(model, open("models/model.pkl", "wb"))
+    joblib.dump(clf, "models/model.joblib")
 
     print("Saved trained model")
