@@ -1,16 +1,16 @@
-from sklearn.metrics import accuracy_score
+from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
-import pickle
+import joblib
 import json
 import pandas as pd
 
 
-def evaluate(data_conf, model_conf, **kwargs):
-
+def score(data_conf, model_conf, **kwargs):
     dataset = pd.read_csv(data_conf['url'], header=None)
 
-    # split into test and train
+    # in a real world scenario - the scoring will ONLY take a dataset to score and NOT split it like this
+    # but for demo model purposes with a simple simple dataset, lets split
     _, test = train_test_split(dataset, test_size=data_conf["test_split"], random_state=42)
 
     # split data into X and y
@@ -18,23 +18,36 @@ def evaluate(data_conf, model_conf, **kwargs):
     X_test = test[:, 0:8]
     y_test = test[:, 8]
 
-    scaler = pickle.load(open("models/scaler.pkl", 'rb'))
-    model = pickle.load(open("models/model.pkl", 'rb'))
+    clf = joblib.load('models/model.joblib')
 
-    y_pred = model.predict(scaler.transform(X_test))
+    y_pred = clf.predict(X_test)
+
+    return y_pred, y_test
+
+
+def evaluate(data_conf, model_conf, **kwargs):
+
+    y_pred, y_test = score(data_conf, model_conf, **kwargs)
 
     predictions = [round(value) for value in y_pred]
-    accuracy = accuracy_score(y_test, predictions)
+
+    evaluation = {
+        'Accuracy': metrics.accuracy_score(y_test, y_pred),
+        'Recall': metrics.recall_score(y_test, y_pred),
+        'Precision': metrics.precision_score(y_test, y_pred),
+        'f1-score': metrics.f1_score(y_test, y_pred)
+    }
+
+    print("model metrics: {}".format(evaluation))
 
     with open("models/evaluation.json", "w+") as f:
-        json.dump({'accuracy': (accuracy * 100.0)}, f)
+        json.dump(evaluation, f)
 
 
 # Add code required for RESTful API
 class ModelScorer(object):
     def __init__(self, config=None):
-        self.scaler = pickle.load(open("models/scaler.pkl", 'rb'))
-        self.model = pickle.load(open("models/model.pkl", 'rb'))
+        self.model = joblib.load('models/model.joblib')
 
         from prometheus_client import Counter
         self.pred_class_counter = Counter('model_prediction_classes',
@@ -47,8 +60,7 @@ class ModelScorer(object):
                                        clazz=str(int(pred))).inc()
 
     def predict(self, data):
-        data = self.scaler.transform([data])
-        pred = self.model.predict(data)
+        pred = self.model.predict([data])
 
         self.record_prediction_stats(pred)
 
