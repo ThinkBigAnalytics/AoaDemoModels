@@ -22,14 +22,17 @@ def score(data_conf, model_conf, **kwargs):
 
     y_pred = clf.predict(X_test)
 
+    print("Finished Scoring")
+
+    # store predictions somewhere.. As this is demo, we'll just print to stdout.
+    print(y_pred)
+
     return y_pred, y_test
 
 
 def evaluate(data_conf, model_conf, **kwargs):
 
     y_pred, y_test = score(data_conf, model_conf, **kwargs)
-
-    predictions = [round(value) for value in y_pred]
 
     evaluation = {
         'Accuracy': metrics.accuracy_score(y_test, y_pred),
