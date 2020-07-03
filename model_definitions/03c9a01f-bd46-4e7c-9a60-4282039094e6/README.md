@@ -20,7 +20,7 @@ The [training.py](model_modules/training.py) produces the following artifacts
 - scaler.pkl    (the scaler file)
 
 # Evaluation
-Evaluation is defined in the `evalute` method in [scoring.py](model_modules/scoring.py) and it returns the following metrics
+Evaluation is defined in the `evaluate` method in [scoring.py](model_modules/scoring.py) and it returns the following metrics
 
     Accuracy
     Recall
