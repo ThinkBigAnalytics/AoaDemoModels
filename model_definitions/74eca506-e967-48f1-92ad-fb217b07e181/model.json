@@ -6,15 +6,11 @@
 
     "automation":{
         "trainDatasetId": "563f84da-a2f7-4705-9c4a-552eb024abfa",
-        "evaluateDatasetId": "563f84da-a2f7-4705-9c4a-552eb024abfa"
-    },
+        "evaluateDatasetId": "563f84da-a2f7-4705-9c4a-552eb024abfa",
 
-    "resources": {
-        "training": {
-            "limits": {
-                "cpu": "1",
-                "memory": "2048Mi"
-            }
+        "resources": {
+            "cpu": "1",
+            "memory": "2048Mi"
         }
     }
 }
