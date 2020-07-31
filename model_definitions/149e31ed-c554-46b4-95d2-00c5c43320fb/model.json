@@ -6,10 +6,7 @@
 
     "automation": {
         "trainingEngine": "pyspark"
-    },
-
-    "resources": {
-        "training": {
+        "resources": {
             "master": "local[1]",
             "args": "--num-executors 1 --executor-cores 1 --driver-memory 1G --executor-memory 1G"
         }
