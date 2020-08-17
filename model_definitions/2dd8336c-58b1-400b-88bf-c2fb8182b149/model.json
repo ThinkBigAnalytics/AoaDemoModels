@@ -1,6 +1,6 @@
 {
     "id": "2dd8336c-58b1-400b-88bf-c2fb8182b149",
-    "name": "Iris model with explainer",
+    "name": "Iris Model with explainers",
     "description": "Simple model showcasing model explanations using two frameworks",
     "language": "python",
 

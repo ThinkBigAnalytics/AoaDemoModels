@@ -12,6 +12,7 @@ More human friendly folder names for each model under model_definitions is track
 - [SQL MLE XGboost (Diabetes)](model_definitions/d0cfc94e-fa8d-4b08-a9ff-341ef2739adf)
 - [Demo R GBM](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45)
 - [PySpark Logistic Regression](model_definitions/149e31ed-c554-46b4-95d2-00c5c43320fb)
+- [Iris Model with explainers](model_definitions/2dd8336c-58b1-400b-88bf-c2fb8182b149)
 
 # Adding new Models
 
