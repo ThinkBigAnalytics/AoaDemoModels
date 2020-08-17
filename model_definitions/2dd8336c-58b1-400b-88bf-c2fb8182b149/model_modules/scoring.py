@@ -44,7 +44,6 @@ def evaluate(data_conf, model_conf, **kwargs):
     fig.savefig('artifacts/output/summary.png', dpi = 100)
     scores['shap_values'] = {'Content-Type':'image/png', 'location':'S3', 'object':'summary.png'}
 
-    # dump results as json file evaluation.json to models/ folder
     with open("metrics/metrics.json", "w+") as f:
         json.dump(scores, f)
     print("Evaluation complete...")
