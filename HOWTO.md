@@ -85,7 +85,7 @@ numpy==1.16.1
 pandas==0.24.2
 python-dateutil==2.8.0
 pytz==2019.1
-scikit-learn==0.20.4
+scikit-learn==0.22.2
 scipy==1.3.0
 six==1.12.0
 EOF

@@ -6,20 +6,20 @@ predict.model <- function(model, data) {
     predict(model$model, data, 1)
 }
 
-new_gbm <- function(filename) {
-    model <- readRDS(filename)
+initialise_model <- function() {
+    print("loading model")
+    model <- readRDS("models/model.rds")
     structure(list(model=model), class = "model")
 }
 
-initialise_model <- function() {
-    print("loading model")
-    new_gbm("models/model.rds")
-}
-
-
 evaluate <- function(data_conf, model_conf, ...) {
-    initialise_model()
+    model <- initialise_model()
+
+    data <- read.csv(url(data_conf[['url']]))
+    colnames(data) <- c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")
+
+    preds <- predict(model$model, data, 1)
 
     results <- list("accuracy" = "95")
-    write(jsonlite::toJSON(results, auto_unbox = TRUE, null = "null"), "models/evaluation.json")
+    write(jsonlite::toJSON(results, auto_unbox = TRUE, null = "null", force = TRUE), "models/evaluation.json")
 }

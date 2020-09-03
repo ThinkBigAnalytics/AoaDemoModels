@@ -1,10 +1,15 @@
 
 # Overview
-Simple least squares regression using GBM module from R taken from [here](https://github.com/gbm-developers/gbm/blob/master/demo/gaussian.R)
+PIMA Diabetes demo using R
 
 # Datasets
-The dataset used is randomly generated data for demo purposes. Therefore it doesn't expect any data information to be provided.
+The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The dataset descriptor is 
 
+    {
+        "url": "http://nrvis.com/data/mldata/pima-indians-diabetes.csv",
+        "test_split": 0.2
+    }
+    
 # Training
 The [training.R](model_modules/training.R) produces the following artifacts
 
@@ -21,6 +26,30 @@ for prediction.
 
 # Sample Request
 
-    curl -X POST -H "Content-Type: application/json" \
-        -d '{"data":{"names":["Y","X1","X2","X3","X4","X5","X6"],"ndarray":[[0,0.8545,0.0037,"d","d","a",2.6062]]}}' \
-        http://<service-name>/predict
+    curl -X POST http://<service-name>/predict \
+            -H "Content-Type: application/json" \
+            -d '{
+                "data": {
+                    "ndarray": [[
+                            6,
+                            148,
+                            72,
+                            35,
+                            0,
+                            33.6,
+                            0.627,
+                            50
+                    ]],
+                    "names":[
+                        "NumTimesPrg", 
+                        "PlGlcConc", 
+                        "BloodP", 
+                        "SkinThick", 
+                        "TwoHourSerIns", 
+                        "BMI", 
+                        "DiPedFunc", 
+                        "Age"
+                    ]
+                }
+            }' 
+
