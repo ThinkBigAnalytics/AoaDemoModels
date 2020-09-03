@@ -1,9 +1,12 @@
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
+import os
 import joblib
 import json
 import pandas as pd
+import shap
+import matplotlib.pyplot as plt
 
 
 def score(data_conf, model_conf, **kwargs):
@@ -18,21 +21,27 @@ def score(data_conf, model_conf, **kwargs):
     X_test = test[:, 0:8]
     y_test = test[:, 8]
 
-    clf = joblib.load('models/model.joblib')
-
-    y_pred = clf.predict(X_test)
+    model = joblib.load('models/model.joblib')
+    y_pred = model.predict(X_test)
 
     print("Finished Scoring")
 
     # store predictions somewhere.. As this is demo, we'll just print to stdout.
     print(y_pred)
 
-    return y_pred, y_test
+    return X_test, y_pred, y_test, model
+
+
+def save_plot(title):
+    plt.title(title)
+    fig = plt.gcf()
+    filename = title.replace(" ", "_").lower()
+    fig.savefig('artifacts/output/{}'.format(filename), dpi=500)
 
 
 def evaluate(data_conf, model_conf, **kwargs):
 
-    y_pred, y_test = score(data_conf, model_conf, **kwargs)
+    X_test, y_pred, y_test, model = score(data_conf, model_conf, **kwargs)
 
     evaluation = {
         'Accuracy': metrics.accuracy_score(y_test, y_pred),
@@ -41,14 +50,26 @@ def evaluate(data_conf, model_conf, **kwargs):
         'f1-score': metrics.f1_score(y_test, y_pred)
     }
 
-    print("model metrics: {}".format(evaluation))
-
-    with open("models/evaluation.json", "w+") as f:
+    with open("metrics/metrics.json", "w+") as f:
         json.dump(evaluation, f)
+
+    metrics.plot_confusion_matrix(model, X_test, y_test)
+    save_plot('Confusion Matrix')
+
+    metrics.plot_roc_curve(model, X_test, y_test)
+    save_plot('ROC Curve')
+
+    # xgboost has its own feature importance plot support but lets use shap as explainability example
+    shap_explainer = shap.TreeExplainer(model['xgb'])
+    shap_values = shap_explainer.shap_values(X_test)
+
+    shap.summary_plot(shap_values, X_test, feature_names=model.feature_names, show=False)
+    save_plot('SHAP Feature Importance')
 
 
 # Add code required for RESTful API
 class ModelScorer(object):
+
     def __init__(self, config=None):
         self.model = joblib.load('models/model.joblib')
 
@@ -56,15 +77,12 @@ class ModelScorer(object):
         self.pred_class_counter = Counter('model_prediction_classes',
                                           'Model Prediction Classes', ['model', 'version', 'clazz'])
 
-    def record_prediction_stats(self, pred):
-        import os
-        self.pred_class_counter.labels(model=os.environ["MODEL_NAME"],
-                                       version=os.environ.get("MODEL_VERSION", "1.0"),
-                                       clazz=str(int(pred))).inc()
-
     def predict(self, data):
         pred = self.model.predict([data])
 
-        self.record_prediction_stats(pred)
+        # record the predicted class so we can check model drift (via class distributions)
+        self.pred_class_counter.labels(model=os.environ["MODEL_NAME"],
+                                       version=os.environ.get("MODEL_VERSION", "1.0"),
+                                       clazz=str(int(pred))).inc()
 
         return pred

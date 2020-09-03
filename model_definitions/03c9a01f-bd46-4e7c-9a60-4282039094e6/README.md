@@ -16,16 +16,25 @@ For Batch scoring, we also include the [dataset_template.json](./scheduler/datas
 # Training
 The [training.py](model_modules/training.py) produces the following artifacts
 
-- model.pkl     (xgboost pickle file with mode)
-- scaler.pkl    (the scaler file)
+- model.joblib     (sklearn pipeline with scalers and xgboost model)
 
 # Evaluation
 Evaluation is defined in the `evaluate` method in [scoring.py](model_modules/scoring.py) and it returns the following metrics
 
-    Accuracy
-    Recall
-    Precision
-    f1-score
+- Accuracy
+- Recall
+- Precision
+- f1-score
+
+We produce a number of plots for each evaluation also
+
+- roc curve
+- confusion matrix
+
+We also use shap to save some global explainability plots which help understand the importance and contribution of each feature
+
+- shap feature importance
+
 
 # Scoring 
 This demo mode supports two types of scoring

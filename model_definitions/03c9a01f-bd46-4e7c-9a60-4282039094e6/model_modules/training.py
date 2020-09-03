@@ -10,7 +10,8 @@ import joblib
 def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
-    dataset = pd.read_csv(data_conf['url'], header=None)
+    column_names = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes"]
+    dataset = pd.read_csv(data_conf['url'], header=None, names=column_names)
 
     # split into test and train
     train, _ = train_test_split(dataset, test_size=data_conf["test_split"], random_state=42)
@@ -23,15 +24,17 @@ def train(data_conf, model_conf, **kwargs):
     print("Starting training...")
 
     # fit model to training data
-    clf = Pipeline([('scaler', MinMaxScaler()),
+    model = Pipeline([('scaler', MinMaxScaler()),
                      ('xgb', XGBClassifier(eta=hyperparams["eta"],
                                            max_depth=hyperparams["max_depth"]))])
+    # xgboost saves feature names but lets store on pipeline for easy access
+    model.feature_names = column_names[0:8]
 
-    clf.fit(X_train, y_train)
+    model.fit(X_train, y_train)
 
     print("Finished training")
 
     # export model artefacts
-    joblib.dump(clf, "models/model.joblib")
+    joblib.dump(model, "artifacts/output/model.joblib")
 
     print("Saved trained model")
