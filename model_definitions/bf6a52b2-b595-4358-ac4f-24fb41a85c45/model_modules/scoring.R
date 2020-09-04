@@ -1,15 +1,16 @@
 library(methods)
 library(gbm)
+library(jsonlite)
+library(caret)
 
 predict.model <- function(model, data) {
     print("scoring model")
-    predict(model$model, data, 1)
+    predict(model, data, 1)
 }
 
 initialise_model <- function() {
     print("loading model")
     model <- readRDS("models/model.rds")
-    structure(list(model=model), class = "model")
 }
 
 evaluate <- function(data_conf, model_conf, ...) {
@@ -18,8 +19,17 @@ evaluate <- function(data_conf, model_conf, ...) {
     data <- read.csv(url(data_conf[['url']]))
     colnames(data) <- c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")
 
-    preds <- predict(model$model, data, 1)
+    probs <- predict(model, data, na.action = na.pass, type = "response")
+    preds <- as.integer(ifelse(probs > 0.5, 1, 0))
 
-    results <- list("accuracy" = "95")
-    write(jsonlite::toJSON(results, auto_unbox = TRUE, null = "null", force = TRUE), "models/evaluation.json")
+    cm <- confusionMatrix(table(preds, data$HasDiabetes))
+
+    png("models/confusion_matrix.png", width = 860, height = 860)
+    fourfoldplot(cm$table)
+    dev.off()
+
+    preds$pred = preds
+    metrics <- cm$overall
+
+    write(jsonlite::toJSON(metrics, auto_unbox = TRUE, null = "null", keep_vec_names=TRUE), "models/evaluation.json")
 }

@@ -8,26 +8,22 @@ train <- function(data_conf, model_conf, ...) {
 
     hyperparams <- model_conf[["hyperParameters"]]
 
-    model <- gbm(HasDiabetes~NumTimesPrg+PlGlcConc+BloodP+SkinThick+TwoHourSerIns+BMI+DiPedFunc+Age,
-            data=data,
-            var.monotone=c(0,0,0,0,0,0,0,0),
-            distribution="gaussian",
-            n.trees=hyperparams$n.trees,
-            shrinkage=hyperparams$shrinkage,
-            interaction.depth=hyperparams$interaction.depth,
-            bag.fraction=hyperparams$bag.fraction,
-            train.fraction=hyperparams$train.fraction,
-            n.minobsinnode=hyperparams$n.minobsinnode,
-            keep.data=TRUE,
-            cv.folds=hyperparams$cv.folds,
-            verbose = FALSE)
+    model <- gbm(HasDiabetes~.,
+                 data=data,
+                 shrinkage=hyperparams$shrinkage,
+                 distribution = 'bernoulli',
+                 cv.folds=hyperparams$cv.folds,
+                 n.trees=hyperparams$n.trees,
+                 verbose=FALSE)
 
     best.iter <- gbm.perf(model, plot.it=FALSE, method="cv")
 
-    # clean the model
-    light <- model
-    light$trees <- light$trees[best.iter]
-    light$data <- list()
+    # clean the model (R stores the dataset on the model..
+    model$data <- NULL
 
-    saveRDS(light, "models/model.rds")
+    # how to save only best.iter tree?
+    # model$best.iter <- best.iter
+    # model$trees <- light$trees[best.iter]
+
+    saveRDS(model, "models/model.rds")
 }
