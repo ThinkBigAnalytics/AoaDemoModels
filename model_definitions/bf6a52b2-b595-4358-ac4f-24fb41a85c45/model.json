@@ -1,7 +1,7 @@
 {
   "id": "bf6a52b2-b595-4358-ac4f-24fb41a85c45",
-  "name": "R GBM",
-  "description": "Sample R GBM model",
+  "name": "R Diabetes Prediction",
+  "description": "R GBM for Diabetes Prediction",
   "language": "R",
 
   "automation":{
