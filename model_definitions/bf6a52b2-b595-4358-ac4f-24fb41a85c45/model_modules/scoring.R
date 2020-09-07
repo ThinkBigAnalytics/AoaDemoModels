@@ -24,12 +24,12 @@ evaluate <- function(data_conf, model_conf, ...) {
 
     cm <- confusionMatrix(table(preds, data$HasDiabetes))
 
-    png("models/confusion_matrix.png", width = 860, height = 860)
+    png("artifacts/output/confusion_matrix.png", width = 860, height = 860)
     fourfoldplot(cm$table)
     dev.off()
 
     preds$pred = preds
     metrics <- cm$overall
 
-    write(jsonlite::toJSON(metrics, auto_unbox = TRUE, null = "null", keep_vec_names=TRUE), "models/evaluation.json")
+    write(jsonlite::toJSON(metrics, auto_unbox = TRUE, null = "null", keep_vec_names=TRUE), "metrics/metrics.json")
 }
