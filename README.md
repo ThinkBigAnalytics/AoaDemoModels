@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/teradata-consulting/AnalyticOps/_apis/build/status/ThinkBigAnalytics.AoaDemoModels?branchName=master)](https://dev.azure.com/teradata-consulting/AnalyticOps/_build/latest?definitionId=95&branchName=master)
+
 # Models
 
 This repository contains demo models for the Teradata AOA. See the [HowTo](./HOWTO.md) guide for a brief tutorial on how to add new models.

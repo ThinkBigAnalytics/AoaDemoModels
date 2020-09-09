@@ -3,14 +3,126 @@
 trigger:
   - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+variables:
+  dockerConnection: 'dockerhub-dartov'
+  gogsBaseImage: 'christianaxel/aoa-gogs-base:0.0.3'
+  newImageRepo: 'thinkbiganalytics/aoa-demomodels'
+  newImageVersion: '2.7-alpha'
 
-steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
+resources:
+  containers:
+    - container: 'aoa-demo-models'
+      image: '$(gogsBaseImage)'
+      endpoint: '$(dockerConnection)'
+      ports:
+        - "3000:3000"
+#  repositories:
+#    - repository: 'aoa-demo-models-repo'
+#      type: github
+#      name: 'ThinkBigAnalytics/AoaDemoModels'
+#      endpoint: github-dartov
 
-  - script: |
-      echo Add other tasks to build, test, and deploy your project.
-      echo See https://aka.ms/yaml
-    displayName: 'Run a multi-line script'
+stages:
+  - stage: SetupGitRepo
+    displayName: 'Setup git repo'
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: BuildPushDocker
+        displayName: 'Build and push docker image'
+        services:
+          aoa-demo-models: aoa-demo-models
+#          aoa-demo-models-repo: aoa-demo-models-repo
+        steps:
+          - script: |
+              ls -lisha
+              echo $(Build.BuildNumber)
+              git status
+              git branch
+              git remote show
+              git rev-parse --show-toplevel
+              docker ps
+              docker images
+              docker ps -aqf "ancestor=$(gogsBaseImage)"
+            displayName: 'Check environment'
+          - script: |
+              export MAIN_REPO=$PWD
+              echo $MAIN_REPO
+              cd ..
+              export WORKING_DIR=$PWD
+              export NEW_REPO="${WORKING_DIR}/AoaDemoModels/"
+              echo $WORKING_DIR
+              echo $NEW_REPO
+              git clone http://gituser:gitpassword@localhost:3000/gituser/AoaDemoModels
+              rsync -avrI --exclude=".git" "${MAIN_REPO}/" $NEW_REPO
+              ls -lisha
+              cd AoaDemoModels
+              echo $PWD
+              ls -lisha
+              git status
+              git branch
+              git remote show
+              git rev-parse --show-toplevel
+              git config --global user.email "analytics.ops@azure.pipelines.com"
+              git config --global user.name "AnalyticsOps"
+              git add .
+              git commit -m "Updating demo models build $(Build.BuildNumber)"
+              git push
+              git status
+              git log
+            displayName: 'Update AOA Demo Models repo'
+#          - task: InstallSSHKey@0
+#            displayName: 'Install ssh keys'
+#            inputs:
+#              knownHostsEntry: 140.82.114.4 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+#              sshPublicKey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDKxbJTMU49pneC3VVRl1cdJXJpfxp+8mJH825zWbxusFB86RidO4yFn8hZqeuaPnfkEtREKueeMZajSdkRUXXiURq4HM49is2Os2h6WyettSW7aw8kqeqvFrYuGQl3jFnZGGGUjhIqBG8Hl0EdBhou56oqcC+aPUJTQ1ycffUimCrlT9mwcm2a9RO3sadjFEiVs23X3ryCPFIqvwdFmzmGSYwxHniHzs6bn6YHRnEFhllb616Im4n/pdmYfj1yW5cj9N5MBNKqAmcQyZn8XnF23Xkra8ATRi+hG4jjz7CAVZw3N/GMz6qg3nzEbd0gp31KK1SsqxDFWjNFnKEck/j9MehgVL0Oez1WjFLTPcm2Np+Oh+JeCvBDy1XMN6p4aTRNmkMrxZ6NBTM0LY3yw+8F7tIHpUvaaYOAH+UZjZoiKIshX1yDwjSvsZ162CxayYJxioyXLm23rTWZUPHIyosDWlROpHfD9/arxrmP5JKS9Q4qo1cXo8VgJp2S6gN2rWUTO+r8hSPARTQ2FiiAarY3vTg1ILnYm0DEUKHyl5edK8PyUw2g2zoLXT2ZoBd5Bj8WyQ1Xs3ElaievKHET8+Hbs4ma7eZ3+jOjjbc8mnDJMHjO6xbZwg6iWUx97dZfQlUM1d7FB/b41COeP8Y4ih7LnVjKQUIBhEAoPiSfU5xuFw== talha.zahid331@gmail.com
+#              sshKeySecureFile: 'id_rsa'
+#          - task: CmdLine@2
+#            displayName: 'Clone AoaFraudIndustryPack'
+#            inputs:
+#              script: 'git clone git@github.com:ThinkBigAnalytics/AoaFraudIndustryPack.git'
+#          - task: CmdLine@2
+#            displayName: 'Clone AoaSmartCitiesIndustryPack'
+#            inputs:
+#              script: 'git clone git@github.com:ThinkBigAnalytics/AoaSmartCitiesIndustryPack.git'
+#          - task: CmdLine@2
+#            displayName: 'Clone AoaJbpmModelLifecycle'
+#            inputs:
+#              script: 'git clone git@github.com:ThinkBigAnalytics/AoaJbpmModelLifecycle.git'
+          - script: |
+              pwd
+              ls -lisha
+              cd
+              ls -lisha
+            displayName: 'Check repos downloaded'
+          - script: |
+              cd ../AoaDemoModels
+              git log
+              git status
+              cd ..
+              ls -lisha
+              export DOCKER_IMAGE=$(docker ps -aqf "ancestor=$(gogsBaseImage)")
+              docker cp $DOCKER_IMAGE:/data/ backup
+              echo "$(Build.BuildNumber)" > backup/build.txt
+              ls -lisha backup
+              echo Show contents of container aoa-backup before
+              docker exec $DOCKER_IMAGE ls -lisha /aoa-backup
+              docker cp backup/. $DOCKER_IMAGE:/aoa-backup
+              echo Show contents of container aoa-backup after
+              docker exec $DOCKER_IMAGE ls -lisha /aoa-backup
+              ls -lisha backup
+              docker ps
+              docker images
+              docker commit $DOCKER_IMAGE $(newImageRepo):$(newImageVersion)
+              docker images
+#              docker commit -m "New image build $(Build.BuildNumber)" -a "AnalyticsOps" $DOCKER_IMAGE thinkbiganalytics/aoa-demomodels:2.7-alpha
+#              export NEW_DOCKER_IMAGE=$(docker ps -aqf "ancestor=thinkbiganalytics/aoa-demomodels:2.7-alpha")
+#              docker push thinkbiganalytics/aoa-demomodels:2.7-alpha
+            displayName: 'Commit docker image'
+          - task: Docker@2
+            displayName: 'Push docker image'
+            inputs:
+              command: push
+              containerRegistry: '$(dockerConnection)'
+              repository: '$(newImageRepo)'
+              tags: '$(newImageVersion)'
