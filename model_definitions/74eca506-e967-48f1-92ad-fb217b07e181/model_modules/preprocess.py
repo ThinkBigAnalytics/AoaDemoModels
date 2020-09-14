@@ -1,5 +1,5 @@
-from keras.preprocessing import sequence
+import tensorflow as tf
 
 
 def preprocess(data, maxlen):
-    return sequence.pad_sequences(data, maxlen=maxlen)
+    return tf.keras.preprocessing.sequence.pad_sequences(data, maxlen=maxlen)

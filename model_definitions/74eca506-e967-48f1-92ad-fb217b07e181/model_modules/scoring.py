@@ -1,33 +1,28 @@
 import json
 import tensorflow as tf
+import numpy as np
 
 from sklearn import metrics
-from keras.models import load_model
-from keras.datasets import imdb
 from .preprocess import preprocess
 
 
 def score(data_conf, model_conf, **kwargs):
-    (_, _), (X_test, y_test) = imdb.load_data(num_words=model_conf["hyperParameters"]["max_features"])
+    hyper_params = model_conf["hyperParameters"]
 
-    model = load_model("artifacts/input/model.h5")
+    (_, _), (X_test, y_test) = tf.keras.datasets.imdb.load_data(
+        num_words=hyper_params["max_features"])
 
-    y_pred = model.predict(preprocess(X_test, maxlen=model_conf["hyperParameters"]["maxlen"]))
+    model = tf.keras.models.load_model("artifacts/input/model.h5")
+
+    X_test = preprocess(X_test, maxlen=model_conf["hyperParameters"]["maxlen"])
+    y_pred = model.predict(X_test)
 
     return X_test, y_pred, y_test, model
 
 
-def save_plot(title):
-    import matplotlib.pyplot as plt
-
-    plt.title(title)
-    fig = plt.gcf()
-    filename = title.replace(" ", "_").lower()
-    fig.savefig('artifacts/output/{}'.format(filename), dpi=500)
-
-
 def evaluate(data_conf, model_conf, **kwargs):
     X_test, y_pred, y_test, model = score(data_conf, model_conf, **kwargs)
+    y_pred = np.argmax(y_pred, axis=1)
 
     evaluation = {
         'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),
@@ -39,12 +34,6 @@ def evaluate(data_conf, model_conf, **kwargs):
     with open("artifacts/output/metrics.json", "w+") as f:
         json.dump(evaluation, f)
 
-    metrics.plot_confusion_matrix(model, X_test, y_test)
-    save_plot('Confusion Matrix')
-
-    metrics.plot_roc_curve(model, X_test, y_test)
-    save_plot('ROC Curve')
-
 
 class ModelScorer(object):
     def __init__(self, config=None):
@@ -52,7 +41,7 @@ class ModelScorer(object):
             with open("config.json") as f:
                 config = json.load(f)
 
-        self.model = load_model("artifacts/input/model.h5")
+        self.model = tf.keras.models.load_model("artifacts/input/model.h5")
         self.model._make_predict_function()
         self.graph = tf.get_default_graph()
 
