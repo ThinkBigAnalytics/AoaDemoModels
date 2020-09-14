@@ -10,7 +10,7 @@ predict.model <- function(model, data) {
 
 initialise_model <- function() {
     print("loading model")
-    model <- readRDS("models/model.rds")
+    model <- readRDS("artifacts/input/model.rds")
 }
 
 evaluate <- function(data_conf, model_conf, ...) {
@@ -31,5 +31,5 @@ evaluate <- function(data_conf, model_conf, ...) {
     preds$pred = preds
     metrics <- cm$overall
 
-    write(jsonlite::toJSON(metrics, auto_unbox = TRUE, null = "null", keep_vec_names=TRUE), "metrics/metrics.json")
+    write(jsonlite::toJSON(metrics, auto_unbox = TRUE, null = "null", keep_vec_names=TRUE), "artifacts/output/metrics.json")
 }

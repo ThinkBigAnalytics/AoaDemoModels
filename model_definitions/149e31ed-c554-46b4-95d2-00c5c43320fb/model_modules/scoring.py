@@ -42,7 +42,7 @@ def evaluate(data_conf, model_conf, **kwargs):
     roc = evaluator.evaluate(expected.join(actual, expected.id == actual.id))
     logging.info('Test Area Under ROC: {}'.format(roc))
 
-    with open("models/evaluation.json", "w+") as f:
+    with open("artifacts/output/evaluation.json", "w+") as f:
         json.dump({'roc': roc}, f)
 
     logging.info("Finished Evaluation")

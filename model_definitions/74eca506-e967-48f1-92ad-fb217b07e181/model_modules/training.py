@@ -32,7 +32,7 @@ def train(data_conf, model_conf, **kwargs):
                         validation_data=(x_test, y_test),
                         callbacks=[AoaKerasProgressCallback(progress_callback)])
 
-    model.save('models/model.h5')
+    model.save('artifacts/output/model.h5')
 
 
 def build_model_pipeline(hyper_params):
