@@ -32,7 +32,7 @@ def train(data_conf, model_conf, **kwargs):
 
     logging.info("Finished training")
 
-    # export model artefacts to models/ folder
+    # export model directly to s3 model artifacts folder
     lr_model.write().overwrite().save(spark.conf.get("spark.aoa.modelPath"))
     logging.info("Saved trained model")
 

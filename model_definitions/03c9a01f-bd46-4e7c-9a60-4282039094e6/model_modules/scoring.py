@@ -5,8 +5,6 @@ import os
 import joblib
 import json
 import pandas as pd
-import shap
-import matplotlib.pyplot as plt
 
 
 def score(data_conf, model_conf, **kwargs):
@@ -21,7 +19,7 @@ def score(data_conf, model_conf, **kwargs):
     X_test = test[:, 0:8]
     y_test = test[:, 8]
 
-    model = joblib.load('models/model.joblib')
+    model = joblib.load('artifacts/input/model.joblib')
     y_pred = model.predict(X_test)
 
     print("Finished Scoring")
@@ -33,6 +31,8 @@ def score(data_conf, model_conf, **kwargs):
 
 
 def save_plot(title):
+    import matplotlib.pyplot as plt
+
     plt.title(title)
     fig = plt.gcf()
     filename = title.replace(" ", "_").lower()
@@ -44,13 +44,13 @@ def evaluate(data_conf, model_conf, **kwargs):
     X_test, y_pred, y_test, model = score(data_conf, model_conf, **kwargs)
 
     evaluation = {
-        'Accuracy': metrics.accuracy_score(y_test, y_pred),
-        'Recall': metrics.recall_score(y_test, y_pred),
-        'Precision': metrics.precision_score(y_test, y_pred),
-        'f1-score': metrics.f1_score(y_test, y_pred)
+        'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),
+        'Recall': '{:.2f}'.format(metrics.recall_score(y_test, y_pred)),
+        'Precision': '{:.2f}'.format(metrics.precision_score(y_test, y_pred)),
+        'f1-score': '{:.2f}'.format(metrics.f1_score(y_test, y_pred))
     }
 
-    with open("metrics/metrics.json", "w+") as f:
+    with open("artifacts/output/metrics.json", "w+") as f:
         json.dump(evaluation, f)
 
     metrics.plot_confusion_matrix(model, X_test, y_test)
@@ -60,6 +60,8 @@ def evaluate(data_conf, model_conf, **kwargs):
     save_plot('ROC Curve')
 
     # xgboost has its own feature importance plot support but lets use shap as explainability example
+    import shap
+
     shap_explainer = shap.TreeExplainer(model['xgb'])
     shap_values = shap_explainer.shap_values(X_test)
 
@@ -71,7 +73,7 @@ def evaluate(data_conf, model_conf, **kwargs):
 class ModelScorer(object):
 
     def __init__(self, config=None):
-        self.model = joblib.load('models/model.joblib')
+        self.model = joblib.load('artifacts/input/model.joblib')
 
         from prometheus_client import Counter
         self.pred_class_counter = Counter('model_prediction_classes',

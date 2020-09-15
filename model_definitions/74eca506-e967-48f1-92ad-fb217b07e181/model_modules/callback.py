@@ -1,7 +1,7 @@
-from keras.callbacks import Callback
+import tensorflow as tf
 
 
-class AoaKerasProgressCallback(Callback):
+class AoaKerasProgressCallback(tf.keras.callbacks.Callback):
 
     def __init__(self, aoa_progress_callback):
         self.aoa_progress_callback = aoa_progress_callback
