@@ -1,10 +1,7 @@
 import logging
 
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation
-from keras.layers import Embedding
-from keras.layers import Conv1D, GlobalMaxPooling1D
-from keras.datasets import imdb
+import tensorflow as tf
+
 from .callback import AoaKerasProgressCallback
 from .preprocess import preprocess
 
@@ -14,9 +11,8 @@ def train(data_conf, model_conf, **kwargs):
     progress_callback = kwargs.get("progress_callback_handler", lambda **args: None)
 
     logging.info('Loading data...')
-    (x_train, y_train), (x_test, y_test) = imdb.load_data(num_words=hyper_params["max_features"])
-    logging.info('{} train sequences'.format(len(x_train)))
-    logging.info('{} test sequences'.format(len(x_test)))
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.imdb.load_data(
+        num_words=hyper_params["max_features"])
 
     logging.info('Pad sequences (samples x time)')
     x_train = preprocess(x_train, maxlen=hyper_params["maxlen"])
@@ -32,30 +28,28 @@ def train(data_conf, model_conf, **kwargs):
                         validation_data=(x_test, y_test),
                         callbacks=[AoaKerasProgressCallback(progress_callback)])
 
-    model.save('models/model.h5')
+    model.save('artifacts/output/model.h5')
 
 
 def build_model_pipeline(hyper_params):
     logging.info('Building model...')
 
-    model = Sequential()
-    model.add(Embedding(hyper_params["max_features"],
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Embedding(hyper_params["max_features"],
                         hyper_params["embedding_dims"],
                         input_length=hyper_params["maxlen"]))
-    model.add(Dropout(0.2))
-    model.add(Conv1D(hyper_params["filters"],
+    model.add(tf.keras.layers.Dropout(0.2))
+    model.add(tf.keras.layers.Conv1D(hyper_params["filters"],
                      hyper_params["kernel_size"],
                      padding='valid',
                      activation='relu',
                      strides=1))
-    model.add(GlobalMaxPooling1D())
-
-    model.add(Dense(hyper_params["hidden_dims"]))
-    model.add(Dropout(0.2))
-    model.add(Activation('relu'))
-
-    model.add(Dense(1))
-    model.add(Activation('sigmoid'))
+    model.add(tf.keras.layers.GlobalMaxPooling1D())
+    model.add(tf.keras.layers.Dense(hyper_params["hidden_dims"]))
+    model.add(tf.keras.layers.Dropout(0.2))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Dense(1))
+    model.add(tf.keras.layers.Activation('sigmoid'))
 
     model.compile(loss='binary_crossentropy',
                   optimizer='adam',
