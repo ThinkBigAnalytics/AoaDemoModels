@@ -65,7 +65,8 @@ def evaluate(data_conf, model_conf, **kwargs):
     shap_explainer = shap.TreeExplainer(model['xgb'])
     shap_values = shap_explainer.shap_values(X_test)
 
-    shap.summary_plot(shap_values, X_test, feature_names=model.feature_names, show=False)
+    shap.summary_plot(shap_values, X_test, feature_names=model.feature_names,
+                      show=False, plot_size=(12,8), plot_type='bar')
     save_plot('SHAP Feature Importance')
 
 
