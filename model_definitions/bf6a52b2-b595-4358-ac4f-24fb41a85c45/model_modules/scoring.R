@@ -3,17 +3,18 @@ library(gbm)
 library(jsonlite)
 library(caret)
 
-predict.model <- function(model, data) {
-    print("scoring model")
-    predict(model, data, 1)
+score <- function(data, model, ...) {
+    print("Scoring model...")
+    predict(model, data, na.action = na.pass, type = "response")
 }
 
 initialise_model <- function() {
-    print("loading model")
+    print("Loading model...")
     model <- readRDS("artifacts/input/model.rds")
 }
 
 evaluate <- function(data_conf, model_conf, ...) {
+    print("Evaluating model...")
     model <- initialise_model()
 
     data <- read.csv(url(data_conf[['url']]))

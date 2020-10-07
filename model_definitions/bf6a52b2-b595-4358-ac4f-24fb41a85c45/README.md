@@ -16,13 +16,12 @@ The [training.R](model_modules/training.R) produces the following artifacts
 - model.rds     (gbm parameters)
 
 # Evaluation
-Evaluation is also performed in [scoring.evluate](model_modules/scoring.R) and it returns the following metrics
+Evaluation is also performed in [scoring.R](model_modules/scoring.R) by the function `evaluate` and it returns the following metrics
 
     accuracy: <acc>
 
 # Scoring 
-The [scoring.R](model_modules/scoring.R) is responsible loads the model and metadata and accepts the dataframe for
-for prediction. 
+The function `score` in [scoring.R](model_modules/scoring.R) loads the model and metadata and accepts the dataframe for prediction. 
 
 # Sample Request
 

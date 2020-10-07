@@ -2,7 +2,7 @@ library("gbm")
 
 
 train <- function(data_conf, model_conf, ...) {
-
+    print("Training model...")
     data <- read.csv(url(data_conf[['url']]))
     colnames(data) <- c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")
 
