@@ -3,17 +3,23 @@ library(gbm)
 library(jsonlite)
 library(caret)
 
-predict.model <- function(model, data) {
-    print("scoring model")
-    predict(model, data, 1)
+score <- function(data_conf, model_conf, ...) {
+    print("Batch scoring model...")
+    data <- read.csv(url(data_conf[['url']]))
+    new_data <- data[-c(9)]
+    colnames(new_data) <- c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age")
+    score <- predict(model, new_data, na.action = na.pass, type = "response")
+    # The score is printed out but for instance it could be saved into a table, file, etc.
+    print(score)
 }
 
 initialise_model <- function() {
-    print("loading model")
+    print("Loading model...")
     model <- readRDS("artifacts/input/model.rds")
 }
 
 evaluate <- function(data_conf, model_conf, ...) {
+    print(
     model <- initialise_model()
 
     data <- read.csv(url(data_conf[['url']]))

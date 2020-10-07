@@ -1,0 +1,7 @@
+{
+  "hyperParameters": {
+    "shrinkage": 0.01,
+    "cv.folds": 5,
+    "n.trees": 3000
+  }
+}
