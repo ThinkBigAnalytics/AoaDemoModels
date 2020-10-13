@@ -1,8 +1,8 @@
+# R Diabetes Prediction
+## Overview
+PIMA Diabetes demo model using R
 
-# Overview
-PIMA Diabetes demo using R
-
-# Datasets
+## Datasets
 The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The dataset descriptor is 
 
     {
@@ -10,23 +10,25 @@ The dataset required to train or evaluate this model is the PIMA Indians Diabete
         "test_split": 0.2
     }
     
-# Training
+## Training
 The [training.R](model_modules/training.R) produces the following artifacts
 
 - model.rds     (gbm parameters)
 
-# Evaluation
-Evaluation is also performed in [scoring.evluate](model_modules/scoring.R) and it returns the following metrics
+## Evaluation
+Evaluation is also performed in [scoring.R](model_modules/scoring.R) by the function `evaluate` and it returns the following metrics
 
     accuracy: <acc>
 
-# Scoring 
-The [scoring.R](model_modules/scoring.R) is responsible loads the model and metadata and accepts the dataframe for
-for prediction. 
+## Scoring
+The [scoring.R](model_modules/scoring.R) loads the model and metadata and accepts the dataframe for prediction.
 
-# Sample Request
+### Batch mode
+In this example the output is sent to stdout, but it could be saved into a table, file, etc.
 
-    curl -X POST http://<service-name>/predict \
+### RESTful Sample Request
+
+    curl -X POST http://localhost:5000/predict \
             -H "Content-Type: application/json" \
             -d '{
                 "data": {
