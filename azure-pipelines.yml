@@ -1,13 +1,23 @@
 # AoA Demo Models Azure Pipeline
 
 trigger:
-  - master
+  branches:
+    include:
+      - master
+      - '*.*.*'
+    exclude:
+      - issue-*
 
 variables:
   dockerConnection: 'dockerhub-dartov'
   gogsBaseImage: 'thinkbiganalytics/aoa-gogs-base:0.0.3'
   newImageRepo: 'thinkbiganalytics/aoa-demomodels'
-  newImageVersion: '2.7.0.rc0'
+  ${{ if and(startsWith(variables['Build.SourceBranch'], 'refs/heads/'), ne(variables['Build.SourceBranch'], 'refs/heads/master')) }}:
+    newImageVersion: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
+    newImageVersion: $[ replace(variables['System.PullRequest.TargetBranch'], 'master', 'latest') ]
+  ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+    newImageVersion: 'latest'
 
 resources:
   containers:
@@ -34,6 +44,16 @@ stages:
           aoa-demo-models: aoa-demo-models
 #          aoa-demo-models-repo: aoa-demo-models-repo
         steps:
+          - task: InstallSSHKey@0
+            displayName: 'Install ssh keys'
+            inputs:
+              knownHostsEntry: 140.82.114.4 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+              sshPublicKey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDKQBD5kNe/TxXxnL+etCyM6dPv5oLezRJJVSVbv8z4ghtxsSgJmh5v2HhtPLSbAxgRtLOKj1IX8KliXdR6MQzTfVidcpaDCQaLP9/qg7kUx26Wv3/1GzEt6c8QgtLyjsJ1VLbjkprAQCL8OTDOjhUFL3y0Vefw26dTwqGjC8WvrzRQml8ziEwa2bkFfKdb2KqVnZ7MgT3rG9Ie4IdqASlQVMqyso91AELBqFMeKXQ7EZ5BKMkebnjFAHerpNumxl2CBnto5YbTgbqBmyzoJ51XM+REvcZOU3x2wTbTsPq5DXPA3kYFteASIHdggIJv5SmpCIKzSxCuByyt9bDsmQ/KylvlmW+F1wyQFseRMbtW1YlEcDec+M7c5c4kBnN8u35UdHgg1QTKsMcZ7o84Y6v7WR7iIJ8lY83oBRVPznRT9y7O2tchTWDkP+P5llmuers+6RYiYbXfnyLXKFNJF3HfKqcOHhJe/toIekv2cb5/D+RhNiTk/eu1PR8NjQ28B7QgK9Yy8/PP5bl95+6mu7TqTe1VaUTRPE/dSCWExc8mM5Zhw9MqJ5g8b96I1W24y71QJMKO+ZOcre9hrychR5vi9/8RBqRTUG0KvrMO6QKWwEee+zkY2oaQ9hfjAQXF7CLv+8XbGB42/c96jDqHBXy+VAuaGbhPCEZ+VDIcPPH+Jw== christianaxel.schmidt@teradata.com
+              sshKeySecureFile: 'td_id_rsa'
+          - task: CmdLine@2
+            displayName: 'Set image tag to $(newImageVersion)'
+            inputs:
+              script: 'echo "Image tag is $(newImageVersion)"'
           - script: |
               ls -lisha
               echo $(Build.BuildNumber)
@@ -71,12 +91,6 @@ stages:
               git status
               git log
             displayName: 'Update AOA Demo Models repo'
-          - task: InstallSSHKey@0
-            displayName: 'Install ssh keys'
-            inputs:
-              knownHostsEntry: 140.82.114.4 ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-              sshPublicKey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDKQBD5kNe/TxXxnL+etCyM6dPv5oLezRJJVSVbv8z4ghtxsSgJmh5v2HhtPLSbAxgRtLOKj1IX8KliXdR6MQzTfVidcpaDCQaLP9/qg7kUx26Wv3/1GzEt6c8QgtLyjsJ1VLbjkprAQCL8OTDOjhUFL3y0Vefw26dTwqGjC8WvrzRQml8ziEwa2bkFfKdb2KqVnZ7MgT3rG9Ie4IdqASlQVMqyso91AELBqFMeKXQ7EZ5BKMkebnjFAHerpNumxl2CBnto5YbTgbqBmyzoJ51XM+REvcZOU3x2wTbTsPq5DXPA3kYFteASIHdggIJv5SmpCIKzSxCuByyt9bDsmQ/KylvlmW+F1wyQFseRMbtW1YlEcDec+M7c5c4kBnN8u35UdHgg1QTKsMcZ7o84Y6v7WR7iIJ8lY83oBRVPznRT9y7O2tchTWDkP+P5llmuers+6RYiYbXfnyLXKFNJF3HfKqcOHhJe/toIekv2cb5/D+RhNiTk/eu1PR8NjQ28B7QgK9Yy8/PP5bl95+6mu7TqTe1VaUTRPE/dSCWExc8mM5Zhw9MqJ5g8b96I1W24y71QJMKO+ZOcre9hrychR5vi9/8RBqRTUG0KvrMO6QKWwEee+zkY2oaQ9hfjAQXF7CLv+8XbGB42/c96jDqHBXy+VAuaGbhPCEZ+VDIcPPH+Jw== christianaxel.schmidt@teradata.com
-              sshKeySecureFile: 'td_id_rsa'
           - task: CmdLine@2
             displayName: 'Clone AoaFraudIndustryPack'
             inputs:
