@@ -1,5 +1,7 @@
 from sklearn import metrics
-from sklearn.model_selection import train_test_split
+from teradataml import create_context
+from teradataml.dataframe.dataframe import DataFrame
+from teradataml.dataframe.copy_to import copy_to_sql
 
 import os
 import joblib
@@ -8,24 +10,33 @@ import pandas as pd
 
 
 def score(data_conf, model_conf, **kwargs):
-    dataset = pd.read_csv(data_conf['url'], header=None)
 
-    # in a real world scenario - the scoring will ONLY take a dataset to score and NOT split it like this
-    # but for demo model purposes with a simple simple dataset, lets split
-    _, test = train_test_split(dataset, test_size=data_conf["test_split"], random_state=42)
+    # load the model
+    model = joblib.load('artifacts/input/model.joblib')
+
+    create_context(host=data_conf["host"], username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
+
+    # Read test dataset from Teradata and convert to pandas.
+    # As this is for demo purposes, we simulate the test dataset changing between executions
+    # by introducing a random sample which can be changed in the dataset definition in the AOA
+    # Note that the sampling is performed in Teradata!
+    test_df = DataFrame(data_conf["table"])
+    test_df = test_df.select([model.feature_names])
+    test_df = test_df.sample(frac=float(data_conf["demo_sample"])).to_pandas()
 
     # split data into X and y
-    test = test.values
+    test = test_df.values
     X_test = test[:, 0:8]
     y_test = test[:, 8]
 
-    model = joblib.load('artifacts/input/model.joblib')
+    print("Scoring")
     y_pred = model.predict(X_test)
 
     print("Finished Scoring")
 
-    # store predictions somewhere.. As this is demo, we'll just print to stdout.
-    print(y_pred)
+    # store predictions in Teradata
+    y_pred = pd.DataFrame(y_pred, columns=["pred"])
+    copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=True, if_exists="replace")
 
     return X_test, y_pred, y_test, model
 

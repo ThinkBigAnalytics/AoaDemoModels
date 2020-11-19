@@ -7,8 +7,9 @@
     "automation": {
         "trainingEngine": "pyspark",
         "resources": {
-            "master": "local[1]",
-            "args": "--num-executors 1 --executor-cores 1 --driver-memory 1G --executor-memory 1G"
+            "training": {
+                "args": "--master local[1] --num-executors 1 --executor-cores 1 --driver-memory 1G --executor-memory 1G"
+            }
         }
     }
 }

@@ -4,11 +4,11 @@ Simple xgboost model python model based on the medical records for Pima Indians 
 A sample notebook is located [here](notebooks/Explore%20Diabetes.ipynb).
 
 # Datasets
-The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The dataset descriptor is 
+The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The dataset metadata required is
 
     {
-        "url": "http://nrvis.com/data/mldata/pima-indians-diabetes.csv",
-        "test_split": 0.2
+        "host": "<vantage host>",
+        "table": "<training dataset>"
     }
     
 For Batch scoring, we also include the [dataset_template.json](./scheduler/dataset_template.json) which is required by the Airflow (or other) scheduler. This will not be necessary anymore after 2.7+ of the AOA as the user will select the dataset template when deploying.
@@ -17,6 +17,7 @@ For Batch scoring, we also include the [dataset_template.json](./scheduler/datas
 The [training.py](model_modules/training.py) produces the following artifacts
 
 - model.joblib     (sklearn pipeline with scalers and xgboost model)
+- model.pmml       (pmml version of the xgboost model and sklearn pipeline)
 
 # Evaluation
 Evaluation is defined in the `evaluate` method in [scoring.py](model_modules/scoring.py) and it returns the following metrics

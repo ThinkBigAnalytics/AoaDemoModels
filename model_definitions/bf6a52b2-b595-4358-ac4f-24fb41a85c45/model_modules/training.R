@@ -1,9 +1,16 @@
 library("gbm")
+library("tdplyr")
+library("dplyr")
+library("dbplyr")
 
 train <- function(data_conf, model_conf, ...) {
     print("Training model...")
-    data <- read.csv(url(data_conf[['url']]))
-    colnames(data) <- c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")
+
+    con <- td_create_context(host = data_conf[["host"]], uid=Sys.getenv("TD_USERNAME"), pwd=Sys.getenv("TD_PASSWORD"), dType = "native")
+
+    data <- tbl(con, data_conf[["table"]])
+    data <- as.data.frame(data)
+    data <- data[c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")]
 
     hyperparams <- model_conf[["hyperParameters"]]
 

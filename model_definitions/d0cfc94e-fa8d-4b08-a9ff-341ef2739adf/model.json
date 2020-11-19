@@ -1,6 +1,0 @@
-{
-    "id": "d0cfc94e-fa8d-4b08-a9ff-341ef2739adf",
-    "name": "SQL Vantage Diabetes Prediction",
-    "description": "Vantage MLE XGBoost for Diabetes Prediction with SQL",
-    "language": "sql"
-}
