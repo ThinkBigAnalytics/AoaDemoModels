@@ -1,4 +1,5 @@
 {
   "host": "3.238.151.85",
-  "tabe": "PIMA_TEST"
+  "table": "PIMA_TEST",
+  "predictions": "PIMA_PREDICTIONS"
 }
