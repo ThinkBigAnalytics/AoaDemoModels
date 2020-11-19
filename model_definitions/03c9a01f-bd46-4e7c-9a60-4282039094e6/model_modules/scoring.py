@@ -22,7 +22,7 @@ def score(data_conf, model_conf, **kwargs):
     # Note that the sampling is performed in Teradata!
     test_df = DataFrame(data_conf["table"])
     test_df = test_df.select([model.feature_names])
-    test_df = test_df.sample(frac=float(data_conf["demo_sample"])).to_pandas()
+    test_df = test_df.sample(frac=float(data_conf["sample"])).to_pandas()
 
     # split data into X and y
     test = test_df.values

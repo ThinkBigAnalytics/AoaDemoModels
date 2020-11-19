@@ -6,9 +6,20 @@ A sample notebook is located [here](notebooks/Explore%20Diabetes.ipynb).
 # Datasets
 The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The dataset metadata required is
 
+Training
+
     {
         "host": "<vantage host>",
         "table": "<training dataset>"
+    }
+
+Evaluation/Scoring
+
+   {
+        "host": "<vantage host>",
+        "table": "<training dataset>",
+        "predictions": "<predictions output table>",
+        "sample": "<frac sample of dataset to score for demo purposes">
     }
     
 For Batch scoring, we also include the [dataset_template.json](./scheduler/dataset_template.json) which is required by the Airflow (or other) scheduler. This will not be necessary anymore after 2.7+ of the AOA as the user will select the dataset template when deploying.
