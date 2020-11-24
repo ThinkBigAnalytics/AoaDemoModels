@@ -5,8 +5,6 @@
     "language": "python",
 
     "automation": {
-        "trainDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
-        "evaluateDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
 
         "resources": {
             "cpu": "200m",
