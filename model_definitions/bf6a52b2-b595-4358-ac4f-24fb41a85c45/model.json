@@ -2,10 +2,5 @@
   "id": "bf6a52b2-b595-4358-ac4f-24fb41a85c45",
   "name": "R Diabetes Prediction",
   "description": "R GBM for Diabetes Prediction",
-  "language": "R",
-
-  "automation":{
-    "trainDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c",
-    "evaluateDatasetId": "11e1df4b-b630-47a1-ab80-7ad5385fcd8c"
-  }
+  "language": "R"
 }

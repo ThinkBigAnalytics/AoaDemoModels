@@ -1,6 +1,6 @@
 {
-  "url": "http://nrvis.com/data/mldata/pima-indians-diabetes.csv",
-  "test_split": 0.2,
-  "start_date": "{{ start_date }}",
-  "end_date": "{{ end_date }}"
+  "host": "3.238.151.85",
+  "table": "PIMA_TEST",
+  "predictions": "PIMA_PREDICTIONS",
+  "sample": 0.9
 }
