@@ -16,29 +16,30 @@ def score(data_conf, model_conf, **kwargs):
 
     create_context(host=data_conf["host"], username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
 
-    # Read test dataset from Teradata and convert to pandas.
-    # As this is for demo purposes, we simulate the test dataset changing between executions
-    # by introducing a random sample which can be changed in the dataset definition in the AOA
-    # Note that the sampling is performed in Teradata!
+    # Read test dataset from Teradata
     test_df = DataFrame(data_conf["table"])
-    test_df = test_df.select([model.feature_names])
-    test_df = test_df.sample(frac=float(data_conf["sample"])).to_pandas()
 
-    # split data into X and y
-    test = test_df.values
-    X_test = test[:, 0:8]
-    y_test = test[:, 8]
+    # As this is for demo purposes, we simulate the test dataset changing between executions
+    # by introducing a random sample. Note that the sampling is performed in Teradata!
+    if "is_evaluation" in kwargs:
+        test_df = test_df.sample(frac=0.8)
+
+    # convert to pandas to use locally
+    test_df = test_df.to_pandas()
+
+    X_test = test_df[model.feature_names]
 
     print("Scoring")
     y_pred = model.predict(X_test)
 
     print("Finished Scoring")
 
-    # store predictions in Teradata
+    # create result dataframe and store in Teradata
     y_pred = pd.DataFrame(y_pred, columns=["pred"])
-    copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=True, if_exists="replace")
+    y_pred["PatientId"] = test_df["PatientId"].values
+    copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=False, if_exists="replace")
 
-    return X_test, y_pred, y_test, model
+    return X_test, y_pred["pred"], test_df[model.target_name], model
 
 
 def save_plot(title):
@@ -48,9 +49,12 @@ def save_plot(title):
     fig = plt.gcf()
     filename = title.replace(" ", "_").lower()
     fig.savefig('artifacts/output/{}'.format(filename), dpi=500)
+    plt.clf()
 
 
 def evaluate(data_conf, model_conf, **kwargs):
+    # tell scoring that its being called from evaluate function as opposed to batch scoring
+    kwargs["is_evaluation"] = True
 
     X_test, y_pred, y_test, model = score(data_conf, model_conf, **kwargs)
 

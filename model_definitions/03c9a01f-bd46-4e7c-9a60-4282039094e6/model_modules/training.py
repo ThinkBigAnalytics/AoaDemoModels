@@ -1,7 +1,7 @@
 from xgboost import XGBClassifier
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline
-from sklearn2pmml import make_pmml_pipeline, sklearn2pmml
+from nyoka import xgboost_to_pmml
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
 
@@ -14,15 +14,17 @@ def train(data_conf, model_conf, **kwargs):
 
     create_context(host=data_conf["host"], username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
 
+    feature_names = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age"]
+    target_name = "HasDiabetes"
+
     # read training dataset from Teradata and convert to pandas
     train_df = DataFrame(data_conf["table"])
-    train_df = train_df.select([["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes"]])
+    train_df = train_df.select([feature_names + [target_name]])
     train_df = train_df.to_pandas()
 
     # split data into X and y
-    train = train_df.values
-    X_train = train[:, 0:8]
-    y_train = train[:, 8]
+    X_train = train_df.drop(target_name, 1)
+    y_train = train_df[target_name]
 
     print("Starting training...")
 
@@ -31,7 +33,8 @@ def train(data_conf, model_conf, **kwargs):
                      ('xgb', XGBClassifier(eta=hyperparams["eta"],
                                            max_depth=hyperparams["max_depth"]))])
     # xgboost saves feature names but lets store on pipeline for easy access later
-    model.feature_names = train_df.columns.tolist()
+    model.feature_names = feature_names
+    model.target_name = target_name
 
     model.fit(X_train, y_train)
 
@@ -39,6 +42,6 @@ def train(data_conf, model_conf, **kwargs):
 
     # export model artefacts
     joblib.dump(model, "artifacts/output/model.joblib")
-    sklearn2pmml(make_pmml_pipeline(model), "artifacts/output/model.pmml")
+    xgboost_to_pmml(pipeline=model, col_names=feature_names, target_name=target_name, pmml_f_name="artifacts/output/model.pmml")
 
     print("Saved trained model")
