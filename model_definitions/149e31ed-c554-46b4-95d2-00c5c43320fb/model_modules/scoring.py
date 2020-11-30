@@ -24,7 +24,10 @@ def read_dataframe(url):
     urllib.request.urlretrieve(url, "/tmp/data.csv")
     column_names = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes"]
 
-    return spark.read.format("csv").load("/tmp/data.csv").toDF(*column_names)
+    return spark.read.format("csv")\
+        .option("inferSchema", "true")\
+        .load("/tmp/data.csv")\
+        .toDF(*column_names)
 
 
 def score(data_conf, model_conf, **kwargs):
@@ -77,9 +80,9 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     evaluation = {
         'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),
-        'Recall': '{:.2f}'.format(metrics.recall_score(y_test, y_pred, pos_label='1')),
-        'Precision': '{:.2f}'.format(metrics.precision_score(y_test, y_pred, pos_label='1')),
-        'f1-score': '{:.2f}'.format(metrics.f1_score(y_test, y_pred, pos_label='1'))
+        'Recall': '{:.2f}'.format(metrics.recall_score(y_test, y_pred)),
+        'Precision': '{:.2f}'.format(metrics.precision_score(y_test, y_pred)),
+        'f1-score': '{:.2f}'.format(metrics.f1_score(y_test, y_pred))
     }
 
     with open("artifacts/output/metrics.json", "w+") as f:

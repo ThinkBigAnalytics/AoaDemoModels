@@ -10,7 +10,7 @@ More human friendly folder names for each model under model_definitions is track
 
 - [Python XGboost (Diabetes)](model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6)
 - [R GBM (Diabetes)](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45)
-- [PySpark Logistic Regression](model_definitions/149e31ed-c554-46b4-95d2-00c5c43320fb)
+- [PySpark XGboost (Diabetes)](model_definitions/149e31ed-c554-46b4-95d2-00c5c43320fb)
 
 
 # Adding new Models
