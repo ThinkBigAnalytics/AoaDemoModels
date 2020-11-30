@@ -1,8 +1,6 @@
 {
-
   "hyperParameters": {
-    "maxIter": 10,
-    "regParam": 0.3,
-    "elasticNetParam": 0.8
+    "eta": 0.2,
+    "max_depth": 6
   }
 }
