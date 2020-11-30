@@ -34,7 +34,3 @@ Use the aoa cli (see [here](https://pypi.org/project/aoa/))
 ```
 aoa run -h
 ```
-    
-## Detailed Documentation
-
-To see more detailed documentation on supported model signatures, additional variables passed to the models, how we store and retrieve artifacts and metrics, see the following [document](https://github.com/ThinkBigAnalytics/AoaCoreService/blob/master/docs/ModelsSupport.md).
