@@ -9,16 +9,7 @@ import json
 
 
 def score(data_conf, model_conf, **kwargs):
-    """Python score method called by AOA framework batch mode
 
-    Parameters:
-    data_conf (dict): The dataset metadata
-    model_conf (dict): The model configuration to use
-
-    Returns:
-    None:No return
-
-    """
 
 
 def eval_partition(partition):
