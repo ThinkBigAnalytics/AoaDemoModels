@@ -22,41 +22,58 @@ def score(data_conf, model_conf, **kwargs):
     """
 
 
+def save_metadata(df):
+    # convert stats to dict and save to partitions.json
+    metadata_df = df.select(["partition_id", "partition_metadata", "num_rows"]).to_pandas()
+    metadata_dict = {r["partition_id"]: json.loads(r["partition_metadata"]) for r in
+                     metadata_df.to_dict(orient='records')}
+
+    with open("artifacts/output/partitions.json", 'w+') as f:
+        json.dump(metadata_dict, f, indent=2)
+
+    data_metadata = {
+        "num_rows": int(metadata_df["num_rows"].sum())
+    }
+
+    with open("artifacts/output/data_stats.json", 'w+') as f:
+        json.dump(data_metadata, f, indent=2)
+
+    print("Finished saving artefacts")
+
+
 def evaluate(data_conf, model_conf, **kwargs):
-    """Python evaluate method called by AOA framework
-
-   evaluate
-    - normal stuff
-just mock the eval to start and return metrics !!
-When implementing just join models to start
-    - evaluate per partition and collect results back. Produce aggregate /histogram charts / distribution
- - save individual metrics in partition_metrics.json
-
-    """
-
     model_version = kwargs["model_version"]
 
-    models_df = DataFrame.from_query("SELECT * FROM aoa_sto_models WHERE model_version='{}'".format(model_version))
-    df = DataFrame("iris_train")
-    df = df.join(models_df, on=[df.species == models_df.partition_id], how="left")
+    create_context(host="host.docker.internal", username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
+
+    df = DataFrame.from_query("""
+    SELECT i.*, m.model_artefact FROM iris_train i 
+        LEFT JOIN aoa_sto_models m ON i.species = m.partition_id 
+        WHERE model_version='{}'
+    """.format(model_version))
 
     def eval_partition(partition):
-        return "1"
+
+        # do evaluation
+
+        partition_id = partition.species.iloc[0]
+
+        # whatever evaluation metadata you want to record goes here. Like the evaluation metrics, etc
+        partition_metadata = json.dumps({
+            "num_rows": partition.shape[0],
+            "metrics": {
+                "accuracy": 0.9,
+                "precision": 0.87
+            }
+        })
+
+        return np.array([[partition_id, partition.shape[0], partition_metadata]])
 
     df = DistDataFrame(df._table_name, dist_mode=DistMode.STO, sto_id="my_model")
     eval_df = df.map_partition(lambda partition: eval_partition(partition),
                                partition_by="species",
-                               returns=[["partition_id", "VARCHAR(255)"]])
+                               returns=[["partition_id", "VARCHAR(255)"],
+                                        ["num_rows", "BIGINT"],
+                                        ["partition_metadata", "CLOB"]])
 
-    # dump results as json file evaluation.json to models/ folder
-    print("Evaluation complete...")
-
-
-# Uncomment this code if you want to deploy your model as a Web Service (Real-time / Interactive usage)
-# class ModelScorer(object):
-#    def __init__(self, config=None):
-#        self.model = joblib.load('models/iris_knn.joblib')
-#
-#    def predict(self, data):
-#        return self.model.predict([data])
-#
+    save_metadata(eval_df)

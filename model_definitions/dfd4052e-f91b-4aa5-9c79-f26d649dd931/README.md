@@ -17,10 +17,11 @@ CREATE MULTISET TABLE aoa_sto_models, FALLBACK ,
      (
         partition_id VARCHAR(255) CHARACTER SET LATIN CASESPECIFIC,
         model_version VARCHAR(255) CHARACTER SET LATIN CASESPECIFIC,
-        partition_stats JSON CHARACTER SET UNICODE,
+        num_rows BIGINT,
+        partition_metadata JSON CHARACTER SET UNICODE,
         model_artefact CLOB
      )
-PRIMARY INDEX ( partition_id );
+UNIQUE PRIMARY INDEX ( partition_id, model_version);
 ```
 
 ## Evaluation
