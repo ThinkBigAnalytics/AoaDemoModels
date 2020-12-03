@@ -10,37 +10,33 @@ import base64
 import dill
 
 
-def train_partition(partition, model_version, hyperparams):
-    X = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
-    y = partition[['species']]
-
-    clf = RandomForestClassifier()
-    clf.fit(X, y.values.ravel())
-
-    partition_id = partition.species.iloc[0]
-    artefact = base64.b64encode(dill.dumps(clf))
-
-    # partition metadata allows you to record whatever partition level information you want from data statistics,
-    # to hyper parameters used to model explainability
-    partition_metadata = json.dumps({
-        "num_rows": partition.shape[0],
-        # "data_statistics": json.loads(partition.describe().to_json())
-        # "explainability": shap.....
-        "hyper_parameters": hyperparams
-    })
-
-    return np.array([[partition_id, model_version, partition.shape[0], partition_metadata, artefact]])
-
-
 def train(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
     hyperparams = model_conf["hyperParameters"]
 
     create_context(host="host.docker.internal", username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
 
-    # hack until cli cleans this table up automatically or we allow to override on run
-    from teradataml.context.context import get_connection
-    get_connection().execute("DELETE FROM aoa_sto_models WHERE model_version='{}'".format(model_version))
+    check_apply_cli_hack(model_version)
+
+    def train_partition(partition, model_version, hyperparams):
+        X = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
+        y = partition[['species']]
+
+        model = RandomForestClassifier()
+        model.fit(X, y.values.ravel())
+
+        partition_id = partition.species.iloc[0]
+        artefact = base64.b64encode(dill.dumps(model))
+
+        # record whatever partition level information you want like rows, data stats, explainability, etc
+        partition_metadata = json.dumps({
+            "num_rows": partition.shape[0],
+            # "data_statistics": json.loads(partition.describe().to_json())
+            # "explainability": shap.....
+            "hyper_parameters": hyperparams
+        })
+
+        return np.array([[partition_id, model_version, partition.shape[0], partition_metadata, artefact]])
 
     print("Starting training...")
 
@@ -58,4 +54,12 @@ def train(data_conf, model_conf, **kwargs):
 
     print("Finished training")
 
-    save_metadata(model_df)
+    metadata_df = model_df.select(["partition_id", "partition_metadata", "num_rows"]).to_pandas()
+    save_metadata(metadata_df)
+
+
+def check_apply_cli_hack(model_version):
+    # cli uses model version of "cli" always. We need to cleanup models table between runs
+    if model_version == "cli":
+        from teradataml.context.context import get_connection
+        get_connection().execute("DELETE FROM aoa_sto_models WHERE model_version='cli'")
