@@ -14,7 +14,10 @@ def score(data_conf, model_conf, **kwargs):
     # load the model
     model = joblib.load('artifacts/input/model.joblib')
 
-    create_context(host=data_conf["host"], username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
+    create_context(
+        host=os.environ["AOA_CONN_HOST"],
+        username=os.environ["AOA_CONN_USERNAME"],
+        password=os.environ["AOA_CONN_PASSWORD"])
 
     # Read test dataset from Teradata
     test_df = DataFrame(data_conf["table"])

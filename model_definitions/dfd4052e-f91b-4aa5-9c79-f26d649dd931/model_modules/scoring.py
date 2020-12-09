@@ -11,10 +11,17 @@ import base64
 import dill
 
 
+def score(data_conf, model_conf, **kwargs):
+    pass
+
+
 def evaluate(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
 
-    create_context(host="host.docker.internal", username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
+    create_context(
+        host=os.environ["AOA_CONN_HOST"],
+        username=os.environ["AOA_CONN_USERNAME"],
+        password=os.environ["AOA_CONN_PASSWORD"])
 
     def eval_partition(partition):
         model = dill.loads(base64.b64decode(partition["model_artefact"].iloc[0]))
@@ -53,4 +60,4 @@ def evaluate(data_conf, model_conf, **kwargs):
                                         ["partition_metadata", "CLOB"]])
 
     metadata_df = eval_df.select(["partition_id", "partition_metadata", "num_rows"]).to_pandas()
-    save_metadata(metadata_df)
+    save_metadata(metadata_df, save_evaluation_metrics=True)

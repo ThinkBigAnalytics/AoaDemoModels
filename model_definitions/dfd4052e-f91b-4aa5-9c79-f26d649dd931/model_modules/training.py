@@ -14,7 +14,10 @@ def train(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
     hyperparams = model_conf["hyperParameters"]
 
-    create_context(host="host.docker.internal", username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
+    create_context(
+        host=os.environ["AOA_CONN_HOST"],
+        username=os.environ["AOA_CONN_USERNAME"],
+        password=os.environ["AOA_CONN_PASSWORD"])
 
     check_apply_cli_hack(model_version)
 
