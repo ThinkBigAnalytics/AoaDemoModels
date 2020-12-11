@@ -12,7 +12,9 @@ import os
 def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
-    create_context(host=data_conf["host"], username=os.environ['TD_USERNAME'], password=os.environ['TD_PASSWORD'])
+    create_context(host=os.environ["AOA_CONN_HOST"],
+                   username=os.environ["AOA_CONN_USERNAME"],
+                   password=os.environ["AOA_CONN_PASSWORD"])
 
     feature_names = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age"]
     target_name = "HasDiabetes"
