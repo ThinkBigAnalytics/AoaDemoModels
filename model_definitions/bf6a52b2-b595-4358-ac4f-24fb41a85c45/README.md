@@ -3,12 +3,8 @@
 PIMA Diabetes demo model using R
 
 ## Datasets
-The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The dataset descriptor is 
-
-    {
-        "url": "http://nrvis.com/data/mldata/pima-indians-diabetes.csv",
-        "test_split": 0.2
-    }
+The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv).
+This dataset is available in Teradata Vantage and already configured in the demo environment.
     
 ## Training
 The [training.R](model_modules/training.R) produces the following artifacts
@@ -24,7 +20,12 @@ Evaluation is also performed in [scoring.R](model_modules/scoring.R) by the func
 The [scoring.R](model_modules/scoring.R) loads the model and metadata and accepts the dataframe for prediction.
 
 ### Batch mode
-In this example the output is sent to stdout, but it could be saved into a table, file, etc.
+In this example, the values to score are in the table 'PIMA_TEST' at Teradata Vantage. The results are saved in the table 'PIMA_PREDICTIONS'. When batch deploying, this custom values should be specified:
+   
+   | key | value |
+   |----------|-------------|
+   | table | PIMA_TEST |
+   | predictions | PIMA_PREDICTIONS |
 
 ### RESTful Sample Request
 
