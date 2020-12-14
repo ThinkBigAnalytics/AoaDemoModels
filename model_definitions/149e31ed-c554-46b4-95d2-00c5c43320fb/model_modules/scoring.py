@@ -31,8 +31,6 @@ def read_dataframe(url):
 
 
 def score(data_conf, model_conf, **kwargs):
-
-    # load the model
     model = joblib.load('artifacts/input/model.joblib')
 
     test_df = read_dataframe(data_conf["url"])
@@ -41,10 +39,10 @@ def score(data_conf, model_conf, **kwargs):
     # split into test and train
     test_df = test_df.randomSplit([0.7, 0.3], 42)[1].toPandas()
 
-    X_test = test_df[model.feature_names]
+    X = test_df[model.feature_names]
 
     print("Scoring")
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(X)
 
     y_pred = pd.DataFrame(y_pred, columns=["pred"])
 
@@ -55,8 +53,6 @@ def score(data_conf, model_conf, **kwargs):
     predictions.write.mode("overwrite").save("/tmp/predictions")
 
     logging.info("Finished scoring")
-
-    return X_test, y_pred, model
 
 
 def save_plot(title):
@@ -70,13 +66,18 @@ def save_plot(title):
 
 
 def evaluate(data_conf, model_conf, **kwargs):
+    model = joblib.load('artifacts/input/model.joblib')
 
-    X_test, y_pred, model = score(data_conf, model_conf, **kwargs)
+    test_df = read_dataframe(data_conf["url"])
 
-    # again, in a real world you would read from S3, HDFS, Teradata and join the y_pred index to read the expected
-    # values for the dataset you scored
-    y_test = read_dataframe(data_conf["url"]).select("HasDiabetes")
-    y_test = y_test.randomSplit([0.7, 0.3], 42)[1].toPandas()
+    # do feature eng in spark / joins whatever reason you're using pyspark...
+    # split into test and train
+    test_df = test_df.randomSplit([0.7, 0.3], 42)[1].toPandas()
+
+    X_test = test_df[model.feature_names]
+    y_test = test_df["HasDiabetes"]
+
+    y_pred = model.predict(X_test)
 
     evaluation = {
         'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),

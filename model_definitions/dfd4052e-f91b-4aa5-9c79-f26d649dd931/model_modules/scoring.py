@@ -1,6 +1,5 @@
 from teradataml import create_context
 from tdextensions.distributed import DistDataFrame, DistMode
-from teradataml.dataframe.dataframe import DataFrame
 from sklearn import metrics
 from .util import save_metadata
 
@@ -12,7 +11,40 @@ import dill
 
 
 def score(data_conf, model_conf, **kwargs):
-    pass
+    model_version = kwargs["model_version"]
+
+    create_context(
+        host=os.environ["AOA_CONN_HOST"],
+        username=os.environ["AOA_CONN_USERNAME"],
+        password=os.environ["AOA_CONN_PASSWORD"])
+
+    def score_partition(partition):
+        model_artefact = partition.loc[partition['n_row'] == 1, 'model_artefact'].iloc[0]
+        model = dill.loads(base64.b64decode(model_artefact))
+
+        X_test = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
+
+        y_pred = model.predict(X_test)
+        partition_id = partition.species.iloc[0]
+
+        return np.array([[partition_id, y_pred]])
+
+    # we join the model artefact to the 1st row of the data table so we can load it in the partition
+    query = """
+    SELECT d.*, CASE WHEN n_row=1 THEN m.model_artefact ELSE null END AS model_artefact 
+        FROM (SELECT x.*, row_number() OVER (PARTITION BY x.species ORDER BY x.species) AS n_row FROM iris_train x) AS d
+        LEFT JOIN aoa_sto_models m
+        ON d.species = m.partition_id
+        WHERE model_artefact = '{model_version}'
+    """.format(model_version=model_version)
+
+    df = DistDataFrame(query, dist_mode=DistMode.STO, sto_id="my_model_score")
+    scored_df = df.map_partition(lambda partition: score_partition(partition),
+                                 partition_by="species",
+                                 returns=[["partition_id", "VARCHAR(255)"],
+                                          ["prediction", "VARCHAR(255)"]])
+
+    scored_df.to_sql("my_predictions_table", if_exists="append")
 
 
 def evaluate(data_conf, model_conf, **kwargs):
@@ -24,7 +56,8 @@ def evaluate(data_conf, model_conf, **kwargs):
         password=os.environ["AOA_CONN_PASSWORD"])
 
     def eval_partition(partition):
-        model = dill.loads(base64.b64decode(partition["model_artefact"].iloc[0]))
+        model_artefact = partition.loc[partition['n_row'] == 1, 'model_artefact'].iloc[0]
+        model = dill.loads(base64.b64decode(model_artefact))
 
         X_test = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
         y_test = partition[['species']]
@@ -46,13 +79,16 @@ def evaluate(data_conf, model_conf, **kwargs):
 
         return np.array([[partition_id, partition.shape[0], partition_metadata]])
 
-    df = DataFrame.from_query("""
-    SELECT i.*, m.model_artefact FROM iris_train i 
-        LEFT JOIN aoa_sto_models m ON i.species = m.partition_id 
-        WHERE model_version='{}'
-    """.format(model_version))
+    # we join the model artefact to the 1st row of the data table so we can load it in the partition
+    query = """
+    SELECT d.*, CASE WHEN n_row=1 THEN m.model_artefact ELSE null END AS model_artefact 
+        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.species ORDER BY x.species) AS n_row FROM iris_train x) AS d
+        LEFT JOIN aoa_sto_models m
+        ON d.species = m.partition_id
+        WHERE model_artefact = '{model_version}'
+    """.format(model_version=model_version)
 
-    df = DistDataFrame(df._table_name, dist_mode=DistMode.STO, sto_id="my_model")
+    df = DistDataFrame(query, dist_mode=DistMode.STO, sto_id="my_model_eval")
     eval_df = df.map_partition(lambda partition: eval_partition(partition),
                                partition_by="species",
                                returns=[["partition_id", "VARCHAR(255)"],

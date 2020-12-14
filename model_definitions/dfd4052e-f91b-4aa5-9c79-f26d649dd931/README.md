@@ -21,7 +21,7 @@ CREATE MULTISET TABLE aoa_sto_models, FALLBACK ,
         partition_metadata JSON CHARACTER SET UNICODE,
         model_artefact CLOB
      )
-UNIQUE PRIMARY INDEX ( partition_id, model_version);
+UNIQUE PRIMARY INDEX (partition_id, model_version);
 ```
 
 ## Evaluation

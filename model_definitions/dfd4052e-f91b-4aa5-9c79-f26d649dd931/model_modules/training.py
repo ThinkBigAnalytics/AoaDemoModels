@@ -1,7 +1,7 @@
 from teradataml import create_context
 from tdextensions.distributed import DistDataFrame, DistMode
 from sklearn.ensemble import RandomForestClassifier
-from .util import save_metadata
+from .util import save_metadata, cleanup_cli
 
 import os
 import numpy as np
@@ -19,9 +19,9 @@ def train(data_conf, model_conf, **kwargs):
         username=os.environ["AOA_CONN_USERNAME"],
         password=os.environ["AOA_CONN_PASSWORD"])
 
-    check_apply_cli_hack(model_version)
+    cleanup_cli(model_version)
 
-    def train_partition(partition, model_version, hyperparams):
+    def train_partition(partition, kwargs, hyperparams):
         X = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
         y = partition[['species']]
 
@@ -43,7 +43,7 @@ def train(data_conf, model_conf, **kwargs):
 
     print("Starting training...")
 
-    df = DistDataFrame("iris_train", dist_mode=DistMode.STO, sto_id="my_model")
+    df = DistDataFrame("iris_train", dist_mode=DistMode.STO, sto_id="my_model_train")
     model_df = df.map_partition(lambda partition: train_partition(partition, model_version, hyperparams),
                                 partition_by="species",
                                 returns=[["partition_id", "VARCHAR(255)"],
@@ -59,10 +59,3 @@ def train(data_conf, model_conf, **kwargs):
 
     metadata_df = model_df.select(["partition_id", "partition_metadata", "num_rows"]).to_pandas()
     save_metadata(metadata_df)
-
-
-def check_apply_cli_hack(model_version):
-    # cli uses model version of "cli" always. We need to cleanup models table between runs
-    if model_version == "cli":
-        from teradataml.context.context import get_connection
-        get_connection().execute("DELETE FROM aoa_sto_models WHERE model_version='cli'")
