@@ -25,9 +25,8 @@ def score(data_conf, model_conf, **kwargs):
         X_test = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
 
         y_pred = model.predict(X_test)
-        partition_id = partition.species.iloc[0]
 
-        return np.array([[partition_id, y_pred]])
+        return y_pred
 
     # we join the model artefact to the 1st row of the data table so we can load it in the partition
     query = """
@@ -38,11 +37,10 @@ def score(data_conf, model_conf, **kwargs):
         WHERE m.model_version = '{model_version}'
     """.format(model_version=model_version)
 
-    df = DistDataFrame(query, dist_mode=DistMode.STO, sto_id="my_model_score")
+    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="my_model_score")
     scored_df = df.map_partition(lambda partition: score_partition(partition),
                                  partition_by="species",
-                                 returns=[["partition_id", "VARCHAR(255)"],
-                                          ["prediction", "VARCHAR(255)"]])
+                                 returns=[["prediction", "VARCHAR(255)"]])
 
     scored_df.to_sql("my_predictions_table", if_exists="append")
 
@@ -88,7 +86,7 @@ def evaluate(data_conf, model_conf, **kwargs):
         WHERE m.model_version = '{model_version}'
     """.format(model_version=model_version)
 
-    df = DistDataFrame(query, dist_mode=DistMode.STO, sto_id="my_model_eval")
+    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="my_model_eval")
     eval_df = df.map_partition(lambda partition: eval_partition(partition),
                                partition_by="species",
                                returns=[["partition_id", "VARCHAR(255)"],
