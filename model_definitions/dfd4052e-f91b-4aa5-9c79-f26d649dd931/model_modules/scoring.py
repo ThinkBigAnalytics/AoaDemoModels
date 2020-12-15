@@ -35,7 +35,7 @@ def score(data_conf, model_conf, **kwargs):
         FROM (SELECT x.*, row_number() OVER (PARTITION BY x.species ORDER BY x.species) AS n_row FROM iris_train x) AS d
         LEFT JOIN aoa_sto_models m
         ON d.species = m.partition_id
-        WHERE model_artefact = '{model_version}'
+        WHERE m.model_version = '{model_version}'
     """.format(model_version=model_version)
 
     df = DistDataFrame(query, dist_mode=DistMode.STO, sto_id="my_model_score")
@@ -85,7 +85,7 @@ def evaluate(data_conf, model_conf, **kwargs):
         FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.species ORDER BY x.species) AS n_row FROM iris_train x) AS d
         LEFT JOIN aoa_sto_models m
         ON d.species = m.partition_id
-        WHERE model_artefact = '{model_version}'
+        WHERE m.model_version = '{model_version}'
     """.format(model_version=model_version)
 
     df = DistDataFrame(query, dist_mode=DistMode.STO, sto_id="my_model_eval")
