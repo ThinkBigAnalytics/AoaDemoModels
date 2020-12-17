@@ -22,9 +22,7 @@ def score(data_conf, model_conf, **kwargs):
         model_artefact = partition.loc[partition['n_row'] == 1, 'model_artefact'].iloc[0]
         model = dill.loads(base64.b64decode(model_artefact))
 
-        X_test = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
-
-        y_pred = model.predict(X_test)
+        y_pred = model.predict(partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']])
 
         return y_pred
 

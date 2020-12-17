@@ -10,7 +10,7 @@ import pandas as pd
 
 
 def score(data_conf, model_conf, **kwargs):
-    model = joblib.load('artifacts/input/model.joblib')
+    model = joblib.load("artifacts/input/model.joblib")
 
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],

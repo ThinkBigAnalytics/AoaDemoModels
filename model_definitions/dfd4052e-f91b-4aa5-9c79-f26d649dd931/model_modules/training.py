@@ -1,6 +1,11 @@
 from teradataml import create_context
 from tdextensions.distributed import DistDataFrame, DistMode
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import RobustScaler,OneHotEncoder
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
 from .util import save_metadata, cleanup_cli
 
 import os
@@ -21,21 +26,39 @@ def train(data_conf, model_conf, **kwargs):
 
     cleanup_cli(model_version)
 
-    def train_partition(partition, kwargs, hyperparams):
-        X = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
-        y = partition[['species']]
+    def train_partition(partition, model_version, hyperparams):
+        numeric_features = ["X"+str(i) for i in range(1,10)]
+        for i in numeric_features:
+            partition[i] = partition[i].astype("float")
 
-        model = RandomForestClassifier()
-        model.fit(X, y.values.ravel())
+        numeric_transformer = Pipeline(steps=[
+            ("imputer", SimpleImputer(strategy="median")),
+            ("scaler", RobustScaler()),
+            ("pca",PCA(0.95))
+        ])
 
-        partition_id = partition.species.iloc[0]
-        artefact = base64.b64encode(dill.dumps(model))
+        categorical_features = ["flag"]
+        for i in categorical_features:
+            partition[i] = partition[i].astype("category")
+
+        categorical_transformer = Pipeline(steps=[
+            ("imputer", SimpleImputer(strategy="constant", fill_value=0)),
+            ("onehot", OneHotEncoder(handle_unknown="ignore"))])
+
+        preprocessor = ColumnTransformer(transformers=[
+                ("num", numeric_transformer, numeric_features),
+                ("cat", categorical_transformer, categorical_features)])
+
+        pipeline = Pipeline([("preprocessor", preprocessor),
+                             ("rf", RandomForestRegressor(max_depth=hyperparams["max_depth"]))])
+        pipeline.fit(partition[numeric_features+categorical_features], partition[['Y1']] )
+
+        partition_id = partition.partition_ID.iloc[0]
+        artefact = base64.b64encode(dill.dumps(pipeline))
 
         # record whatever partition level information you want like rows, data stats, explainability, etc
         partition_metadata = json.dumps({
             "num_rows": partition.shape[0],
-            # "data_statistics": json.loads(partition.describe().to_json())
-            # "explainability": shap.....
             "hyper_parameters": hyperparams
         })
 
@@ -43,9 +66,10 @@ def train(data_conf, model_conf, **kwargs):
 
     print("Starting training...")
 
-    df = DistDataFrame("iris_train", dist_mode=DistMode.STO, sto_id="my_model_train")
+    query = "SELECT * FROM {table} WHERE fold_ID='train'".format(table=data_conf["table"])
+    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="{}_train".format(model_version))
     model_df = df.map_partition(lambda partition: train_partition(partition, model_version, hyperparams),
-                                partition_by="species",
+                                partition_by="partition_id",
                                 returns=[["partition_id", "VARCHAR(255)"],
                                          ["model_version", "VARCHAR(255)"],
                                          ["num_rows", "BIGINT"],
