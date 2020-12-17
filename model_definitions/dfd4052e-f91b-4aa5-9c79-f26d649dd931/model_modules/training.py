@@ -66,7 +66,6 @@ def train(data_conf, model_conf, **kwargs):
 
     print("Starting training...")
 
-
     query = "SELECT * FROM {table} WHERE fold_ID='train'".format(table=data_conf["table"])
     df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="{}_train".format(model_version))
     model_df = df.map_partition(lambda partition: train_partition(partition, model_version, hyperparams),
