@@ -22,18 +22,18 @@ def score(data_conf, model_conf, **kwargs):
         model_artefact = partition.loc[partition['n_row'] == 1, 'model_artefact'].iloc[0]
         model = dill.loads(base64.b64decode(model_artefact))
 
-        y_pred = model.predict(partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']])
+        X = partition[model.features]
 
-        return y_pred
+        return model.predict(X)
 
     # we join the model artefact to the 1st row of the data table so we can load it in the partition
     query = """
     SELECT d.*, CASE WHEN n_row=1 THEN m.model_artefact ELSE null END AS model_artefact 
-        FROM (SELECT x.*, row_number() OVER (PARTITION BY x.species ORDER BY x.species) AS n_row FROM iris_train x) AS d
+        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.partition_id ORDER BY x.partition_id) AS n_row FROM {data_table} x) AS d
         LEFT JOIN aoa_sto_models m
-        ON d.species = m.partition_id
+        ON d.partition_id = m.partition_id
         WHERE m.model_version = '{model_version}'
-    """.format(model_version=model_version)
+    """.format(model_version=model_version, data_table=data_conf["table"])
 
     df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="my_model_score")
     scored_df = df.map_partition(lambda partition: score_partition(partition),
@@ -55,21 +55,20 @@ def evaluate(data_conf, model_conf, **kwargs):
         model_artefact = partition.loc[partition['n_row'] == 1, 'model_artefact'].iloc[0]
         model = dill.loads(base64.b64decode(model_artefact))
 
-        X_test = partition[['sepal_length', 'sepal_width', 'petal_length', 'petal_width']]
-        y_test = partition[['species']]
+        X_test = partition[model.features]
+        y_test = partition[['Y1']]
 
         y_pred = model.predict(X_test)
 
-        partition_id = partition.species.iloc[0]
+        partition_id = partition.partition_ID.iloc[0]
 
         # record whatever partition level information you want like rows, data stats, metrics, explainability, etc
         partition_metadata = json.dumps({
             "num_rows": partition.shape[0],
             "metrics": {
-                "Accuracy": "{:.2f}".format(metrics.accuracy_score(y_test, y_pred)),
-                "Recall": "{:.2f}".format(metrics.recall_score(y_test, y_pred)),
-                "Precision": "{:.2f}".format(metrics.precision_score(y_test, y_pred)),
-                "f1-score": "{:.2f}".format(metrics.f1_score(y_test, y_pred))
+                "MAE": "{:.2f}".format(metrics.mean_absolute_error(y_test, y_pred)),
+                "MSE": "{:.2f}".format(metrics.mean_squared_error(y_test, y_pred)),
+                "R2": "{:.2f}".format(metrics.r2_score(y_test, y_pred))
             }
         })
 
@@ -78,15 +77,15 @@ def evaluate(data_conf, model_conf, **kwargs):
     # we join the model artefact to the 1st row of the data table so we can load it in the partition
     query = """
     SELECT d.*, CASE WHEN n_row=1 THEN m.model_artefact ELSE null END AS model_artefact 
-        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.species ORDER BY x.species) AS n_row FROM iris_train x) AS d
+        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.partition_id ORDER BY x.partition_id) AS n_row FROM {data_table} x) AS d
         LEFT JOIN aoa_sto_models m
-        ON d.species = m.partition_id
+        ON d.partition_id = m.partition_id
         WHERE m.model_version = '{model_version}'
-    """.format(model_version=model_version)
+    """.format(model_version=model_version, data_table=data_conf["table"])
 
-    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="my_model_eval")
+    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="model_eval")
     eval_df = df.map_partition(lambda partition: eval_partition(partition),
-                               partition_by="species",
+                               partition_by="partition_id",
                                returns=[["partition_id", "VARCHAR(255)"],
                                         ["num_rows", "BIGINT"],
                                         ["partition_metadata", "CLOB"]])

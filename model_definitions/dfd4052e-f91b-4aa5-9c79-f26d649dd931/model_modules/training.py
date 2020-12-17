@@ -49,9 +49,11 @@ def train(data_conf, model_conf, **kwargs):
                 ("num", numeric_transformer, numeric_features),
                 ("cat", categorical_transformer, categorical_features)])
 
+        features = numeric_features + categorical_features
         pipeline = Pipeline([("preprocessor", preprocessor),
                              ("rf", RandomForestRegressor(max_depth=hyperparams["max_depth"]))])
-        pipeline.fit(partition[numeric_features+categorical_features], partition[['Y1']] )
+        pipeline.fit(partition[features], partition[['Y1']])
+        pipeline.features = features
 
         partition_id = partition.partition_ID.iloc[0]
         artefact = base64.b64encode(dill.dumps(pipeline))
@@ -67,7 +69,7 @@ def train(data_conf, model_conf, **kwargs):
     print("Starting training...")
 
     query = "SELECT * FROM {table} WHERE fold_ID='train'".format(table=data_conf["table"])
-    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="{}_train".format(model_version))
+    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="model_train")
     model_df = df.map_partition(lambda partition: train_partition(partition, model_version, hyperparams),
                                 partition_by="partition_id",
                                 returns=[["partition_id", "VARCHAR(255)"],
