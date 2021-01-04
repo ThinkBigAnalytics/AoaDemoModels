@@ -1,10 +1,8 @@
-# Sample Model 
+# STO Micro Modelling Example
 
-Add you model details here..
+This model is a purely ficticious regression example to show how to use STOs to train, evaluation and score micro models (individual models per data partition in Teradata).
 
-## Dataset Description
-
-## Training
+The micro models are stored in Teradata in the following schema.
 
 
 ```sql
@@ -24,6 +22,5 @@ CREATE MULTISET TABLE aoa_sto_models, FALLBACK ,
 UNIQUE PRIMARY INDEX (partition_id, model_version);
 ```
 
-## Evaluation
-
-## Scoring
+## Dataset Description
+The dataset is automatically generated using a simple polynomial and some random columns also. This allows us to fit a regression model to it but not be too simple either. We only created 10 partitions in this example.

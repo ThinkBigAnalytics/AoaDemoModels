@@ -36,9 +36,8 @@ def save_metadata(metadata_df, save_evaluation_metrics=False):
         json.dump(data_metadata, f, indent=2)
 
     if save_evaluation_metrics:
-        # todo - normalize metrics for each partition
-        # val = (num_rows partition / num_rows) * metric
-        metrics = {"one": 1}
+        # in future version we will add support for normalizing all metrics from all partitions
+        metrics = {"n/a": 0}
         with open("artifacts/output/metrics.json", 'w+') as f:
             json.dump(metrics, f, indent=2)
 
