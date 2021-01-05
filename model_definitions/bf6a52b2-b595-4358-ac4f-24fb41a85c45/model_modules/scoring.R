@@ -32,6 +32,7 @@ score.restful <- function(model, data, ...) {
 }
 
 score.batch <- function(data_conf, model_conf, model_version, ...) {
+    model <- initialise_model()
     print("Batch scoring model...")
 
     suppressPackageStartupMessages(LoadPackages())
