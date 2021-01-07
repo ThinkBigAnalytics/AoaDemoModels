@@ -10,38 +10,26 @@ import pandas as pd
 
 
 def score(data_conf, model_conf, **kwargs):
-
-    # load the model
-    model = joblib.load('artifacts/input/model.joblib')
+    model = joblib.load("artifacts/input/model.joblib")
 
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
                    password=os.environ["AOA_CONN_PASSWORD"])
 
-    # Read test dataset from Teradata
-    test_df = DataFrame(data_conf["table"])
-
-    # As this is for demo purposes, we simulate the test dataset changing between executions
-    # by introducing a random sample. Note that the sampling is performed in Teradata!
-    if "is_evaluation" in kwargs:
-        test_df = test_df.sample(frac=0.8)
+    predict_df = DataFrame(data_conf["table"])
 
     # convert to pandas to use locally
-    test_df = test_df.to_pandas()
-
-    X_test = test_df[model.feature_names]
+    predict_df = predict_df.to_pandas()
 
     print("Scoring")
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(predict_df[model.feature_names])
 
     print("Finished Scoring")
 
     # create result dataframe and store in Teradata
     y_pred = pd.DataFrame(y_pred, columns=["pred"])
-    y_pred["PatientId"] = test_df["PatientId"].values
+    y_pred["PatientId"] = predict_df["PatientId"].values
     copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=False, if_exists="replace")
-
-    return X_test, y_pred["pred"], test_df[model.target_name], model
 
 
 def save_plot(title):
@@ -55,10 +43,23 @@ def save_plot(title):
 
 
 def evaluate(data_conf, model_conf, **kwargs):
-    # tell scoring that its being called from evaluate function as opposed to batch scoring
-    kwargs["is_evaluation"] = True
+    model = joblib.load('artifacts/input/model.joblib')
 
-    X_test, y_pred, y_test, model = score(data_conf, model_conf, **kwargs)
+    create_context(host=os.environ["AOA_CONN_HOST"],
+                   username=os.environ["AOA_CONN_USERNAME"],
+                   password=os.environ["AOA_CONN_PASSWORD"])
+
+    # Read test dataset from Teradata
+    # As this is for demo purposes, we simulate the test dataset changing between executions
+    # by introducing a random sample. Note that the sampling is performed in Teradata!
+    test_df = DataFrame(data_conf["table"]).sample(frac=0.8)
+    test_df = test_df.to_pandas()
+
+    X_test = test_df[model.feature_names]
+    y_test = test_df[model.target_name]
+
+    print("Scoring")
+    y_pred = model.predict(test_df[model.feature_names])
 
     evaluation = {
         'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),
