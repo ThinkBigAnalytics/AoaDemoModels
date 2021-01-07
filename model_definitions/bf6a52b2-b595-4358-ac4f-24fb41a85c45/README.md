@@ -5,6 +5,29 @@ PIMA Diabetes demo model using R
 ## Datasets
 The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv).
 This dataset is available in Teradata Vantage and already configured in the demo environment.
+
+Training
+```json
+{
+    "table": "<training dataset>"
+}
+```
+Evaluation
+
+```json
+{
+    "table": "<test dataset>"
+}
+```
+
+Batch Scoring
+```json
+ {
+     "table": "<score dataset>",
+     "predictions": "<ouput predictions dataset>"
+ }
+ ```
+
     
 ## Training
 The [training.R](model_modules/training.R) produces the following artifacts

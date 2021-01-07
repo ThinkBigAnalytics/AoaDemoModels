@@ -24,3 +24,11 @@ UNIQUE PRIMARY INDEX (partition_id, model_version);
 
 ## Dataset Description
 The dataset is automatically generated using a simple polynomial and some random columns also. This allows us to fit a regression model to it but not be too simple either. We only created 10 partitions in this example.
+
+Training dataset configuration
+
+    table: STO_SYNTHETIC_TRAIN_V
+    
+Evaluation dataset configuration
+
+    table: STO_SYNTHETIC_TEST_V
