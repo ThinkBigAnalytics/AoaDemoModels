@@ -23,26 +23,31 @@ copy_to_sql(df = df[df.sampleid==2], table_name = "PIMA_TEST", index=False, if_e
 ```
 
 
-The dataset metadata required is
+The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv).
+This dataset is available in Teradata Vantage and already configured in the demo environment. For reference, the values which are required
 
 Training
 ```json
 {
-    "host": "<vantage host>",
     "table": "<training dataset>"
 }
 ```
-Evaluation/Scoring
+Evaluation
 
 ```json
 {
-    "host": "<vantage host>",
-    "table": "<test dataset>",
-    "predictions": "<predictions output table>"
+    "table": "<test dataset>"
 }
 ```
 
-For Batch scoring, we also include the [dataset_template.json](./scheduler/dataset_template.json) which is required by the Airflow (or other) scheduler. This will not be necessary anymore after 2.7+ of the AOA as the user will select the dataset template when deploying.
+Batch Scoring
+```json
+ {
+     "table": "<score dataset>",
+     "predictions": "<ouput predictions dataset>"
+ }
+ ```
+
 
 # Training
 The [training.py](model_modules/training.py) produces the following artifacts
