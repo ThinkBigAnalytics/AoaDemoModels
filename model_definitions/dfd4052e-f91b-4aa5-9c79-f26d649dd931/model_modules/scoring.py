@@ -90,5 +90,4 @@ def evaluate(data_conf, model_conf, **kwargs):
                                         ["num_rows", "BIGINT"],
                                         ["partition_metadata", "CLOB"]])
 
-    metadata_df = eval_df.select(["partition_id", "partition_metadata", "num_rows"]).to_pandas()
-    save_metadata(metadata_df, save_evaluation_metrics=True)
+    save_metadata(eval_df, save_evaluation_metrics=True)
