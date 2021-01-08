@@ -1,9 +1,11 @@
+from teradataml.dataframe.dataframe import DataFrame
+
 import json
 
 
-def save_metadata(metadata_df, save_evaluation_metrics=False):
+def save_metadata(partition_df, save_evaluation_metrics=False):
     """
-    create statistic summaries based on the provided dataframe from training or evaluation
+    create statistic summaries based on the provided dataframe produced via training or evaluation
 
     partitions.json is {
         "<partition1 key>": <partition1_metadata>,
@@ -16,19 +18,21 @@ def save_metadata(metadata_df, save_evaluation_metrics=False):
         "num_partitions": <num_partitions>
     }
 
-    :param metadata_df: pandas dataframe containing ["partition_id", "partition_metadata", "num_rows"]
-    :param save_evaluation_metrics: if this is evaluation, save evaluation metrics.json also (partition_metadata must contain it)
+    :param partition_df: teradata dataframe containing at least ["partition_id", "partition_metadata", "num_rows"]
+    :param save_evaluation_metrics: if this is evaluation, save evaluation metrics.json also (partition_df must contain it)
     :return: None
     """
+    metadata_df = partition_df.select(["partition_id", "partition_metadata", "num_rows"]).to_pandas()
+
     metadata_dict = {r["partition_id"]: json.loads(r["partition_metadata"])
                      for r in metadata_df.to_dict(orient='records')}
 
     with open("artifacts/output/partitions.json", 'w+') as f:
         json.dump(metadata_dict, f, indent=2)
 
-    num_rows = int(metadata_df["num_rows"].sum())
+    total_rows = int(metadata_df["num_rows"].sum())
     data_metadata = {
-        "num_rows": num_rows,
+        "num_rows": total_rows,
         "num_partitions": int(metadata_df.shape[0])
     }
 
@@ -36,8 +40,20 @@ def save_metadata(metadata_df, save_evaluation_metrics=False):
         json.dump(data_metadata, f, indent=2)
 
     if save_evaluation_metrics:
-        # in future version we will add support for normalizing all metrics from all partitions
-        metrics = {"n/a": 0}
+        metrics = DataFrame.from_query(f"""
+            SELECT 
+                SUM(CAST(partition_metadata AS JSON).JSONExtractValue('$.metrics.MAE') * num_rows/{total_rows}) AS MAE, 
+                SUM(CAST(partition_metadata AS JSON).JSONExtractValue('$.metrics.MSE') * num_rows/{total_rows}) AS MSE, 
+                SUM(CAST(partition_metadata AS JSON).JSONExtractValue('$.metrics.R2') * num_rows/{total_rows})  AS R2
+                FROM {partition_df._table_name}
+        """).to_pandas()
+
+        metrics = {
+            "MAE": "{:.2f}".format(metrics.iloc[0]["MAE"]),
+            "MSE": "{:.2f}".format(metrics.iloc[0]["MSE"]),
+            "R2": "{:.2f}".format(metrics.iloc[0]["R2"])
+        }
+
         with open("artifacts/output/metrics.json", 'w+') as f:
             json.dump(metrics, f, indent=2)
 

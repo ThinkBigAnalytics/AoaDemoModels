@@ -83,5 +83,4 @@ def train(data_conf, model_conf, **kwargs):
 
     print("Finished training")
 
-    metadata_df = model_df.select(["partition_id", "partition_metadata", "num_rows"]).to_pandas()
-    save_metadata(metadata_df)
+    save_metadata(model_df)
