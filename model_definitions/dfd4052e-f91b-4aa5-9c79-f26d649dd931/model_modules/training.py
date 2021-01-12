@@ -1,4 +1,5 @@
 from teradataml import create_context
+from teradataml.dataframe.dataframe import DataFrame
 from tdextensions.distributed import DistDataFrame, DistMode
 from sklearn.preprocessing import RobustScaler,OneHotEncoder
 from sklearn.decomposition import PCA
@@ -77,10 +78,12 @@ def train(data_conf, model_conf, **kwargs):
                                          ["num_rows", "BIGINT"],
                                          ["partition_metadata", "CLOB"],
                                          ["model_artefact", "CLOB"]])
+    # materialize as we reuse result
+    model_df = DataFrame(model_df._table_name, materialize=True)
 
     # append to models table
     model_df.to_sql("aoa_sto_models", if_exists="append")
 
-    print("Finished training")
-
     save_metadata(model_df)
+
+    print("Finished training")
