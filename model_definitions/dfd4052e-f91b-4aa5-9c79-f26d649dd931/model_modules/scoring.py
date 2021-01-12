@@ -1,7 +1,8 @@
 from teradataml import create_context
+from teradataml.dataframe.dataframe import DataFrame
 from tdextensions.distributed import DistDataFrame, DistMode
 from sklearn import metrics
-from .util import save_metadata
+from .util import save_metadata, save_evaluation_metrics
 
 import os
 import numpy as np
@@ -27,13 +28,13 @@ def score(data_conf, model_conf, **kwargs):
         return model.predict(X)
 
     # we join the model artefact to the 1st row of the data table so we can load it in the partition
-    query = """
+    query = f"""
     SELECT d.*, CASE WHEN n_row=1 THEN m.model_artefact ELSE null END AS model_artefact 
-        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.partition_id ORDER BY x.partition_id) AS n_row FROM {data_table} x) AS d
+        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.partition_id ORDER BY x.partition_id) AS n_row FROM {data_conf["table"]} x) AS d
         LEFT JOIN aoa_sto_models m
         ON d.partition_id = m.partition_id
         WHERE m.model_version = '{model_version}'
-    """.format(model_version=model_version, data_table=data_conf["table"])
+    """
 
     df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="my_model_score")
     scored_df = df.map_partition(lambda partition: score_partition(partition),
@@ -75,13 +76,13 @@ def evaluate(data_conf, model_conf, **kwargs):
         return np.array([[partition_id, partition.shape[0], partition_metadata]])
 
     # we join the model artefact to the 1st row of the data table so we can load it in the partition
-    query = """
+    query = f"""
     SELECT d.*, CASE WHEN n_row=1 THEN m.model_artefact ELSE null END AS model_artefact 
-        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.partition_id ORDER BY x.partition_id) AS n_row FROM {data_table} x) AS d
+        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.partition_id ORDER BY x.partition_id) AS n_row FROM {data_conf["table"]} x) AS d
         LEFT JOIN aoa_sto_models m
         ON d.partition_id = m.partition_id
         WHERE m.model_version = '{model_version}'
-    """.format(model_version=model_version, data_table=data_conf["table"])
+    """
 
     df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="model_eval")
     eval_df = df.map_partition(lambda partition: eval_partition(partition),
@@ -90,4 +91,10 @@ def evaluate(data_conf, model_conf, **kwargs):
                                         ["num_rows", "BIGINT"],
                                         ["partition_metadata", "CLOB"]])
 
-    save_metadata(eval_df, save_evaluation_metrics=True)
+    # materialize as we reuse result
+    eval_df = DataFrame(eval_df._table_name, materialize=True)
+
+    save_metadata(eval_df)
+    save_evaluation_metrics(eval_df, ["MAE", "MSE", "R2"])
+
+    print("Finished evaluation")
