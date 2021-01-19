@@ -32,7 +32,7 @@ train <- function(data_conf, model_conf, ...) {
     table <- tbl(con, data_conf$table)
 
     # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
-    data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>% mutate_if(bit64::is.integer64, as.integer) %>% as.data.frame()
+    data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>% mutate(across(where(bit64::is.integer64), as.integer)) %>% as.data.frame()
 
     # Load hyperparameters from model configuration
     hyperparams <- model_conf[["hyperParameters"]]
