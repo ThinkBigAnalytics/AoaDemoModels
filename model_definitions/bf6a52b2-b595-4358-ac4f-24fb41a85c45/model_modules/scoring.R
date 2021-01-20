@@ -44,7 +44,9 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
     table <- tbl(con, data_conf$table)
 
     # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
-    data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age")) %>% mutate(across(where(bit64::is.integer64), as.integer)) %>% as.data.frame()
+    data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>%
+      mutate(NumTimesPrg = as.integer(NumTimesPrg), PlGlcConc = as.integer(PlGlcConc), BloodP = as.integer(BloodP), SkinThick = as.integer(SkinThick), TwoHourSerIns = as.integer(TwoHourSerIns), HasDiabetes = as.integer(HasDiabetes)) %>%
+      as.data.frame()
 
     # The model object will be obtain from the environment as it has already been initialised using 'initialise_model'
     probs <- predict(model, data, na.action = na.pass, type = "response")
@@ -54,7 +56,7 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
     # create result dataframe and store in Teradata Vantage
     score_df <- as.data.frame(unlist(score))
     colnames(score_df) <- c("Prediction")
-    patientIds <- table %>% select("PatientId") %>% mutate(across(where(bit64::is.integer64), as.integer)) %>% as.data.frame()
+    patientIds <- table %>% select("PatientId") %>% mutate(PatientId = as.integer(PatientId)) %>% as.data.frame()
     score_df$PatiendId <- patientIds$PatientId
     copy_to(con, score_df, name=data_conf$predictions, overwrite=TRUE)
     print("Saved batch predictions...")
@@ -78,7 +80,9 @@ evaluate <- function(data_conf, model_conf, ...) {
     table <- tbl(con, data_conf$table)
 
     # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
-    data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>% mutate(across(where(bit64::is.integer64), as.integer)) %>% as.data.frame()
+    data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>%
+      mutate(NumTimesPrg = as.integer(NumTimesPrg), PlGlcConc = as.integer(PlGlcConc), BloodP = as.integer(BloodP), SkinThick = as.integer(SkinThick), TwoHourSerIns = as.integer(TwoHourSerIns), HasDiabetes = as.integer(HasDiabetes)) %>%
+      as.data.frame()
 
     probs <- predict(model, data, na.action = na.pass, type = "response")
     preds <- as.integer(ifelse(probs > 0.5, 1, 0))
