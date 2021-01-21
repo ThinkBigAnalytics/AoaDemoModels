@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from .util import save_metadata, cleanup_cli
+from aoa.sto.util import save_metadata, cleanup_cli
 
 import os
 import numpy as np
