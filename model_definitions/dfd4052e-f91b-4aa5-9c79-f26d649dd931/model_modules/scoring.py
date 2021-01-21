@@ -2,7 +2,7 @@ from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
 from tdextensions.distributed import DistDataFrame, DistMode
 from sklearn import metrics
-from .util import save_metadata, save_evaluation_metrics
+from aoa.sto.util import save_metadata, save_evaluation_metrics
 
 import os
 import numpy as np
@@ -38,10 +38,10 @@ def score(data_conf, model_conf, **kwargs):
 
     df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="my_model_score")
     scored_df = df.map_partition(lambda partition: score_partition(partition),
-                                 partition_by="species",
+                                 partition_by="partition_id",
                                  returns=[["prediction", "VARCHAR(255)"]])
 
-    scored_df.to_sql("my_predictions_table", if_exists="append")
+    scored_df.to_sql(data_conf["predictions"], if_exists="append")
 
 
 def evaluate(data_conf, model_conf, **kwargs):
