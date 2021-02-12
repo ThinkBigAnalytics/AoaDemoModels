@@ -4,6 +4,7 @@ from xgboost import XGBClassifier
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline
 from nyoka import xgboost_to_pmml
+from .util import read_dataframe
 
 import logging
 import joblib
@@ -23,14 +24,7 @@ def train(data_conf, model_conf, **kwargs):
     feature_names = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age"]
     target_name = "HasDiabetes"
 
-    # in a real world scenario, you would read from S3, HDFS, Teradata,
-    # etc but for demo reading from url. we could read via pandas.read_csv but just to show pyspark ...
-    urllib.request.urlretrieve(data_conf["url"], "/tmp/data.csv")
-    all_columns = feature_names + [target_name]
-    train_df = spark.read.format("csv")\
-        .option("inferSchema", "true")\
-        .load("/tmp/data.csv")\
-        .toDF(*all_columns)
+    train_df = read_dataframe(spark, data_conf["url"])
 
     # do feature eng in spark / joins whatever reason you're using pyspark...
     # split into test and train
