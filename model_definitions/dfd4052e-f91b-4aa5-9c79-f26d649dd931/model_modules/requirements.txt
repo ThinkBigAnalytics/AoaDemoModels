@@ -2,4 +2,4 @@ dill==0.2.8.2
 scikit-learn==0.20.3
 tdextensions
 teradataml>=17.0.0.0
-aoa>=2.8.0rc4
+aoa>=3.0
