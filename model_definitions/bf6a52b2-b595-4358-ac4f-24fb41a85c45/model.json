@@ -5,9 +5,23 @@
   "language": "R",
 
   "automation": {
-    "resources": {
-      "cpu": "1",
-      "memory": "1Gi"
+    "training": {
+      "resources": {
+        "cpu": "1",
+        "memory": "1Gi"
+      }
+    },
+    "evaluation": {
+      "resources": {
+        "cpu": "1",
+        "memory": "1Gi"
+      }
+    },
+    "deployment": {
+      "resources": {
+        "cpu": "1",
+        "memory": "1Gi"
+      }
     }
   }
 }
