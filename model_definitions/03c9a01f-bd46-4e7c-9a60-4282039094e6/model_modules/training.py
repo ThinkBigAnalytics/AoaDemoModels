@@ -5,19 +5,10 @@ from nyoka import xgboost_to_pmml
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
 from aoa.stats import stats
+from aoa.util.artefacts import save_plot
 
 import joblib
 import os
-
-
-def save_plot(title):
-    import matplotlib.pyplot as plt
-
-    plt.title(title)
-    fig = plt.gcf()
-    filename = title.replace(" ", "_").lower()
-    fig.savefig('artifacts/output/{}'.format(filename), dpi=500)
-    plt.clf()
 
 
 def train(data_conf, model_conf, **kwargs):

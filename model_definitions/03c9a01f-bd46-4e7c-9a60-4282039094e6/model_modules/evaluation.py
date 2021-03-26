@@ -2,6 +2,7 @@ from sklearn import metrics
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
 from aoa.stats import stats
+from aoa.util.artefacts import save_plot
 
 import os
 import joblib
@@ -9,15 +10,6 @@ import json
 import numpy as np
 import pandas as pd
 
-
-def save_plot(title):
-    import matplotlib.pyplot as plt
-
-    plt.title(title)
-    fig = plt.gcf()
-    filename = title.replace(" ", "_").lower()
-    fig.savefig('artifacts/output/{}'.format(filename), dpi=500)
-    plt.clf()
 
 
 def evaluate(data_conf, model_conf, **kwargs):
