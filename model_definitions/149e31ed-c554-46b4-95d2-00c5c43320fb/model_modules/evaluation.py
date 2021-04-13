@@ -2,6 +2,7 @@ from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from sklearn import metrics
 from .util import read_dataframe
+from aoa.util.artefacts import save_plot
 
 import logging
 import joblib
@@ -13,16 +14,6 @@ logging.getLogger("py4j").setLevel(logging.ERROR)
 spark = SparkSession.builder \
     .config(conf=SparkConf()) \
     .getOrCreate()
-
-
-def save_plot(title):
-    import matplotlib.pyplot as plt
-
-    plt.title(title)
-    fig = plt.gcf()
-    filename = title.replace(" ", "_").lower()
-    fig.savefig('artifacts/output/{}'.format(filename), dpi=500)
-    plt.clf()
 
 
 def evaluate(data_conf, model_conf, **kwargs):
