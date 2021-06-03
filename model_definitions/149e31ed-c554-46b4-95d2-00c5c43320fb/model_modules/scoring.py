@@ -24,7 +24,8 @@ def score(data_conf, model_conf, **kwargs):
     # it can be anything that pyspark can read (csv, parquet, avro, etc...)
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
-                   password=os.environ["AOA_CONN_PASSWORD"])
+                   password=os.environ["AOA_CONN_PASSWORD"],
+                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
     predict_df = DataFrame(data_conf["table"])
 
