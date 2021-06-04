@@ -23,10 +23,15 @@ Connect2Vantage <- function() {
 }
 
 train <- function(data_conf, model_conf, ...) {
+    print(data_conf)
+    print(model_conf)
+
     print("Training model...")
 
     # Connect to Vantage
     con <- Connect2Vantage()
+
+    print(con)
 
     # Create tibble from table in Vantage
     if ("schema" %in% data_conf) {
@@ -35,6 +40,8 @@ train <- function(data_conf, model_conf, ...) {
         table_name <- data_conf$table
     }
     table <- tbl(con, table_name)
+
+    print(table)
 
     # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
     data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>%
