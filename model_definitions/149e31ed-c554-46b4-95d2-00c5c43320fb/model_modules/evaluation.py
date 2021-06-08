@@ -1,12 +1,17 @@
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from sklearn import metrics
-from .util import read_dataframe
+from teradataml import create_context
+from teradataml.dataframe.dataframe import DataFrame
+from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 
 import logging
+import os
 import joblib
 import json
+import numpy as np
+import pandas as pd
 
 logging.getLogger("py4j").setLevel(logging.ERROR)
 
@@ -19,16 +24,24 @@ spark = SparkSession.builder \
 def evaluate(data_conf, model_conf, **kwargs):
     model = joblib.load('artifacts/input/model.joblib')
 
-    test_df = read_dataframe(spark, data_conf["url"])
+    # For demo purposes data is read from Vantage, but in a real environment
+    # it can be anything that pyspark can read (csv, parquet, avro, etc...)
+    create_context(host=os.environ["AOA_CONN_HOST"],
+                   username=os.environ["AOA_CONN_USERNAME"],
+                   password=os.environ["AOA_CONN_PASSWORD"])
+
+    # As this is for demo purposes, we simulate the test dataset changing between executions
+    # by introducing a random sample. Note that the sampling is performed in Teradata!
+    test_df = DataFrame(data_conf["table"]).sample(frac=0.8)
+    test_pdf = test_df.to_pandas()
+
+    X_test = test_pdf[model.feature_names]
+    y_test = test_pdf[model.target_name]
 
     # do feature eng in spark / joins whatever reason you're using pyspark...
-    # split into test and train
-    test_df = test_df.randomSplit([0.7, 0.3], 42)[1].toPandas()
 
-    X_test = test_df[model.feature_names]
-    y_test = test_df["HasDiabetes"]
-
-    y_pred = model.predict(X_test)
+    print("Scoring")
+    y_pred = model.predict(test_pdf[model.feature_names])
 
     evaluation = {
         'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),
@@ -55,3 +68,14 @@ def evaluate(data_conf, model_conf, **kwargs):
     shap.summary_plot(shap_values, X_test, feature_names=model.feature_names,
                       show=False, plot_size=(12,8), plot_type='bar')
     save_plot('SHAP Feature Importance')
+
+    feature_importance = pd.DataFrame(list(zip(model.feature_names, np.abs(shap_values).mean(0))),
+                                      columns=['col_name', 'feature_importance_vals'])
+    feature_importance = feature_importance.set_index("col_name").T.to_dict(orient='records')[0]
+
+    stats.record_stats(test_df,
+                       features=model.feature_names,
+                       predictors=["HasDiabetes"],
+                       categorical=["HasDiabetes"],
+                       importance=feature_importance,
+                       category_labels={"HasDiabetes": {0: "false", 1: "true"}})

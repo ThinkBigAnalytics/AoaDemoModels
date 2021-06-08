@@ -1,6 +1,7 @@
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
-from .util import read_dataframe
+from teradataml import create_context
+from teradataml.dataframe.dataframe import DataFrame
 
 import logging
 import joblib
@@ -19,17 +20,25 @@ spark = SparkSession.builder \
 def score(data_conf, model_conf, **kwargs):
     model = joblib.load('artifacts/input/model.joblib')
 
-    test_df = read_dataframe(spark, data_conf["url"])
+    # For demo purposes we read data from Vantage, but in a real environment
+    # it can be anything that pyspark can read (csv, parquet, avro, etc...)
+    create_context(host=os.environ["AOA_CONN_HOST"],
+                   username=os.environ["AOA_CONN_USERNAME"],
+                   password=os.environ["AOA_CONN_PASSWORD"])
+
+    predict_df = DataFrame(data_conf["table"])
+
+    # convert to pandas to use locally
+    predict_df = predict_df.to_pandas()
 
     # do feature eng in spark / joins whatever reason you're using pyspark...
-    # split into test and train
-    test_df = test_df.randomSplit([0.7, 0.3], 42)[1].toPandas()
-
-    X = test_df[model.feature_names]
 
     print("Scoring")
-    y_pred = model.predict(X)
+    y_pred = model.predict(predict_df[model.feature_names])
 
+    print("Finished Scoring")
+
+    # create result dataframe
     y_pred = pd.DataFrame(y_pred, columns=["pred"])
 
     # wrap as pyspark df
@@ -38,7 +47,7 @@ def score(data_conf, model_conf, **kwargs):
     # in a real world you would write the results back to HDFS, Teradata, S3 etc.
     predictions.write.mode("overwrite").save("/tmp/predictions")
 
-    logging.info("Finished scoring")
+    logging.info("Finished Saving Scoring")
 
 
 # Add code required for RESTful API
