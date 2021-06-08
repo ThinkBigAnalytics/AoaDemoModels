@@ -33,7 +33,12 @@ evaluate <- function(data_conf, model_conf, ...) {
   con <- Connect2Vantage()
 
   # Create tibble from table in Vantage
-  table <- tbl(con, data_conf$table)
+  if (data_conf$schema) {
+    table_name <- in_schema(data_conf$schema, data_conf$table)
+  } else {
+    table_name <- data_conf$table
+  }
+  table <- tbl(con, table_name)
 
   # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
   data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>%

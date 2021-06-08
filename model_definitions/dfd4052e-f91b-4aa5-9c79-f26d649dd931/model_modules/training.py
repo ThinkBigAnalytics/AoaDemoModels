@@ -20,10 +20,10 @@ def train(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
     hyperparams = model_conf["hyperParameters"]
 
-    create_context(
-        host=os.environ["AOA_CONN_HOST"],
-        username=os.environ["AOA_CONN_USERNAME"],
-        password=os.environ["AOA_CONN_PASSWORD"])
+    create_context(host=os.environ["AOA_CONN_HOST"],
+                   username=os.environ["AOA_CONN_USERNAME"],
+                   password=os.environ["AOA_CONN_PASSWORD"],
+                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
     cleanup_cli(model_version)
 
