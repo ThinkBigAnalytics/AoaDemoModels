@@ -14,10 +14,10 @@ import dill
 def evaluate(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
 
-    create_context(
-        host=os.environ["AOA_CONN_HOST"],
-        username=os.environ["AOA_CONN_USERNAME"],
-        password=os.environ["AOA_CONN_PASSWORD"])
+    create_context(host=os.environ["AOA_CONN_HOST"],
+                   username=os.environ["AOA_CONN_USERNAME"],
+                   password=os.environ["AOA_CONN_PASSWORD"],
+                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
     def eval_partition(partition):
         model_artefact = partition.loc[partition['n_row'] == 1, 'model_artefact'].iloc[0]
