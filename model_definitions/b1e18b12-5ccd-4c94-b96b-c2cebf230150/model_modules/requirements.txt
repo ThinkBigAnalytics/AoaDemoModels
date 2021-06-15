@@ -1,0 +1,6 @@
+xgboost==0.90
+scikit-learn==0.22.2
+shap==0.36.0
+matplotlib>=2.2.2
+teradataml>=17.0.0.0
+nyoka>=4.3.0
