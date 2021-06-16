@@ -12,7 +12,7 @@ from sklearn.compose import make_column_selector
 from nyoka import skl_to_pmml
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
-#from aoa.stats import stats
+from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 
 import joblib
@@ -38,11 +38,10 @@ def train(data_conf, model_conf, **kwargs):
     train_pdf = train_df.to_pandas(all_rows = True)
     if "id" in train_df.columns:
         train_df.set_index("id", inplace=True)
-    train_pdf = train_pdf[feature_names]
     train_pdf[feature_names_cat] = train_pdf[feature_names_cat].astype("category")
 
     # split data into X and y
-    X_train = train_pdf.drop(columns=target_name)
+    X_train = train_pdf[feature_names]
     y_train = train_pdf[target_name]
 
     # encode categorical features 
