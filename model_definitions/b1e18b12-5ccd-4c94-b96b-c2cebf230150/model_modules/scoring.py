@@ -12,12 +12,14 @@ def score(data_conf, model_conf, **kwargs):
 
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
-                   password=os.environ["AOA_CONN_PASSWORD"])
+                   password=os.environ["AOA_CONN_PASSWORD"],
+                   database=data_conf["schema"] if "schema" in data_conf and 
+                                           data_conf["schema"] != "" else None)
 
     predict_df = DataFrame(data_conf["table"])
 
     # convert to pandas to use locally
-    predict_df = predict_df.to_pandas()
+    predict_df = predict_df.to_pandas(all_rows = True)
 
     print("Scoring")
     y_pred = model.predict(predict_df[model.feature_names])
@@ -26,8 +28,9 @@ def score(data_conf, model_conf, **kwargs):
 
     # create result dataframe and store in Teradata
     y_pred = pd.DataFrame(y_pred, columns=["pred"])
-    y_pred["PatientId"] = predict_df["PatientId"].values
-    copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=False, if_exists="replace")
+    y_pred["pred"] = predict_df["pred"].values
+    copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=False, 
+                if_exists="replace")
 
 
 # Add code required for RESTful API
@@ -38,14 +41,16 @@ class ModelScorer(object):
 
         from prometheus_client import Counter
         self.pred_class_counter = Counter('model_prediction_classes',
-                                          'Model Prediction Classes', ['model', 'version', 'clazz'])
+                                          'Model Prediction Classes', 
+                                          ['model', 'version', 'clazz'])
 
     def predict(self, data):
         pred = self.model.predict([data])
 
         # record the predicted class so we can check model drift (via class distributions)
         self.pred_class_counter.labels(model=os.environ["MODEL_NAME"],
-                                       version=os.environ.get("MODEL_VERSION", "1.0"),
+                                       version=os.environ.get("MODEL_VERSION",
+                                                              "1.0"),
                                        clazz=str(int(pred))).inc()
 
         return pred
