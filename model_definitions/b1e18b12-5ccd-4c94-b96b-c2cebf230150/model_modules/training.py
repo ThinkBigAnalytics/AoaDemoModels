@@ -12,7 +12,7 @@ from sklearn.compose import make_column_selector
 from nyoka import skl_to_pmml
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
-from aoa.stats import stats
+#from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 
 import joblib
