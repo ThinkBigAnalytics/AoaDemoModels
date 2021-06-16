@@ -1,5 +1,6 @@
 {
-  "hyperParameters": {
-    "n_neighbors": 3
-  }
+    "hyperParameters": {
+        "rand_seed": 111,
+        "n_estimators": 100
+    }
 }
