@@ -1,27 +1,3 @@
-from sklearn import metrics
-from teradataml import create_context
-from teradataml.dataframe.dataframe import DataFrame
-
-import os
-import joblib
-import json
-
-
-def save_plot(title):
-    import matplotlib.pyplot as plt
-
-    plt.title(title)
-    fig = plt.gcf()
-    filename = title.replace(" ", "_").lower()
-    fig.savefig('artifacts/output/{}'.format(filename), dpi=500)
-    plt.clf()
-
-
-# -*- coding: utf-8 -*-
-"""
-AOPS's evaluate function implementation for 
-the demand forecasting regression model
-"""
 import sklearn.metrics as skm
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
@@ -34,6 +10,21 @@ import json
 import numpy as np
 import pandas as pd
 
+
+def save_plot(title):
+    import matplotlib.pyplot as plt
+
+    plt.title(title)
+    fig = plt.gcf()
+    filename = title.replace(" ", "_").lower()
+    fig.savefig('artifacts/output/{}'.format(filename), dpi=500)
+    plt.clf()
+
+
+"""
+AOPS's evaluate function implementation for 
+the demand forecasting regression model
+"""
 def evaluate(data_conf, model_conf, **kwargs):
     model = joblib.load('artifacts/input/model.joblib')
 
@@ -78,8 +69,8 @@ def evaluate(data_conf, model_conf, **kwargs):
     # randomforestregressor has its own feature importance plot support 
     # but lets use shap as explainability example
     import shap
-    ct = model['columntransformer']
-    shap_explainer = shap.TreeExplainer(model['randomforestregressor'])
+    ct = model['mapper']
+    shap_explainer = shap.TreeExplainer(model['regressor'])
     X_test = pd.DataFrame(ct.transform(X_test), columns=model.feature_names_tr)
     X_shap = shap.sample(X_test, 100)
     shap_values = shap_explainer.shap_values(X_shap)
