@@ -33,7 +33,7 @@ evaluate <- function(data_conf, model_conf, ...) {
   con <- Connect2Vantage()
 
   # Create tibble from table in Vantage
-  if (data_conf$schema) {
+  if ("schema" %in% data_conf)
     table_name <- in_schema(data_conf$schema, data_conf$table)
   } else {
     table_name <- data_conf$table
