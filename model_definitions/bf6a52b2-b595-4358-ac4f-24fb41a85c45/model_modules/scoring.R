@@ -41,7 +41,7 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
     con <- Connect2Vantage()
 
     # Create tibble from table in Teradata Vantage
-    if ("schema" %in% data_conf)
+    if ("schema" %in% data_conf) {
         table_name <- in_schema(data_conf$schema, data_conf$table)
     } else {
         table_name <- data_conf$table
