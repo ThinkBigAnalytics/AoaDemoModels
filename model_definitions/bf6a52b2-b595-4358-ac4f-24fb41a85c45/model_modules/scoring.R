@@ -63,7 +63,7 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
     colnames(score_df) <- c("Prediction")
     patientIds <- table %>% select("PatientId") %>% mutate(PatientId = as.integer(PatientId)) %>% as.data.frame()
     score_df$PatiendId <- patientIds$PatientId
-    if (data_conf$schema) {
+    if ("schema" %in% data_conf) {
         predictions_table_name <- SQL(sprintf("%s.%s", data_conf$schema, data_conf$predictions))
     } else {
         predictions_table_name <- data_conf$predictions
