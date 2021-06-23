@@ -85,7 +85,7 @@ def evaluate(data_conf, model_conf, **kwargs):
 #     feature_importances = feature_importances.set_index("col_name").T.to_dict(orient='records')[0]
 
     # Temp fix
-    feature_importances = None
+    feature_importances = {}
     stats.record_stats(test_df,
                        features=model.feature_names,
                        predictors=model.target_name,
