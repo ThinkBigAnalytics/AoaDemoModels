@@ -56,8 +56,8 @@ def evaluate(data_conf, model_conf, **kwargs):
     with open("artifacts/output/metrics.json", "w+") as f:
         json.dump(evaluation, f)
 
-#     print("Saving plots")
-#     # a plot of actual num_orders vs predicted
+    print("Saving plots")
+    # a plot of actual num_orders vs predicted
 #     result_df = pd.DataFrame(np.vstack((y_test, y_pred)).T, columns=['Actual', 'Predicted'])
 #     df = result_df.sample(n=100, replace=True)
 #     df['No.'] = range(len(df))
@@ -65,9 +65,9 @@ def evaluate(data_conf, model_conf, **kwargs):
 #             subplots = False, sharex = True, figsize = (5.5,4), ls="none",
 #             marker="o", alpha=0.4)
 #     save_plot('Actual vs Predicted')
-#
-#     # randomforestregressor has its own feature importance plot support
-#     # but lets use shap as explainability example
+
+    # randomforestregressor has its own feature importance plot support
+    # but lets use shap as explainability example
 #     import shap
 #     ct = model['mapper']
 #     shap_explainer = shap.TreeExplainer(model['regressor'])
@@ -84,6 +84,8 @@ def evaluate(data_conf, model_conf, **kwargs):
                                       columns=['col_name', 'feature_importance_vals'])
     feature_importances = feature_importances.set_index("col_name").T.to_dict(orient='records')[0]
 
+    # Temp fix
+    feature_importances = None
     stats.record_stats(test_df,
                        features=model.feature_names,
                        predictors=model.target_name,
