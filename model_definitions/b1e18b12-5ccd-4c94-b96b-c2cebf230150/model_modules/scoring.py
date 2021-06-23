@@ -1,4 +1,4 @@
-from teradataml import create_context
+from teradataml import create_context, remove_context
 from teradataml.dataframe.dataframe import DataFrame
 from teradataml.dataframe.copy_to import copy_to_sql
 
@@ -11,10 +11,9 @@ def score(data_conf, model_conf, **kwargs):
     model = joblib.load("artifacts/input/model.joblib")
 
     create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
+                   username="AOA_DEMO",
                    password=os.environ["AOA_CONN_PASSWORD"],
-                   database=data_conf["schema"] if "schema" in data_conf and 
-                                           data_conf["schema"] != "" else None)
+                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
     predict_df = DataFrame(data_conf["table"])
 
@@ -29,8 +28,8 @@ def score(data_conf, model_conf, **kwargs):
     # create result dataframe and store in Teradata
     y_pred = pd.DataFrame(y_pred, columns=["pred"])
     y_pred["pred"] = predict_df["pred"].values
-    copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=False, 
-                if_exists="replace")
+    copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=False, if_exists="replace")
+    remove_context()
 
 
 # Add code required for RESTful API

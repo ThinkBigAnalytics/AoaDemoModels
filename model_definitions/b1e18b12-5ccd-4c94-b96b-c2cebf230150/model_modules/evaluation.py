@@ -1,5 +1,5 @@
 import sklearn.metrics as skm
-from teradataml import create_context
+from teradataml import create_context, remove_context
 from teradataml.dataframe.dataframe import DataFrame
 from aoa.stats import stats
 from aoa.util.artefacts import save_plot
@@ -29,10 +29,9 @@ def evaluate(data_conf, model_conf, **kwargs):
     model = joblib.load('artifacts/input/model.joblib')
 
     create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
+                   username="AOA_DEMO",
                    password=os.environ["AOA_CONN_PASSWORD"],
-                   database=data_conf["schema"] if "schema" in data_conf and 
-                               data_conf["schema"] != "" else None)
+                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
     # Read test dataset from Teradata
     # As this is for demo purposes, we simulate the test dataset changing between executions
@@ -53,10 +52,12 @@ def evaluate(data_conf, model_conf, **kwargs):
         'MSLE': '{:.2f}'.format(skm.mean_squared_log_error(y_test, y_pred))
     }
 
+    print("Saving metrics to artifacts/output/metrics.json")
     with open("artifacts/output/metrics.json", "w+") as f:
         json.dump(evaluation, f)
 
-    # a plot of actual num_orders vs predicted 
+    print("Saving plots")
+    # a plot of actual num_orders vs predicted
     result_df = pd.DataFrame(np.vstack((y_test, y_pred)).T, 
                                         columns=['Actual', 'Predicted'])
     df = result_df.sample(n=100, replace=True)
@@ -68,6 +69,7 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     # randomforestregressor has its own feature importance plot support 
     # but lets use shap as explainability example
+    print("Saving stats")
     import shap
     ct = model['mapper']
     shap_explainer = shap.TreeExplainer(model['regressor'])
@@ -89,3 +91,5 @@ def evaluate(data_conf, model_conf, **kwargs):
                        categorical=model.feature_names_cat,
                        importance=feature_importances,
                        category_labels=model.cat_feature_dict)
+    remove_context()
+    print("All done!")

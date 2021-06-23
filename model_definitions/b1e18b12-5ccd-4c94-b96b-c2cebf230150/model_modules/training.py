@@ -24,7 +24,8 @@ def train(data_conf, model_conf, **kwargs):
     # username=os.environ["AOA_CONN_USERNAME"]
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username="AOA_DEMO",
-                   password=os.environ["AOA_CONN_PASSWORD"])
+                   password=os.environ["AOA_CONN_PASSWORD"],
+                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
     feature_names = ["center_id", "meal_id", "checkout_price", 
                      "base_price", "emailer_for_promotion", "homepage_featured",
@@ -35,7 +36,7 @@ def train(data_conf, model_conf, **kwargs):
     print('Starting training ...')
 
     # read training dataset from Teradata and convert to pandas
-    train_df = DataFrame(data_conf["table"]).sample(10)
+    train_df = DataFrame(data_conf["table"])
     train_df = train_df.select([feature_names + [target_name]])
     train_pdf = train_df.to_pandas(all_rows = True)
     if "id" in train_df.columns:
@@ -79,11 +80,9 @@ def train(data_conf, model_conf, **kwargs):
     # we can also save as pmml so it can be used for In-Vantage scoring etc.
     print("Exporting model to artifacts/output/model.pmml")
     sklearn2pmml(model, "artifacts/output/model.pmml", with_repr = True)
-    # export model artefacts
-    #joblib.dump(model, "model.joblib")
-    print("Saved trained model")
 
     # save results and analytics
+    print("Saving stats")
     feature_importances = model["regressor"].feature_importances_
     d = np.vstack((model.feature_names_tr, feature_importances)).T
     df_results = pd.DataFrame(d, columns=["Feature_names", "Weights"])
@@ -92,7 +91,6 @@ def train(data_conf, model_conf, **kwargs):
     df_results[0:9].plot.bar(x="Feature_names", y="Weights")
     save_plot("feature_importance.png")
 
-    print("Saving stats")
     stats.record_stats(train_df,
                        features=model.feature_names,
                        predictors=model.target_name,
