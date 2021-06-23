@@ -79,10 +79,10 @@ def evaluate(data_conf, model_conf, **kwargs):
 #     save_plot('SHAP Feature Importance')
 
     print("Saving stats")
-    feature_importances = pd.DataFrame(list(zip(model.feature_names_tr,
-                                                np.abs(shap_values).mean(0))),
-                                      columns=['col_name', 'feature_importance_vals'])
-    feature_importances = feature_importances.set_index("col_name").T.to_dict(orient='records')[0]
+#     feature_importances = pd.DataFrame(list(zip(model.feature_names_tr,
+#                                                 np.abs(shap_values).mean(0))),
+#                                       columns=['col_name', 'feature_importance_vals'])
+#     feature_importances = feature_importances.set_index("col_name").T.to_dict(orient='records')[0]
 
     # Temp fix
     feature_importances = None
