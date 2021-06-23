@@ -58,14 +58,13 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     print("Saving plots")
     # a plot of actual num_orders vs predicted
-    result_df = pd.DataFrame(np.vstack((y_test, y_pred)).T, 
-                                        columns=['Actual', 'Predicted'])
-    df = result_df.sample(n=100, replace=True)
-    df['No.'] = range(len(df))
-    df.plot(x="No.", y=['Actual', 'Predicted'], kind = 'line', legend=True, 
-            subplots = False, sharex = True, figsize = (5.5,4), ls="none", 
-            marker="o", alpha=0.4)    
-    save_plot('Actual vs Predicted')
+#     result_df = pd.DataFrame(np.vstack((y_test, y_pred)).T, columns=['Actual', 'Predicted'])
+#     df = result_df.sample(n=100, replace=True)
+#     df['No.'] = range(len(df))
+#     df.plot(x="No.", y=['Actual', 'Predicted'], kind = 'line', legend=True,
+#             subplots = False, sharex = True, figsize = (5.5,4), ls="none",
+#             marker="o", alpha=0.4)
+#     save_plot('Actual vs Predicted')
 
     # randomforestregressor has its own feature importance plot support 
     # but lets use shap as explainability example

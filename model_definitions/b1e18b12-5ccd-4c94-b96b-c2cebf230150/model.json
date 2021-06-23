@@ -6,20 +6,20 @@
     "automation": {
         "training": {
             "resources": {
-                "cpu": "500m",
-                "memory": "2Gi"
+                "cpu": "1000m",
+                "memory": "5Gi"
             }
         },
         "evaluation": {
             "resources": {
                 "cpu": "500m",
-                "memory": "1Gi"
+                "memory": "500Mi"
             }
         },
         "deployment": {
             "resources": {
                 "cpu": "500m",
-                "memory": "1Gi"
+                "memory": "500Mi"
             }
         }
     }
