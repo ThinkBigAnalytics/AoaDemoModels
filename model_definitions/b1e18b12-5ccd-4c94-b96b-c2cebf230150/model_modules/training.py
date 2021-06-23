@@ -31,19 +31,21 @@ def train(data_conf, model_conf, **kwargs):
     feature_names_cat = ["center_type", "category", "cuisine"]
     target_name = "num_orders"
     
+    print('Starting training ...')
     # read training dataset from Teradata and convert to pandas
-    train_df = DataFrame(data_conf["table"])
+    train_df = DataFrame(data_conf["table"]).sample(10)
     train_df = train_df.select([feature_names + [target_name]])
     train_pdf = train_df.to_pandas(all_rows = True)
     if "id" in train_df.columns:
         train_df.set_index("id", inplace=True)
     train_pdf[feature_names_cat] = train_pdf[feature_names_cat].astype("category")
+    print('Loaded data ...')
 
     # split data into X and y
     X_train = train_pdf[feature_names]
     y_train = train_pdf[target_name]
 
-    # modelling pipeline: feature encoding + algorithm 
+    # modelling pipeline: feature encoding + algorithm
     oh_encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
     mapping = [(f, None) for f in feature_names if f not in feature_names_cat] + [
                                             (feature_names_cat, oh_encoder)]
@@ -51,7 +53,7 @@ def train(data_conf, model_conf, **kwargs):
     regressor = RandomForestRegressor(random_state=hyperparams["rand_seed"],
                                       n_estimators=hyperparams["n_estimators"]
                                      )
-    model = PMMLPipeline([("mapper", mapper), 
+    model = PMMLPipeline([("mapper", mapper),
                       ('regressor', regressor)])
     # preprocess training data and train the model
     model.fit(X_train, y_train)
@@ -69,12 +71,14 @@ def train(data_conf, model_conf, **kwargs):
     model.cat_feature_dict = cat_feature_dict
 
     # export model artefacts
+    print("Saving model to artifacts/output/model.joblib")
     joblib.dump(model, "artifacts/output/model.joblib")
 
     # we can also save as pmml so it can be used for In-Vantage scoring etc.
-    sklearn2pmml(model, "model.pmml", with_repr = True)
+    print("Exporting model to artifacts/output/model.pmml")
+    sklearn2pmml(model, "artifacts/output/model.pmml", with_repr = True)
     # export model artefacts
-    joblib.dump(model, "model.joblib")
+    #joblib.dump(model, "model.joblib")
     print("Saved trained model")
 
     # save results and analytics
