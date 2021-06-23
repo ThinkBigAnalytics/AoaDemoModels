@@ -72,7 +72,7 @@ def train(data_conf, model_conf, **kwargs):
     joblib.dump(model, "artifacts/output/model.joblib")
 
     # we can also save as pmml so it can be used for In-Vantage scoring etc.
-    sklearn2pmml(model, "artifacts/output/model.pmml", with_repr = True)
+    sklearn2pmml(model, "model.pmml", with_repr = True)
     # export model artefacts
     joblib.dump(model, "model.joblib")
     print("Saved trained model")
