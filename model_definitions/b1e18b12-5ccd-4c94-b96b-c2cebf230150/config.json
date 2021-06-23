@@ -1,6 +1,6 @@
 {
     "hyperParameters": {
         "rand_seed": 111,
-        "n_estimators": 100
+        "n_estimators": 10
     }
 }
