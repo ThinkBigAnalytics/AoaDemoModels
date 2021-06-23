@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn2pmml import sklearn2pmml
 from sklearn2pmml.pipeline import PMMLPipeline
 from sklearn_pandas import DataFrameMapper
-from teradataml import create_context
+from teradataml import create_context, remove_context
 from teradataml.dataframe.dataframe import DataFrame
 from aoa.stats import stats
 from aoa.util.artefacts import save_plot
@@ -21,8 +21,9 @@ import os
 def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
+    # username=os.environ["AOA_CONN_USERNAME"]
     create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
+                   username="AOA_DEMO",
                    password=os.environ["AOA_CONN_PASSWORD"])
 
     feature_names = ["center_id", "meal_id", "checkout_price", 
@@ -32,6 +33,7 @@ def train(data_conf, model_conf, **kwargs):
     target_name = "num_orders"
     
     print('Starting training ...')
+
     # read training dataset from Teradata and convert to pandas
     train_df = DataFrame(data_conf["table"]).sample(10)
     train_df = train_df.select([feature_names + [target_name]])
@@ -63,7 +65,7 @@ def train(data_conf, model_conf, **kwargs):
     model.feature_names = feature_names
     model.feature_names_tr = mapper.transformed_names_ #feature names after transformation
     model.feature_names_cat = feature_names_cat
-    model.target_name = target_name
+    model.target_name = [target_name]
     cat_feature_dict = {}
     for feature in feature_names_cat:
         cat_feature_dict[feature] = dict(enumerate(train_pdf[feature].
@@ -89,9 +91,14 @@ def train(data_conf, model_conf, **kwargs):
     df_results.sort_values(by="Weights", ascending=False, inplace=True)
     df_results[0:9].plot.bar(x="Feature_names", y="Weights")
     save_plot("feature_importance.png")
+
+    print("Saving stats")
     stats.record_stats(train_df,
-                       features=model.feature_names_tr,
-                       predictors=target_name,
-                       categorical=feature_names_cat,
+                       features=model.feature_names,
+                       predictors=model.target_name,
+                       categorical=model.feature_names_cat,
                        importance=feature_importances,
-                       category_labels=cat_feature_dict)
+                       category_labels=model.cat_feature_dict)
+
+    remove_context()
+    print("All done!")
