@@ -29,7 +29,7 @@ def evaluate(data_conf, model_conf, **kwargs):
     model = joblib.load('artifacts/input/model.joblib')
 
     create_context(host=os.environ["AOA_CONN_HOST"],
-                   username="AOA_DEMO",
+                   username=os.environ["AOA_CONN_USERNAME"],
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 

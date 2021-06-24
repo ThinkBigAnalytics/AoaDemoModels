@@ -21,9 +21,8 @@ import os
 def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
-    # username=os.environ["AOA_CONN_USERNAME"]
     create_context(host=os.environ["AOA_CONN_HOST"],
-                   username="AOA_DEMO",
+                   username=os.environ["AOA_CONN_USERNAME"],
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
