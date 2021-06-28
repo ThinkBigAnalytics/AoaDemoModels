@@ -3,7 +3,7 @@ from teradataml.dataframe.dataframe import DataFrame
 from teradataml.dataframe.copy_to import copy_to_sql
 from aoa.stats import stats
 
-import os, json
+import os
 import joblib
 import pandas as pd
 import numpy as np
