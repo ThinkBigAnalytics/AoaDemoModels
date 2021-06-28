@@ -58,34 +58,34 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     print("Saving plots")
     # a plot of actual num_orders vs predicted
-#     result_df = pd.DataFrame(np.vstack((y_test, y_pred)).T, columns=['Actual', 'Predicted'])
-#     df = result_df.sample(n=100, replace=True)
-#     df['No.'] = range(len(df))
-#     df.plot(x="No.", y=['Actual', 'Predicted'], kind = 'line', legend=True,
-#             subplots = False, sharex = True, figsize = (5.5,4), ls="none",
-#             marker="o", alpha=0.4)
-#     save_plot('Actual vs Predicted')
+     result_df = pd.DataFrame(np.vstack((y_test, y_pred)).T, columns=['Actual', 'Predicted'])
+     df = result_df.sample(n=100, replace=True)
+     df['No.'] = range(len(df))
+     df.plot(x="No.", y=['Actual', 'Predicted'], kind = 'line', legend=True,
+             subplots = False, sharex = True, figsize = (5.5,4), ls="none",
+             marker="o", alpha=0.4)
+     save_plot('Actual vs Predicted')
 
     # randomforestregressor has its own feature importance plot support
     # but lets use shap as explainability example
-#     import shap
-#     ct = model['mapper']
-#     shap_explainer = shap.TreeExplainer(model['regressor'])
-#     X_test = pd.DataFrame(ct.transform(X_test), columns=model.feature_names_tr)
-#     X_shap = shap.sample(X_test, 100)
-#     shap_values = shap_explainer.shap_values(X_shap)
-#     shap.summary_plot(shap_values, X_test, feature_names=model.feature_names,
-#                       show=False, plot_size=(12, 8), plot_type='bar')
-#     save_plot('SHAP Feature Importance')
+     import shap
+     mapper = model['mapper']
+     shap_explainer = shap.TreeExplainer(model['regressor'])
+     X_test = pd.DataFrame(mapper.transform(X_test), columns=model.feature_names_tr)
+     X_shap = shap.sample(X_test, 100)
+     shap_values = shap_explainer.shap_values(X_shap)
+     shap.summary_plot(shap_values, X_test, feature_names=model.feature_names_tr,
+                       show=False, plot_size=(12, 8), plot_type='bar')
+     save_plot('SHAP Feature Importance')
 
     print("Saving stats")
-#     feature_importances = pd.DataFrame(list(zip(model.feature_names_tr,
-#                                                 np.abs(shap_values).mean(0))),
-#                                       columns=['col_name', 'feature_importance_vals'])
-#     feature_importances = feature_importances.set_index("col_name").T.to_dict(orient='records')[0]
+     feature_importances = pd.DataFrame(list(zip(model.feature_names_tr,
+                                                 np.abs(shap_values).mean(0))),
+                                       columns=['col_name', 'feature_importance_vals'])
+     feature_importances = feature_importances.set_index("col_name").T.to_dict(orient='records')[0]
 
     # Temp fix
-    feature_importances = {}
+#    feature_importances = {}
     stats.record_stats(test_df,
                        features=model.feature_names,
                        predictors=model.target_name,
