@@ -1,6 +1,7 @@
 from sklearn import metrics
 from teradataml import create_context
 from teradataml.dataframe.dataframe import DataFrame
+from teradataml.dataframe.copy_to import copy_to_sql
 from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 
@@ -9,7 +10,6 @@ import joblib
 import json
 import numpy as np
 import pandas as pd
-
 
 
 def evaluate(data_conf, model_conf, **kwargs):
@@ -31,6 +31,9 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     print("Scoring")
     y_pred = model.predict(test_pdf[model.feature_names])
+
+    y_pred_tdf = pd.DataFrame(y_pred, columns=[model.target_name])
+    y_pred_tdf["PatientId"] = test_pdf["PatientId"].values
 
     evaluation = {
         'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),
@@ -62,9 +65,7 @@ def evaluate(data_conf, model_conf, **kwargs):
                                       columns=['col_name', 'feature_importance_vals'])
     feature_importance = feature_importance.set_index("col_name").T.to_dict(orient='records')[0]
 
-    stats.record_stats(test_df,
-                       features=model.feature_names,
-                       predictors=["HasDiabetes"],
-                       categorical=["HasDiabetes"],
-                       importance=feature_importance,
-                       category_labels={"HasDiabetes": {0: "false", 1: "true"}})
+    predictions_table="TMP_{}".format(data_conf["predictions"]).lower()
+    copy_to_sql(df=y_pred_tdf, table_name=predictions_table, index=False, if_exists="replace", temporary=True)
+
+    stats.record_evaluation_stats(test_df, DataFrame(predictions_table), feature_importance)

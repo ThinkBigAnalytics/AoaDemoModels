@@ -60,9 +60,9 @@ def train(data_conf, model_conf, **kwargs):
     save_plot("feature_importance.png")
 
     feature_importance = model["xgb"].get_booster().get_score(importance_type="weight")
-    stats.record_stats(train_df,
+    stats.record_training_stats(train_df,
                        features=feature_names,
-                       predictors=["HasDiabetes"],
-                       categorical=["HasDiabetes"],
+                       predictors=[target_name],
+                       categorical=[target_name],
                        importance=feature_importance,
-                       category_labels={"HasDiabetes": {0: "false", 1: "true"}})
+                       category_labels={target_name: {0: "false", 1: "true"}})
