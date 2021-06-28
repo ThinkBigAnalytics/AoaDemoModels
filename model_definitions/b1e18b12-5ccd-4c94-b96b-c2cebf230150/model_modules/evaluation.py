@@ -40,7 +40,7 @@ def evaluate(data_conf, model_conf, **kwargs):
     test_pdf = test_df.to_pandas(all_rows = True)
     
     X_test = test_pdf[model.feature_names]
-    y_test = test_pdf[model.target_name]
+    y_test = test_pdf[model.target_name[0]]
 
     print("Scoring")
     y_pred = model.predict(X_test)
