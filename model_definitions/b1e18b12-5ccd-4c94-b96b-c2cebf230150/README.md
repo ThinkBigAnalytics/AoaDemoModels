@@ -44,8 +44,7 @@ copy_to_sql(df=df.iloc[0:n], table_name="DEMAND_FORECAST_TRAIN", index=False, if
 copy_to_sql(df=df.iloc[n:], table_name="DEMAND_FORECAST_TEST", index=False, if_exists="replace")
 ```
 
-
-All of the above datasets are available in Teradata Vantage and already configured in the demo environment. For reference, the values which are required
+The above datasets are available in Teradata Vantage and already configured in the demo environment. For reference, the values which are required
 
 Training
 ```json
