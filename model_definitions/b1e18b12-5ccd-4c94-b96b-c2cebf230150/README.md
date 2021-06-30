@@ -13,8 +13,7 @@ from teradataml.dataframe.dataframe import DataFrame
 
 base_info = pd.read_csv('train.csv')
 base_info.set_index('id', inplace=True)
-copy_to_sql(base_info, table_name='demand_forecast_demo_base', schema_name='AOA_DEMO', if_exists='replace', 
-            index=True, index_label='index', primary_index='index')
+copy_to_sql(base_info, table_name='demand_forecast_demo_base', schema_name='AOA_DEMO', if_exists='replace')
 ```
 
 In addition to the base features included in train.csv, two other datasets are provided related to this problem with additional information on meals, e.g. meal categories, and outlets, e.g. center locations and types. The following code can be used to combine these and create enhanced training datasets.  
