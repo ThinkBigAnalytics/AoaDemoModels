@@ -1,6 +1,7 @@
 import sklearn.metrics as skm
 from teradataml import create_context, remove_context
 from teradataml.dataframe.dataframe import DataFrame
+from teradataml.dataframe.copy_to import copy_to_sql
 from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 
@@ -21,10 +22,6 @@ def save_plot(title):
     plt.clf()
 
 
-"""
-AOPS's evaluate function implementation for 
-the demand forecasting regression model
-"""
 def evaluate(data_conf, model_conf, **kwargs):
     model = joblib.load('artifacts/input/model.joblib')
 
@@ -44,6 +41,7 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     print("Scoring")
     y_pred = model.predict(X_test)
+    y_pred_tdf = pd.DataFrame(y_pred, columns=model.target_name)
 
     evaluation = {
         'R-Squared': '{:.2f}'.format(skm.r2_score(y_test, y_pred)),
@@ -83,11 +81,8 @@ def evaluate(data_conf, model_conf, **kwargs):
                                    columns=['col_name', 'feature_importance_vals'])
     feature_importances = feature_importances.set_index("col_name").T.to_dict(orient='records')[0]
 
-    stats.record_stats(test_df,
-                   features=model.feature_names,
-                   predictors=model.target_name,
-                   categorical=model.feature_names_cat,
-                   importance=feature_importances,
-                   category_labels=model.cat_feature_dict)
+    predictions_table="TMP_{}".format(data_conf["table"]).lower()
+    copy_to_sql(df=y_pred_tdf, table_name=predictions_table, index=False, if_exists="replace", temporary=True)
+    stats.record_evaluation_stats(test_df, DataFrame(predictions_table), feature_importances)
     remove_context()
     print("All done!")

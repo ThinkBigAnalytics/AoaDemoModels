@@ -1,7 +1,3 @@
-"""
-AOPS"s train function implementation for 
-the demand forecasting regression model
-"""
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
@@ -29,7 +25,7 @@ def train(data_conf, model_conf, **kwargs):
     feature_names = ["center_id", "meal_id", "checkout_price", 
                      "base_price", "emailer_for_promotion", "homepage_featured",
                      "category", "cuisine", "center_type", "op_area"]
-    feature_names_cat = ["center_type", "category", "cuisine"]
+    feature_names_cat = ["center_type", "category", "cuisine", "emailer_for_promotion", "homepage_featured"]
     target_name = "num_orders"
     
     print('Starting training ...')
@@ -66,11 +62,11 @@ def train(data_conf, model_conf, **kwargs):
     model.feature_names_tr = mapper.transformed_names_ #feature names after transformation
     model.feature_names_cat = feature_names_cat
     model.target_name = [target_name]
-    cat_feature_dict = {}
-    for feature in feature_names_cat:
-        cat_feature_dict[feature] = dict(enumerate(train_pdf[feature].
-                                                   cat.categories ))
-    model.cat_feature_dict = cat_feature_dict
+    category_labels_overrides = {
+        "emailer_for_promotion": {0: "false", 1: "true"},
+        "homepage_featured": {0: "Not featured", 1: "Featured"}
+    }
+    model.category_labels_overrides = category_labels_overrides
 
     # export model artefacts
     print("Saving model to artifacts/output/model.joblib")
@@ -90,12 +86,24 @@ def train(data_conf, model_conf, **kwargs):
     df_results[0:9].plot.bar(x="Feature_names", y="Weights")
     save_plot("feature_importance.png")
 
-    stats.record_stats(train_df,
+    # TODO: fix importance dictionary
+    import shap
+    mapper = model['mapper']
+    shap_explainer = shap.TreeExplainer(model['regressor'])
+    X_train = pd.DataFrame(mapper.transform(X_train), columns=model.feature_names_tr)
+    X_shap = shap.sample(X_train, 100)
+    shap_values = shap_explainer.shap_values(X_shap)
+    feature_importances = pd.DataFrame(list(zip(model.feature_names_tr,
+                                             np.abs(shap_values).mean(0))),
+                                   columns=['col_name', 'feature_importance_vals'])
+    feature_importances = feature_importances.set_index("col_name").T.to_dict(orient='records')[0]
+
+    stats.record_training_stats(train_df,
                        features=model.feature_names,
                        predictors=model.target_name,
                        categorical=model.feature_names_cat,
                        importance=feature_importances,
-                       category_labels=model.cat_feature_dict)
+                       category_labels=model.category_labels_overrides)
 
     remove_context()
     print("All done!")

@@ -111,19 +111,16 @@ RESTful scoring is supported via the `ModelScorer` class which implements a pred
         -d '{
             "data": {
                 "ndarray": [
-						55,
-						1885,
-						136.83,
-						152.29,
-						0,
-						0,
-						177,
-						647,
-						56,
-						'TYPE_C',
-						2.0,
-						'Beverages',
-						'Thai'
+                    44957,
+                    73,
+                    1778,
+                    183.33,
+                    0,
+                    0,
+                    "Beverages",
+                    "Italian",
+                    "TYPE_A",
+                    4.0
                 ]
             }
         }' 
