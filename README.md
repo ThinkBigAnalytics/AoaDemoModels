@@ -18,7 +18,7 @@ If you want to see more details around how to use the AOA, please watch the foll
 - [R GBM (Diabetes)](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45)
 - [Python Micro-Model](model_definitions/dfd4052e-f91b-4aa5-9c79-f26d649dd931)
 - [PySpark XGboost (Diabetes)](model_definitions/149e31ed-c554-46b4-95d2-00c5c43320fb)
-
+- [Python RF Regressor (Demand Forecasting)](model_definitions/b1e18b12-5ccd-4c94-b96b-c2cebf230150)
 
 # Adding new Models
 
