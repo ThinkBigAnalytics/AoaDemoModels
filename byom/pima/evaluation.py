@@ -36,7 +36,7 @@ def evaluate(data_conf, model_conf, **kwargs):
                    (model_version, model_id, model_bytes))
 
     scores = pd.read_sql(f"""
-    SELECT PatientId, HasDiabetes as y_test, CAST(CAST(score_result AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred FROM IVSM_SCORE(
+    SELECT PatientId, HasDiabetes as y_test, CAST(CAST(score_result AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred FROM IVSM.IVSM_SCORE(
                 ON (SELECT * FROM {data_conf["table"]}) AS DataTable
                 ON (SELECT model_id, model FROM ivsm_models_tmp WHERE model_version = '{model_version}') AS ModelTable DIMENSION
                 USING
