@@ -1,6 +1,9 @@
 from sklearn import metrics
 from teradataml import create_context
 from teradataml.context.context import get_connection
+from teradataml.dataframe.copy_to import copy_to_sql
+from teradataml.dataframe.dataframe import DataFrame
+from aoa.stats import stats
 
 import os
 import json
@@ -14,8 +17,8 @@ def evaluate(data_conf, model_conf, **kwargs):
     model_id = kwargs["model_id"]
 
     engine = create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
-                   password=os.environ["AOA_CONN_PASSWORD"])
+                            username=os.environ["AOA_CONN_USERNAME"],
+                            password=os.environ["AOA_CONN_PASSWORD"])
 
     cursor = engine.raw_connection().cursor()
     conn = get_connection()
@@ -35,8 +38,8 @@ def evaluate(data_conf, model_conf, **kwargs):
                    "values(?,?,?)",
                    (model_version, model_id, model_bytes))
 
-    scores = pd.read_sql(f"""
-    SELECT PatientId, HasDiabetes as y_test, CAST(CAST(score_result AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred FROM IVSM_SCORE(
+    scores_df = pd.read_sql(f"""
+    SELECT PatientId, HasDiabetes as y_test, CAST(CAST(score_result AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred FROM IVSM.IVSM_SCORE(
                 ON (SELECT * FROM {data_conf["table"]}) AS DataTable
                 ON (SELECT model_id, model FROM ivsm_models_tmp WHERE model_version = '{model_version}') AS ModelTable DIMENSION
                 USING
@@ -46,8 +49,8 @@ def evaluate(data_conf, model_conf, **kwargs):
             ) sc;
     """, conn)
 
-    y_pred = scores[["y_pred"]]
-    y_test = scores[["y_test"]]
+    y_pred = scores_df[["y_pred"]]
+    y_test = scores_df[["y_test"]]
 
     evaluation = {
         'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),
@@ -78,3 +81,8 @@ def evaluate(data_conf, model_conf, **kwargs):
     fig.savefig('artifacts/output/confusion_matrix', dpi=500)
     plt.clf()
 
+    predictions_table = "{}_tmp".format(data_conf["predictions"])
+    predictions_df = scores_df[["y_pred"]].rename({'y_pred': 'HasDiabetes'}, axis=1)
+    copy_to_sql(df=predictions_df, table_name=predictions_table, index=False, if_exists="replace", temporary=True)
+
+    stats.record_evaluation_stats(DataFrame(data_conf["table"]), DataFrame(predictions_table))
