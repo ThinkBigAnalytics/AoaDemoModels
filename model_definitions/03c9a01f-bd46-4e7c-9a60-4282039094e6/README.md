@@ -84,21 +84,29 @@ In-Vantage scoring is supported via the PMML model we produce during scoring.
 
 Batch Scoring is supported via the `score` method in [scoring.py](model_modules/scoring.py). As Evaluation is batch score + compare, the scoring logic is already validated with the evaluation step. The results of batch scoring are stored in the predictions table defined in the dataset template under `scoring` scope. 
 
-The following table must exist 
+The following table must exist to write (append) the scores into
 
 ```sql
 CREATE MULTISET TABLE ivsm_pima_predictions, FALLBACK ,
- NO BEFORE JOURNAL,
- NO AFTER JOURNAL,
- CHECKSUM = DEFAULT,
- DEFAULT MERGEBLOCKRATIO,
- MAP = TD_MAP1
- (
-    job_id VARCHAR(255),
-    patient_id BIGINT, 
-    score_result CLOB(2097088000) CHARACTER SET LATIN
- )
- PRIMARY INDEX ( job_id );
+     NO BEFORE JOURNAL,
+     NO AFTER JOURNAL,
+     CHECKSUM = DEFAULT,
+     DEFAULT MERGEBLOCKRATIO,
+     MAP = TD_MAP1
+     (
+        job_id VARCHAR(255),
+        patient_id BIGINT, 
+        score_result CLOB(2097088000) CHARACTER SET LATIN
+     )
+     PRIMARY INDEX ( job_id );
+```
+
+And the following view must exist to extract the specific prediction from the json output of IVSM.
+
+```sql
+CREATE VIEW ivsm_pima_predictions_v AS 
+    SELECT job_id, patient_id, CAST(CAST(score_result AS JSON).JSONExtractValue(''$.predicted_HasDiabetes'') AS INT) as HasDiabetes 
+    FROM ivsm_pima_predictions;
 ```
 
 RESTful scoring is supported via the `ModelScorer` class which implements a predict method which is called by the RESTful Serving Engine. An example request is  
