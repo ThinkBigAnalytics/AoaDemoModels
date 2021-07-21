@@ -105,7 +105,7 @@ And the following view must exist to extract the specific prediction from the js
 
 ```sql
 CREATE VIEW ivsm_pima_predictions_v AS 
-    SELECT job_id, patient_id, CAST(CAST(score_result AS JSON).JSONExtractValue(''$.predicted_HasDiabetes'') AS INT) as HasDiabetes 
+    SELECT job_id, patient_id, CAST(CAST(score_result AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as HasDiabetes 
     FROM ivsm_pima_predictions;
 ```
 
