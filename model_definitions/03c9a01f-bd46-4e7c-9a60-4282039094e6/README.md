@@ -94,9 +94,9 @@ CREATE MULTISET TABLE ivsm_pima_predictions, FALLBACK ,
      DEFAULT MERGEBLOCKRATIO,
      MAP = TD_MAP1
      (
-        job_id VARCHAR(255),
         patient_id BIGINT, 
-        score_result CLOB(2097088000) CHARACTER SET LATIN
+        score_result CLOB(2097088000) CHARACTER SET LATIN,
+        job_id VARCHAR(255)
      )
      PRIMARY INDEX ( job_id );
 ```
