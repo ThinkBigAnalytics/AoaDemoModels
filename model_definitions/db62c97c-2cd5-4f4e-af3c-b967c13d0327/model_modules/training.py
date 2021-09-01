@@ -1,5 +1,6 @@
+#VAL libraries and VAL installation path
 #import pandas as pd
-#VAL and teradata ML Libraries
+#teradata ML Libraries
 from teradataml import DataFrame, create_context, remove_context
 from teradataml.analytics.Transformations import OneHotEncoder
 from teradataml.analytics.Transformations import Retain
@@ -21,56 +22,65 @@ def train(data_conf, model_conf, **kwargs):
 
     """
 
-    hyperparams = model_conf["hyperParameters"]
+    #hyperparams = model_conf["hyperParameters"]
     
-    create_context(host = os.environ["AOA_CONN_HOST"],
-                   username = os.environ["AOA_CONN_USERNAME"],
-                   password = os.environ["AOA_CONN_PASSWORD"],
-                   database = "EP_SDS")
+    create_context(host=os.environ["AOA_CONN_HOST"],
+                   username=os.environ["AOA_CONN_USERNAME"],
+                   password=os.environ["AOA_CONN_PASSWORD"],
+                   database="AOA_DEMO")
 
     ########################
     # load data & engineer #
     ########################
+    table_name = data_conf["data_table"]
+    numeric_columns = data_conf["numeric_columns"]
+    target_column = data_conf["target_column"]
+    categorical_columns = data_conf["categorical_columns"]
+    
+    # feature encoding
+    # categorical features to one_hot_encode using VAL transform
+    cat_feature_values = {}
+    for feature in categorical_columns:
+        #distinct has a spurious behaviour so using Group by
+        q = 'SELECT ' + feature + ' FROM ' + table_name + ' GROUP BY 1;'  
+        df = DataFrame.from_query(q)
+        cat_feature_values[feature] = list(df.dropna().get_values().flatten())
+
+    one_hot_encode = []
+    for feature in categorical_columns:
+        ohe = OneHotEncoder(values=cat_feature_values[feature], columns=feature)
+        one_hot_encode.append(ohe)
+
+    # carried forward columns using VAL's Retain function
+    retained_cols = numeric_columns+[target_column]
+    retain = Retain(columns=retained_cols)    
+
     data = DataFrame(data_conf["data_table"])
-    #we can use ML"s OneHotEncoder to transform the x variable so it can be treated as numeric
-    centers = ["TYPE_A", "TYPE_B", "TYPE_C"]
-    cuisines = ["Continental", "Indian", "Italian", "Thai"]
-    meals = ["Beverages", "Biryani", "Desert", "Extras", "Fish", "Other Snacks", "Pasta", 
-             "Pizza", "Rice Bowl", "Salad", "Sandwich", "Seafood", "Soup", "Starters"]
-    ohe_center = OneHotEncoder(values=centers, columns= "center_type")
-    ohe_cuisine = OneHotEncoder(values=cuisines, columns= "cuisine")
-    ohe_meal = OneHotEncoder(values=meals, columns= "category")
-    one_hot_encode = [ohe_center, ohe_cuisine, ohe_meal]
-    
-    retained_cols = ["center_id", "meal_id", "checkout_price", "base_price",
-           "emailer_for_promotion", "homepage_featured", "op_area", "num_orders"]
-    retain = Retain(columns=retained_cols)
-    
     tf = valib.Transform(data=data, one_hot_encode=one_hot_encode, retain=retain)
     df_train = tf.result
 
-    print("Starting training...")
+    # to avoid multi-collinearity issue we need to pass 
+    # k-1 categories for each categorical feature to LinReg function
+    excluded_cols = [target_column]
+    for index, feature in enumerate(categorical_columns):
+        ohe = one_hot_encode[index]
+        f_name = ohe.values[-1] + "_" + feature
+        excluded_cols.append(f_name)
+    features = [col_name for col_name in df_train.columns if not col_name in excluded_cols]
 
     ##############################    
     # fit model to training data #
     ##############################
-    # to avoid multi-collinearity issue we need to pass 
-    # k-1 categories for each categorical feature to LinReg function
-    features = [col_name for col_name in df_train.columns if not (col_name=="num_orders" 
-                or col_name=="TYPE_C_center_type"
-                or col_name=="Thai_cuisine"
-                or col_name=="Starters_category")]
+    print("Starting training...")
     model = valib.LinReg(data=df_train, 
                      columns=features, 
-                     response_column="num_orders")
+                     response_column=target_column)
 
     print("Finished training")
 
-    # saving model dataframes in the database so it could be used for evaluation and scoring
-    
-    model.model.to_sql(table_name = kwargs.get("model_table"), if_exists = 'replace')
-    model.statistical_measures.to_sql(table_name = kwargs.get("model_table") + "_rpt", if_exists = 'replace')
-
+    # saving model dataframes in the database so it could be used for evaluation and scoring    
+    model.model.to_sql(table_name=kwargs.get("model_table"), if_exists='replace')
+    model.statistical_measures.to_sql(table_name=kwargs.get("model_table") + "_rpt", if_exists='replace')
 
     print("Saved trained model")
     
