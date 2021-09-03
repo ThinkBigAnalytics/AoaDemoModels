@@ -1,6 +1,4 @@
-#VAL libraries and VAL installation path
-#import pandas as pd
-#teradata ML Libraries
+#TD/VAL libraries and VAL installation path
 from teradataml import DataFrame, create_context, remove_context
 from teradataml.analytics.Transformations import OneHotEncoder
 from teradataml.analytics.Transformations import Retain
