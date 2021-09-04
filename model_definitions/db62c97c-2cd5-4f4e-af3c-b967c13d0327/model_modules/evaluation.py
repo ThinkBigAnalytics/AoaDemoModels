@@ -70,7 +70,7 @@ def evaluate(data_conf, model_conf, **kwargs):
                                   )
     eval_result = df_score_eval.result
     evaluation = {}
-    for col in df_score_eval.columns:
+    for col in eval_result.columns:
         evaluation[col] = eval_result.get(col).squeeze()
 
     with open("artifacts/output/metrics.json", "w+") as f:
