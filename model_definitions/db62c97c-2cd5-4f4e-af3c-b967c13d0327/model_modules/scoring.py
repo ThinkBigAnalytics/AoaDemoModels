@@ -58,9 +58,10 @@ def score(data_conf, model_conf, **kwargs):
     score = valib.LinRegPredict(data=df_eval,
                         model=DataFrame(kwargs.get("model_table"))
                         )
+    
     df = score.result
    
-    df.to_sql(table_name = data_conf["result_table"], if_exists = 'replace')
+    df.to_sql(table_name = data_conf["results_table"], if_exists = 'replace')
     
     remove_context()
     
