@@ -63,13 +63,4 @@ def score(data_conf, model_conf, **kwargs):
     df.to_sql(table_name = data_conf["result_table"], if_exists = 'replace')
     
     remove_context()
-
-
-# Uncomment this code if you want to deploy your model as a Web Service (Real-time / Interactive usage)
-# class ModelScorer(object):
-#    def __init__(self, config=None):
-#        self.model = joblib.load('models/iris_knn.joblib')
-#
-#    def predict(self, data):
-#        return self.model.predict([data])
-#
+    
