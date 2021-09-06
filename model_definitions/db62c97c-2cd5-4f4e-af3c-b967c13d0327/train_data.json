@@ -2,6 +2,6 @@
 	"data_table": "DEMAND_FORECAST_TRAIN_VAL",
 	"numeric_columns": ["center_id", "meal_id", "checkout_price", "base_price", "emailer_for_promotion", "homepage_featured", "op_area"],
 	"target_column": "num_orders",
-	"categorical_columns": ["center_type", "category", "cuisine"]
+	"categorical_columns": ["center_type", "category", "cuisine"],
 	"results_table": "DEMAND_FORECAST_TRAIN_VAL_PREDICTIONS"
 }
