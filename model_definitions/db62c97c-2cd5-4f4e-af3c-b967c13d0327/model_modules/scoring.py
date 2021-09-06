@@ -23,7 +23,7 @@ def score(data_conf, model_conf, **kwargs):
     create_context(host = os.environ["AOA_CONN_HOST"],
                    username = os.environ["AOA_CONN_USERNAME"],
                    password = os.environ["AOA_CONN_PASSWORD"],
-                   database = "EP_SDS")
+                   database = "AOA_DEMO")
     
     ########################
     # load data & engineer #
