@@ -77,22 +77,14 @@ def evaluate(data_conf, model_conf, **kwargs):
         json.dump(evaluation, f)
 
     model = valib.LinRegPredict(data=df_eval,
-                        model=DataFrame(kwargs.get("model_table"))
+                        model=DataFrame(kwargs.get("model_table")),
+                        accumulate=target_column
                         )
     df_score = model.result
     
-    y_test = df_eval.get(["index", target_column]).sort('index').get_values().flatten()
-    y_pred = df_score.get(["index", target_column]).sort('index').get_values().flatten()
-
-    #y_test = df_eval.get(target_column).get_values().flatten()
-    #y_pred = df_score.get(target_column).get_values().flatten()
-
-    # evaluation = {
-    #     'R-Squared': '{:.2f}'.format(skm.r2_score(y_test, y_pred)),
-    #     'MAE': '{:.2f}'.format(skm.mean_absolute_error(y_test, y_pred)),
-    #     'MSE': '{:.2f}'.format(skm.mean_squared_error(y_test, y_pred)),
-    #     #'MSLE': '{:.2f}'.format(skm.mean_squared_log_error(y_test, y_pred))
-    # }
+    pdf_score = df_score.to_pandas(all_rows=True)
+    y_test = pdf_score[target_column]
+    y_pred = pdf_score["_tm_" + target_column]
 
     # a plot of actual num_orders vs predicted 
     result_df = pd.DataFrame(np.vstack((y_test, y_pred)).T, 
