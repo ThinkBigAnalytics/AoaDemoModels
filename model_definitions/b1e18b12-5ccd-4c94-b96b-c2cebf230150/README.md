@@ -48,22 +48,22 @@ The above datasets are available in Teradata Vantage and already configured in t
 Training
 ```json
 {
-    "table": "<training dataset>"
+    "table": "DEMAND_FORECAST_TRAIN"
 }
 ```
 Evaluation
 
 ```json
 {
-    "table": "<test dataset>"
+    "table": "DEMAND_FORECAST_TEST"
 }
 ```
 
 Batch Scoring
 ```json
  {
-     "table": "<score dataset>",
-     "predictions": "<ouput predictions dataset>"
+     "table": "DEMAND_FORECAST_TEST",
+     "predictions": "DEMAND_FORECAST_PREDICTIONS"
  }
  ```
 
@@ -92,7 +92,7 @@ We also use shap to save some global explainability plots which help understand 
 
 
 # Scoring 
-This demo mode supports two types of scoring
+This demo modeL supports three types of scoring
 
  - Batch
  - RESTful
