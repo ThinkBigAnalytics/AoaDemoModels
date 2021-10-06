@@ -1,5 +1,5 @@
 # Overview
-This is a demo regression model built using a Teradata native Vantage Analytics Library (VAL). The model is applied to a demand forecasting problem. Details of the given problem and a companion scikit-learn-based regression model are available [here](model_definitions/b1e18b12-5ccd-4c94-b96b-c2cebf230150/README.md).
+This is a demo regression model built using Teradata's native Vantage Analytics Library (VAL). The model is applied to a demand forecasting problem. Details of the given problem and a companion scikit-learn-based regression model are available [here](model_definitions/b1e18b12-5ccd-4c94-b96b-c2cebf230150/README.md).
 
 A sample notebook that demonstrates how to build models using VAL is available [here](notebooks/demand_forecasting_with_VAL.ipynb).
 
