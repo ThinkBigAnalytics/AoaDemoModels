@@ -1,5 +1,7 @@
 {
   "hyperParameters": {
-    "sampleParam": 1
+      "entrance_criterion": 3.84
+      "use_fstat": True
+      "use_pstat": False      
   }
 }

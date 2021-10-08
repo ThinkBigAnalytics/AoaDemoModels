@@ -20,7 +20,7 @@ def train(data_conf, model_conf, **kwargs):
 
     """
 
-    #hyperparams = model_conf["hyperParameters"]
+    hyperparams = model_conf["hyperParameters"]
     
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
@@ -70,9 +70,13 @@ def train(data_conf, model_conf, **kwargs):
     # fit model to training data #
     ##############################
     print("Starting training...")
-    model = valib.LinReg(data=df_train, 
-                     columns=features, 
-                     response_column=target_column)
+    model = valib.LinReg(data=df_train,
+                         columns=features,
+                         response_column=target_column,
+                         entrance_criterion=hyperparams["entrance_criterion"],
+                         use_fstat=hyperparams["use_fstat"],
+                         use_pstat: hyperparams["use_pstat"]   
+                        )
 
     print("Finished training")
 
