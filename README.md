@@ -24,6 +24,8 @@ If you want to see more details around how to use the AOA, please watch the foll
 ## Regression
 
 - [Python RF Regressor (Demand Forecasting)](model_definitions/b1e18b12-5ccd-4c94-b96b-c2cebf230150)
+- [VAL Linear Regressor (Demand Forecasting)](model_definitions/db62c97c-2cd5-4f4e-af3c-b967c13d0327)
+
 
 # Adding new Models
 
