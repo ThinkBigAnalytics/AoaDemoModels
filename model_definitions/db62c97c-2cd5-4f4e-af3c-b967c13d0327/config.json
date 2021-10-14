@@ -1,7 +1,7 @@
 {
   "hyperParameters": {
-      "entrance_criterion": 3.84
-      "use_fstat": true
+      "entrance_criterion": 3.84,
+      "use_fstat": true,
       "use_pstat": false      
   }
 }
