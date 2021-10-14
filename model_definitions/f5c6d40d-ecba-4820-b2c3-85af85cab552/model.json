@@ -1,0 +1,6 @@
+{
+    "id": "f5c6d40d-ecba-4820-b2c3-85af85cab552",
+    "name": "Bank Marketing in R with H2O GBM",
+    "description": "Bank Marketing example GBM model in python using h2o libraries.",
+    "language": "R"
+}

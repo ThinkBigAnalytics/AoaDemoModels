@@ -1,0 +1,8 @@
+{
+  "hyperParameters": {
+    "ntrees": 50,
+    "max_depth": 2,
+    "min_rows": 2,
+    "learn_rate": 0.1
+  }
+}
