@@ -1,0 +1,6 @@
+{
+  "id": "4cf477da-e0c6-4a33-93f3-d37768f41639",
+  "name": "Bank Marketing in R with H2O AutoML",
+  "description": "Bank Marketing example model in python using h2o AutoML libraries.",
+  "language": "R"
+}

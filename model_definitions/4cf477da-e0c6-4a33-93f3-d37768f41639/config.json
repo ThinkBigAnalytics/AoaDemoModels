@@ -1,0 +1,6 @@
+{
+  "hyperParameters": {
+    "max_models": 20,
+    "seed": 1
+  }
+}
