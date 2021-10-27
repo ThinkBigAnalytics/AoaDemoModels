@@ -5,6 +5,8 @@ from teradataml.analytics.Transformations import Retain
 from teradataml import valib
 from teradataml import configure
 configure.val_install_location = "VAL"
+from aoa.stats import stats
+
 
 import os
 
@@ -86,7 +88,7 @@ def train(data_conf, model_conf, **kwargs):
     model.statistical_measures.to_sql(table_name=kwargs.get("model_table") + "_rpt", if_exists='replace')
     
     #save categorical features and their values so we can isolate any new feature values
-    model.cat_feature_values = cat_feature_values
+    stats.record_training_stats(cat_feature_values)
 
     print("Saved trained model")
     

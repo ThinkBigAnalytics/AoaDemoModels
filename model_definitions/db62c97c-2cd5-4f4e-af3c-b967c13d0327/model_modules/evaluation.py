@@ -42,6 +42,7 @@ def evaluate(data_conf, model_conf, **kwargs):
     
     # feature encoding
     # categorical features to one_hot_encode using VAL transform
+    cat_feature_values = model.
     cat_feature_values = {}
     for feature in categorical_columns:
         #distinct has a spurious behaviour so using Group by
