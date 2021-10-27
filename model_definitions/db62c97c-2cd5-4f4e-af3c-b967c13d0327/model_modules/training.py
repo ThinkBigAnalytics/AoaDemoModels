@@ -62,7 +62,8 @@ def train(data_conf, model_conf, **kwargs):
     excluded_cols = [target_column]
     for index, feature in enumerate(categorical_columns):
         ohe = one_hot_encode[index]
-        f_name = ohe.values[-1] + "_" + feature
+        if len(ohe.values > 1):
+            f_name = ohe.values[-1] + "_" + feature
         excluded_cols.append(f_name)
     features = [col_name for col_name in df_train.columns if not col_name in excluded_cols]
 
@@ -83,6 +84,9 @@ def train(data_conf, model_conf, **kwargs):
     # saving model dataframes in the database so it could be used for evaluation and scoring    
     model.model.to_sql(table_name=kwargs.get("model_table"), if_exists='replace')
     model.statistical_measures.to_sql(table_name=kwargs.get("model_table") + "_rpt", if_exists='replace')
+    
+    #save categorical features and their values so we can isolate any new feature values
+    model.cat_feature_values = cat_feature_values
 
     print("Saved trained model")
     
