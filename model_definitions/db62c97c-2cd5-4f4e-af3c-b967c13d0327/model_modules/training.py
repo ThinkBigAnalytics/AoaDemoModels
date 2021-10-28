@@ -78,7 +78,7 @@ def train(data_conf, model_conf, **kwargs):
                          response_column=target_column,
                          entrance_criterion=hyperparams["entrance_criterion"],
                          use_fstat=hyperparams["use_fstat"],
-                         use_pstat=hyperparams["use_pstat"]   
+                         use_pvalue=hyperparams["use_pvalue"]   
                         )
 
     print("Finished training")
