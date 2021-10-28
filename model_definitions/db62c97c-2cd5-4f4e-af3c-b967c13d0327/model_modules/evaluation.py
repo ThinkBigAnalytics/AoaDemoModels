@@ -26,7 +26,6 @@ def evaluate(data_conf, model_conf, **kwargs):
     None:No return
 
     """
-    
     create_context(host = os.environ["AOA_CONN_HOST"],
                    username = os.environ["AOA_CONN_USERNAME"],
                    password = os.environ["AOA_CONN_PASSWORD"],
@@ -42,7 +41,6 @@ def evaluate(data_conf, model_conf, **kwargs):
     
     # feature encoding
     # categorical features to one_hot_encode using VAL transform
-    cat_feature_values = model.
     cat_feature_values = {}
     for feature in categorical_columns:
         #distinct has a spurious behaviour so using Group by
