@@ -1,6 +1,7 @@
 {
     "hyperParameters": {
         "entrance_criterion": 3.84,
+        "stepwise": false,
         "use_fstat": true,
         "use_pvalue": false
     }
