@@ -33,6 +33,29 @@ def score(data_conf, model_conf, **kwargs):
     target_column = data_conf["target_column"]
     categorical_columns = data_conf["categorical_columns"]
     
+    ########################
+    # !!!!!!WARNING!!!!!!! #
+    ########################
+   """
+   The eval/scoring data is encoded here similarly as done 
+   with the training data. The assumption is that all categorical variables
+   contain same categories in both the training and eval/score datasets.
+   However, if this assumption does not hold or there is uncertainty then it is 
+   best to save and carry forward all the distinct categorical feature values to 
+   eval/score model codes and use those for encoding. 
+   
+   The default VAL's OHE behavior is to ignore any categories not listed in the encoder
+   definition call, by having an all zero record (for all the categorical features). If 
+   this behavior is undesired then a simple technique to filter out the records with new
+   categories can be adopted as follows:
+   
+   df = DataFrame(table_name)
+   for feature in categorical_columns:
+       df = df[~df[feature].isin(cat_feature_values[feature])]
+
+   """
+    
+   
     # feature encoding
     # categorical features to one_hot_encode using VAL transform
     cat_feature_values = {}

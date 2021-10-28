@@ -5,8 +5,6 @@ from teradataml.analytics.Transformations import Retain
 from teradataml import valib
 from teradataml import configure
 configure.val_install_location = "VAL"
-from aoa.stats import stats
-
 
 import os
 
@@ -77,7 +75,7 @@ def train(data_conf, model_conf, **kwargs):
                          columns=features,
                          response_column=target_column,
                          entrance_criterion=hyperparams["entrance_criterion"],
-                         stepwise=hyperparams["stepwise"],
+                         stepwise=hyperparams["stepwise"]
                         )
 
     print("Finished training")
