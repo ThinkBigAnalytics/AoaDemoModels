@@ -86,9 +86,6 @@ def train(data_conf, model_conf, **kwargs):
     model.model.to_sql(table_name=kwargs.get("model_table"), if_exists='replace')
     model.statistical_measures.to_sql(table_name=kwargs.get("model_table") + "_rpt", if_exists='replace')
     
-    #save categorical features and their values so we can isolate any new feature values
-    stats.record_training_stats(cat_feature_values)
-
     print("Saved trained model")
     
     remove_context()
