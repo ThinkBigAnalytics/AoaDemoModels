@@ -1,13 +1,16 @@
-#TD/VAL libraries and VAL installation path
+import os
+
+# TD libraries
 from teradataml import DataFrame, create_context, remove_context
 from teradataml.analytics.Transformations import OneHotEncoder
 from teradataml.analytics.Transformations import Retain
 from teradataml import valib
 from teradataml import configure
-configure.val_install_location = "VAL"
 from aoa.stats import stats
 
-import os
+# VAL installation path
+configure.val_install_location = "VAL"
+
 
 def train(data_conf, model_conf, **kwargs):
     """Python train method called by AOA framework
@@ -28,13 +31,12 @@ def train(data_conf, model_conf, **kwargs):
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database="AOA_DEMO")
 
-    ########################
     # load data & engineer #
-    ########################
     table_name = data_conf["data_table"]
-    numeric_columns = data_conf["numeric_columns"]
-    target_column = data_conf["target_column"]
-    categorical_columns = data_conf["categorical_columns"]
+    numeric_columns = ["center_id","meal_id","checkout_price","base_price","emailer_for_promotion","homepage_featured","op_area"]
+    categorical_columns = ["center_type","category","cuisine"]
+    target_column = "target_column"
+    features = numeric_columns + categorical_columns
     
     # feature encoding
     # categorical features to one_hot_encode using VAL transform
@@ -66,14 +68,12 @@ def train(data_conf, model_conf, **kwargs):
         if len(ohe.values) > 1:
             f_name = ohe.values[-1] + "_" + feature
         excluded_cols.append(f_name)
-    features = [col_name for col_name in df_train.columns if not col_name in excluded_cols]
+    sel_features = [col_name for col_name in df_train.columns if not col_name in excluded_cols]
 
-    ##############################    
     # fit model to training data #
-    ##############################
     print("Starting training...")
     model = valib.LinReg(data=df_train,
-                         columns=features,
+                         columns=sel_features,
                          response_column=target_column,
                          entrance_criterion=hyperparams["entrance_criterion"],
                          stepwise=hyperparams["stepwise"]
@@ -85,12 +85,10 @@ def train(data_conf, model_conf, **kwargs):
     model.model.to_sql(table_name=kwargs.get("model_table"), if_exists='replace')
     model.statistical_measures.to_sql(table_name=kwargs.get("model_table") + "_rpt", if_exists='replace')
     
-    stats.record_training_stats(df_train,
-                   features=df_train.columns,
+    stats.record_training_stats(data,
+                   features=features,
                    predictors=[target_column],
-                   categorical=categorical_columns,
-                   #importance=feature_importances,
-                   category_labels=cat_feature_values)
+                   categorical=categorical_columns)
 
     remove_context()
 
