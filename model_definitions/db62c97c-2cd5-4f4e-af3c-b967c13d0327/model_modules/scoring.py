@@ -5,6 +5,8 @@ from teradataml import valib
 from teradataml import configure
 configure.val_install_location = "VAL"
 
+from aoa.stats import stats
+
 import os
 
 
@@ -83,5 +85,7 @@ def score(data_conf, model_conf, **kwargs):
     df = score.result
 
     df.to_sql(table_name=data_conf["result_table"], if_exists = 'replace')
+    
+    stats.record_scoring_stats(df_eval, df)
 
     remove_context()

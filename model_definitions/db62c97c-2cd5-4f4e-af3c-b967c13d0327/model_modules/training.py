@@ -5,6 +5,7 @@ from teradataml.analytics.Transformations import Retain
 from teradataml import valib
 from teradataml import configure
 configure.val_install_location = "VAL"
+from aoa.stats import stats
 
 import os
 
@@ -84,7 +85,12 @@ def train(data_conf, model_conf, **kwargs):
     model.model.to_sql(table_name=kwargs.get("model_table"), if_exists='replace')
     model.statistical_measures.to_sql(table_name=kwargs.get("model_table") + "_rpt", if_exists='replace')
     
-    print("Saved trained model")
-    
+    stats.record_training_stats(df_train,
+                   features=df_train.columns,
+                   predictors=[target_column],
+                   categorical=categorical_columns,
+                   #importance=feature_importances,
+                   category_labels=cat_feature_values)
+
     remove_context()
 

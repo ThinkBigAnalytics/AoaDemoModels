@@ -6,6 +6,7 @@ from teradataml import valib
 from teradataml import configure
 configure.val_install_location = "VAL"
 from aoa.util.artefacts import save_plot
+from aoa.stats import stats
 
 
 import os
@@ -115,6 +116,8 @@ def evaluate(data_conf, model_conf, **kwargs):
             subplots = False, sharex = True, figsize = (5.5,4), ls="none", 
             marker="o", alpha=0.4)    
     save_plot('Actual vs Predicted')
+    
+    stats.record_evaluation_stats(test_df, df_score)
 
     print("Evaluation complete...")
 
