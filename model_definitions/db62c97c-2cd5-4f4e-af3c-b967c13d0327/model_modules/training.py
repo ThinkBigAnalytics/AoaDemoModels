@@ -35,7 +35,7 @@ def train(data_conf, model_conf, **kwargs):
     table_name = data_conf["data_table"]
     numeric_columns = ["center_id","meal_id","checkout_price","base_price","emailer_for_promotion","homepage_featured","op_area"]
     categorical_columns = ["center_type","category","cuisine"]
-    target_column = "target_column"
+    target_column = "num_orders"
     features = numeric_columns + categorical_columns
     
     # feature encoding
