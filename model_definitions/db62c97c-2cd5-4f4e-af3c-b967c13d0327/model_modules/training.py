@@ -86,9 +86,8 @@ def train(data_conf, model_conf, **kwargs):
     model.statistical_measures.to_sql(table_name=kwargs.get("model_table") + "_rpt", if_exists='replace')
     
     stats.record_training_stats(data,
-                   features=features,
-                   predictors=[target_column],
-                   categorical=categorical_columns)
-
+                                features=features,
+                                predictors=[target_column],
+                                categorical=categorical_columns)
     remove_context()
 
