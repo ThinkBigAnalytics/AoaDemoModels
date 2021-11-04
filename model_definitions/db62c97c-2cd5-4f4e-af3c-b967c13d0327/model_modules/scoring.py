@@ -31,11 +31,11 @@ def score(data_conf, model_conf, **kwargs):
     # load data & engineer #
     ########################
     table_name = data_conf["data_table"]
-    numeric_columns = data_conf["numeric_columns"]
-    target_column = data_conf["target_column"]
-    categorical_columns = data_conf["categorical_columns"]
+    numeric_columns = ["center_id","meal_id","checkout_price","base_price","emailer_for_promotion","homepage_featured","op_area"]
+    categorical_columns = ["center_type","category","cuisine"]
+    target_column = "num_orders"
+    features = numeric_columns + categorical_columns
 
-    # Caveat: handling unseen categories
     """
     The eval/scoring data is encoded here similarly as done 
     with the training data. The assumption is that all categorical variables
@@ -54,7 +54,6 @@ def score(data_conf, model_conf, **kwargs):
        df = df[~df[feature].isin(cat_feature_values[feature])]
 
     """
-
 
     # feature encoding
     # categorical features to one_hot_encode using VAL transform

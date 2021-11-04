@@ -36,12 +36,12 @@ def evaluate(data_conf, model_conf, **kwargs):
     # load data & engineer #
     ########################
     table_name = data_conf["data_table"]
-    numeric_columns = data_conf["numeric_columns"]
-    target_column = data_conf["target_column"]
-    categorical_columns = data_conf["categorical_columns"]
+    numeric_columns = ["center_id","meal_id","checkout_price","base_price","emailer_for_promotion","homepage_featured","op_area"]
+    categorical_columns = ["center_type","category","cuisine"]
+    target_column = "num_orders"
+    features = numeric_columns + categorical_columns
 
 
-    # Caveat: handling unseen categories
     """
     The eval/scoring data is encoded here similarly as done 
     with the training data. The assumption is that all categorical variables
@@ -83,9 +83,7 @@ def evaluate(data_conf, model_conf, **kwargs):
     tf = valib.Transform(data=data, one_hot_encode=one_hot_encode, retain=retain)
     df_eval = tf.result
 
-    ##################################################    
     # evaluate using fitted model on evaluation data #
-    ##################################################
     df_score_eval = valib.LinRegEvaluator(data=df_eval,
                                   model=DataFrame(kwargs.get("model_table"))
                                   )
@@ -117,7 +115,7 @@ def evaluate(data_conf, model_conf, **kwargs):
             marker="o", alpha=0.4)    
     save_plot('Actual vs Predicted')
     
-    stats.record_evaluation_stats(test_df, df_score)
+    stats.record_evaluation_stats(data, df_score)
 
     print("Evaluation complete...")
 
