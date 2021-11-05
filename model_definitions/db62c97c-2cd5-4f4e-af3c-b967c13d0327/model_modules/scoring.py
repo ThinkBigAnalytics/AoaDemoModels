@@ -85,6 +85,6 @@ def score(data_conf, model_conf, **kwargs):
 
     df.to_sql(table_name=data_conf["result_table"], if_exists = 'replace')
     
-    stats.record_scoring_stats(df_eval, df)
+    stats.record_scoring_stats(data.select(features+[target_column]), df)
 
     remove_context()
