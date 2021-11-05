@@ -36,7 +36,7 @@ def evaluate(data_conf, model_conf, **kwargs):
     # load data & engineer #
     ########################
     table_name = data_conf["data_table"]
-    numeric_columns = ["center_id","meal_id","checkout_price","base_price","emailer_for_promotion","homepage_featured","op_area"]
+    numeric_columns = ["checkout_price","base_price","emailer_for_promotion","homepage_featured","op_area"]
     categorical_columns = ["center_type","category","cuisine"]
     target_column = "num_orders"
     features = numeric_columns + categorical_columns
@@ -115,7 +115,7 @@ def evaluate(data_conf, model_conf, **kwargs):
             marker="o", alpha=0.4)    
     save_plot('Actual vs Predicted')
     
-    stats.record_evaluation_stats(data, df_score)
+    stats.record_evaluation_stats(data.select(features), df_score)
 
     print("Evaluation complete...")
 

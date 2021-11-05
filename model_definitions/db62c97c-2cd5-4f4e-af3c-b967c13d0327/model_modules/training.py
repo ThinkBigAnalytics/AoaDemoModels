@@ -33,7 +33,7 @@ def train(data_conf, model_conf, **kwargs):
 
     # load data & engineer #
     table_name = data_conf["data_table"]
-    numeric_columns = ["center_id","meal_id","checkout_price","base_price","emailer_for_promotion","homepage_featured","op_area"]
+    numeric_columns = ["checkout_price","base_price","emailer_for_promotion","homepage_featured","op_area"]
     categorical_columns = ["center_type","category","cuisine"]
     target_column = "num_orders"
     features = numeric_columns + categorical_columns
@@ -85,7 +85,7 @@ def train(data_conf, model_conf, **kwargs):
     model.model.to_sql(table_name=kwargs.get("model_table"), if_exists='replace')
     model.statistical_measures.to_sql(table_name=kwargs.get("model_table") + "_rpt", if_exists='replace')
     
-    stats.record_training_stats(data,
+    stats.record_training_stats(data.select(features),
                                 features=features,
                                 predictors=[target_column],
                                 categorical=categorical_columns)
