@@ -115,7 +115,7 @@ def evaluate(data_conf, model_conf, **kwargs):
             marker="o", alpha=0.4)    
     save_plot('Actual vs Predicted')
     
-    stats.record_evaluation_stats(data.select(features+[target_columnn]), df_score)
+    stats.record_evaluation_stats(data.select(features+[target_column]), df_score)
 
     print("Evaluation complete...")
 
