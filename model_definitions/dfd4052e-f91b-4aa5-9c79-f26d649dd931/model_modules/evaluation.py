@@ -1,7 +1,7 @@
-from teradataml import create_context
-from teradataml.dataframe.dataframe import DataFrame
-from tdextensions.distributed import DistDataFrame, DistMode
+from teradataml import DataFrame, create_context
+from teradatasqlalchemy.types import INTEGER, VARCHAR, CLOB
 from sklearn import metrics
+from collections import OrderedDict
 from aoa.sto.util import save_metadata, save_evaluation_metrics
 
 import os
@@ -20,19 +20,23 @@ def evaluate(data_conf, model_conf, **kwargs):
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
     def eval_partition(partition):
-        model_artefact = partition.loc[partition['n_row'] == 1, 'model_artefact'].iloc[0]
+        rows = partition.read()
+        if rows is None:
+            return None
+
+        model_artefact = rows.loc[rows['n_row'] == 1, 'model_artefact'].iloc[0]
         model = dill.loads(base64.b64decode(model_artefact))
 
-        X_test = partition[model.features]
-        y_test = partition[['Y1']]
+        X_test = rows[model.features]
+        y_test = rows[['Y1']]
 
         y_pred = model.predict(X_test)
 
-        partition_id = partition.partition_ID.iloc[0]
+        partition_id = rows.partition_ID.iloc[0]
 
         # record whatever partition level information you want like rows, data stats, metrics, explainability, etc
         partition_metadata = json.dumps({
-            "num_rows": partition.shape[0],
+            "num_rows": rows.shape[0],
             "metrics": {
                 "MAE": "{:.2f}".format(metrics.mean_absolute_error(y_test, y_pred)),
                 "MSE": "{:.2f}".format(metrics.mean_squared_error(y_test, y_pred)),
@@ -40,7 +44,9 @@ def evaluate(data_conf, model_conf, **kwargs):
             }
         })
 
-        return np.array([[partition_id, partition.shape[0], partition_metadata]])
+        return np.array([[partition_id, rows.shape[0], partition_metadata]])
+
+    print("Starting evaluation...")
 
     # we join the model artefact to the 1st row of the data table so we can load it in the partition
     query = f"""
@@ -51,15 +57,17 @@ def evaluate(data_conf, model_conf, **kwargs):
         WHERE m.model_version = '{model_version}'
     """
 
-    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="model_eval")
+    df = DataFrame(query=query)
     eval_df = df.map_partition(lambda partition: eval_partition(partition),
-                               partition_by="partition_id",
-                               returns=[["partition_id", "VARCHAR(255)"],
-                                        ["num_rows", "BIGINT"],
-                                        ["partition_metadata", "CLOB"]])
+                               data_partition_column="partition_ID",
+                               returns=OrderedDict(
+                                   [('partition_id', VARCHAR(255)),
+                                    ('num_rows', INTEGER()),
+                                    ('partition_metadata', CLOB())]))
 
-    # materialize as we reuse result
-    eval_df = DataFrame(eval_df._table_name, materialize=True)
+    # persist to temporary table for computing global metrics
+    eval_df.to_sql("sto_eval_results", temporary=True)
+    eval_df = DataFrame("sto_eval_results")
 
     save_metadata(eval_df)
     save_evaluation_metrics(eval_df, ["MAE", "MSE", "R2"])
