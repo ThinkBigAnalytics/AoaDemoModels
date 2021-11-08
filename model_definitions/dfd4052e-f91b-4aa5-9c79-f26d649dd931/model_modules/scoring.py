@@ -1,5 +1,6 @@
-from teradataml import create_context
-from tdextensions.distributed import DistDataFrame, DistMode
+from teradataml import DataFrame, create_context
+from teradatasqlalchemy.types import VARCHAR
+from collections import OrderedDict
 
 import os
 import base64
@@ -15,12 +16,19 @@ def score(data_conf, model_conf, **kwargs):
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
     def score_partition(partition):
-        model_artefact = partition.loc[partition['n_row'] == 1, 'model_artefact'].iloc[0]
+        rows = partition.read()
+        if rows is None:
+            return None
+
+        model_artefact = rows.loc[rows['n_row'] == 1, 'model_artefact'].iloc[0]
         model = dill.loads(base64.b64decode(model_artefact))
 
-        X = partition[model.features]
+        out_df = rows[["ID"]]
+        out_df["predictions"] = model.predict(rows[model.features])
 
-        return model.predict(X)
+        return out_df
+
+    print("Starting scoring...")
 
     # we join the model artefact to the 1st row of the data table so we can load it in the partition
     query = f"""
@@ -31,9 +39,15 @@ def score(data_conf, model_conf, **kwargs):
         WHERE m.model_version = '{model_version}'
     """
 
-    df = DistDataFrame(query=query, dist_mode=DistMode.STO, sto_id="my_model_score")
+    df = DataFrame(query=query)
     scored_df = df.map_partition(lambda partition: score_partition(partition),
-                                 partition_by="partition_id",
-                                 returns=[["prediction", "VARCHAR(255)"]])
+                                 data_partition_column="partition_ID",
+                                 returns=OrderedDict(
+                                     [('partition_id', VARCHAR(255)),
+                                      ('prediction', VARCHAR(255))]))
 
     scored_df.to_sql(data_conf["predictions"], if_exists="append")
+
+    print(scored_df.head(2))
+
+    print("Finished scoring...")
