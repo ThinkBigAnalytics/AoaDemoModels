@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from aoa.sto.util import save_metadata, cleanup_cli
+from aoa.sto.util import save_metadata, cleanup_cli, check_sto_version, collect_sto_versions
 from collections import OrderedDict
 
 import os
@@ -25,6 +25,7 @@ def train(data_conf, model_conf, **kwargs):
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
+    check_sto_version()
     cleanup_cli(model_version)
 
     def train_partition(partition, model_version, hyperparams):
@@ -91,3 +92,6 @@ def train(data_conf, model_conf, **kwargs):
     save_metadata(model_df)
 
     print("Finished training")
+
+    with open("artifacts/output/sto_versions.json", "w+") as f:
+        json.dump(collect_sto_versions(), f)
