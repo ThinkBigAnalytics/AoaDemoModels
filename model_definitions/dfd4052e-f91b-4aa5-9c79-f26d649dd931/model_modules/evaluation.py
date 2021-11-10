@@ -2,7 +2,7 @@ from teradataml import DataFrame, create_context
 from teradatasqlalchemy.types import INTEGER, VARCHAR, CLOB
 from sklearn import metrics
 from collections import OrderedDict
-from aoa.sto.util import save_metadata, save_evaluation_metrics
+from aoa.sto.util import save_metadata, save_evaluation_metrics, check_sto_version
 
 import os
 import numpy as np
@@ -13,11 +13,14 @@ import dill
 
 def evaluate(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
+    model_table = "aoa_sto_models"
 
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
+
+    check_sto_version()
 
     def eval_partition(partition):
         rows = partition.read()
@@ -52,7 +55,7 @@ def evaluate(data_conf, model_conf, **kwargs):
     query = f"""
     SELECT d.*, CASE WHEN n_row=1 THEN m.model_artefact ELSE null END AS model_artefact 
         FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.partition_id ORDER BY x.partition_id) AS n_row FROM {data_conf["table"]} x) AS d
-        LEFT JOIN aoa_sto_models m
+        LEFT JOIN {model_table} m
         ON d.partition_id = m.partition_id
         WHERE m.model_version = '{model_version}'
     """
