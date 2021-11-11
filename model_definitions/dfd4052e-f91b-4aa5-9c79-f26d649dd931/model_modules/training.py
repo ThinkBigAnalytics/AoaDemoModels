@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from aoa.sto.util import save_metadata, cleanup_cli
+from aoa.sto.util import save_metadata, cleanup_cli, check_sto_version, collect_sto_versions
 from collections import OrderedDict
 
 import os
@@ -19,13 +19,15 @@ import dill
 def train(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
     hyperparams = model_conf["hyperParameters"]
+    model_table = "aoa_sto_models"
 
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
-    cleanup_cli(model_version)
+    check_sto_version()
+    cleanup_cli(model_version, model_table)
 
     def train_partition(partition, model_version, hyperparams):
         rows = partition.read()
@@ -85,9 +87,12 @@ def train(data_conf, model_conf, **kwargs):
                                      ('model_artefact', CLOB())]))
 
     # persist to models table
-    model_df.to_sql("aoa_sto_models", if_exists="append")
-    model_df = DataFrame(query=f"SELECT * FROM aoa_sto_models WHERE model_version='{model_version}'")
+    model_df.to_sql(model_table, if_exists="append")
+    model_df = DataFrame(query=f"SELECT * FROM {model_table} WHERE model_version='{model_version}'")
 
     save_metadata(model_df)
 
     print("Finished training")
+
+    with open("artifacts/output/sto_versions.json", "w+") as f:
+        json.dump(collect_sto_versions(), f)
