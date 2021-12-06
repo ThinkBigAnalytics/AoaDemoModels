@@ -4,7 +4,7 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from aoa.sto.util import save_metadata, cleanup_cli
+from aoa.sto.util import save_metadata, cleanup_cli, check_sto_version
 from collections import OrderedDict
 
 import os
@@ -17,11 +17,15 @@ import dill
 def train(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
     hyperparams = model_conf["hyperParameters"]
+    model_artefacts_table = "aoa_sto_models"
 
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
+
+    # validate that the python versions match between client and server
+    check_sto_version()
 
     # required if executing multiple times via cli (model_version = 'cli' on every run).
     cleanup_cli(model_version)
@@ -78,8 +82,8 @@ def train(data_conf, model_conf, **kwargs):
                                      ('model_artefact', CLOB())]))
 
     # persist to models table
-    model_df.to_sql("aoa_sto_models", if_exists="append")
-    model_df = DataFrame(query=f"SELECT * FROM aoa_sto_models WHERE model_version='{model_version}'")
+    model_df.to_sql(model_artefacts_table, if_exists="append")
+    model_df = DataFrame(query=f"SELECT * FROM {model_artefacts_table} WHERE model_version='{model_version}'")
 
     save_metadata(model_df)
 

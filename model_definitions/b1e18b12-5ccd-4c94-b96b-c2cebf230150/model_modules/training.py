@@ -1,5 +1,3 @@
-import pandas as pd
-import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestRegressor
 from sklearn2pmml import sklearn2pmml
@@ -9,6 +7,8 @@ from teradataml import create_context, remove_context, DataFrame
 from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 
+import pandas as pd
+import numpy as np
 import joblib
 import os
 

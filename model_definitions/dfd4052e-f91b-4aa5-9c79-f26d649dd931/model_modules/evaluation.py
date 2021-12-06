@@ -2,7 +2,7 @@ from teradataml import DataFrame, create_context
 from teradatasqlalchemy.types import INTEGER, VARCHAR, CLOB
 from sklearn import metrics
 from collections import OrderedDict
-from aoa.sto.util import save_metadata, save_evaluation_metrics
+from aoa.sto.util import save_metadata, save_evaluation_metrics, check_sto_version
 from .util import get_joined_models_df
 
 import os
@@ -14,16 +14,22 @@ import dill
 
 def evaluate(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
+    model_artefacts_table = "aoa_sto_models"
 
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
+    # validate that the python versions match between client and server
+    check_sto_version()
+
     # Get the evaluation dataset. Note that we must join this dataset with the model artefacts we want to use in
     # evaluation. To do this, we join the model artefact table to the 1st row of the data table.
     # The util method does this for us.
-    df = get_joined_models_df(data_table=data_conf["table"], model_version=model_version)
+    df = get_joined_models_df(data_table=data_conf["table"],
+                              model_artefacts_table=model_artefacts_table,
+                              model_version=model_version)
 
     def eval_partition(partition):
         rows = partition.read()
