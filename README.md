@@ -4,6 +4,8 @@
 
 This repository contains the example / demo models for Teradata AnalyticOps (ModelOps). The goal of these examples is to provide a simple reference implementation for users and not to provide a detailed data science example for each use case. We provide both Python and R examples along with Classification and Regression model types.
 
+Refer to the [OfficialDocumentation](https://docs.tdaoa.com) for more information.
+
 ## Available Models
 
 ## Categorical
