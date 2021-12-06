@@ -1,0 +1,15 @@
+{
+    "id": "149e31ed-c554-46b4-95d2-00c5c43320fb",
+    "name": "PySpark PIMA Prediction",
+    "description": "Pyspark XGBoost for Diabetes Prediction",
+    "language": "python",
+
+    "automation": {
+        "trainingEngine": "pyspark",
+        "resources": {
+            "training": {
+                "args": "--master local[1] --num-executors 1 --executor-cores 1 --driver-memory 1G --executor-memory 1G"
+            }
+        }
+    }
+}
