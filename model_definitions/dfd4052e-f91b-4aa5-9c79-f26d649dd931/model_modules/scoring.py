@@ -28,6 +28,14 @@ def score(data_conf, model_conf, **kwargs):
                               model_artefacts_table=model_artefacts_table,
                               model_version=model_version)
 
+    # perform simple feature engineering example using map_row
+    def transform_row(row):
+        row["X1"] = row["X1"] + row["X1"] * 2.0
+        return row
+
+    df = df.map_row(lambda row: transform_row(row))
+
+    # define scoring logic/function we want to execute on each data partition.
     def score_partition(partition):
         rows = partition.read()
         if rows is None or len(rows) == 0:
