@@ -1,9 +1,7 @@
 from teradataml import DataFrame, create_context
 from teradatasqlalchemy.types import INTEGER, VARCHAR, CLOB
-from sklearn.preprocessing import RobustScaler, OneHotEncoder
-from sklearn.decomposition import PCA
+from sklearn.preprocessing import RobustScaler
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from aoa.sto.util import save_metadata, cleanup_cli
@@ -25,43 +23,34 @@ def train(data_conf, model_conf, **kwargs):
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
+    # required if executing multiple times via cli (model_version = 'cli' on every run).
     cleanup_cli(model_version)
 
+    # select the training datast via the fold_id
+    query = "SELECT * FROM {table} WHERE fold_id='train'".format(table=data_conf["table"])
+    df = DataFrame(query=query)
+
+    # perform simple feature engineering example using map_row
+    def transform_row(row):
+        row["X1"] = row["X1"] + row["X1"] * 2.0
+        return row
+
+    df = df.map_row(lambda row: transform_row(row))
+
+    # define training logic/function we want to execute on each data partition.
     def train_partition(partition, model_version, hyperparams):
         rows = partition.read()
-        if rows is None:
+        if rows is None or len(rows) == 0:
             return None
 
-        numeric_features = ["X"+str(i) for i in range(1,10)]
-        for i in numeric_features:
-            rows[i] = rows[i].astype("float")
+        features = ["X1", "X2", "X3"]
 
-        numeric_transformer = Pipeline(steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", RobustScaler()),
-            ("pca", PCA(0.95))
-        ])
-
-        categorical_features = ["flag"]
-        for i in categorical_features:
-            rows[i] = rows[i].astype("category")
-
-        categorical_transformer = Pipeline(steps=[
-            ("imputer", SimpleImputer(strategy="constant", fill_value=0)),
-            ("onehot", OneHotEncoder(handle_unknown="ignore"))])
-
-        preprocessor = ColumnTransformer(transformers=[
-                ("num", numeric_transformer, numeric_features),
-                ("cat", categorical_transformer, categorical_features)])
-
-        features = numeric_features + categorical_features
-        pipeline = Pipeline([("preprocessor", preprocessor),
+        pipeline = Pipeline([("imputer", SimpleImputer(strategy="median")),
+                             ("scaler", RobustScaler()),
                              ("rf", RandomForestRegressor(max_depth=hyperparams["max_depth"]))])
-        pipeline.fit(rows[features], rows[['Y1']])
         pipeline.features = features
 
-        partition_id = rows.partition_ID.iloc[0]
-        artefact = base64.b64encode(dill.dumps(pipeline))
+        pipeline.fit(rows[features], rows[["Y1"]])
 
         # record whatever partition level information you want like rows, data stats, explainability, etc
         partition_metadata = json.dumps({
@@ -69,12 +58,16 @@ def train(data_conf, model_conf, **kwargs):
             "hyper_parameters": hyperparams
         })
 
-        return np.array([[partition_id, model_version, rows.shape[0], partition_metadata, artefact]])
+        # now return a single row for this partition with the model details and artefact
+        # (schema/order must match returns argument in map_partition)
+        return np.array([[rows.partition_ID.iloc[0],
+                          model_version,
+                          rows.shape[0],
+                          partition_metadata,
+                          base64.b64encode(dill.dumps(pipeline))]])
 
     print("Starting training...")
 
-    query = "SELECT * FROM {table} WHERE fold_ID='train'".format(table=data_conf["table"])
-    df = DataFrame(query=query)
     model_df = df.map_partition(lambda partition: train_partition(partition, model_version, hyperparams),
                                 data_partition_column="partition_ID",
                                 returns=OrderedDict(
@@ -91,3 +84,4 @@ def train(data_conf, model_conf, **kwargs):
     save_metadata(model_df)
 
     print("Finished training")
+

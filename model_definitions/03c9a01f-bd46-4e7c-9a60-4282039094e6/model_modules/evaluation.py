@@ -1,7 +1,5 @@
 from sklearn import metrics
-from teradataml import create_context
-from teradataml.dataframe.dataframe import DataFrame
-from teradataml.dataframe.copy_to import copy_to_sql
+from teradataml import create_context, DataFrame, copy_to_sql
 from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 

@@ -1,6 +1,4 @@
-from teradataml import create_context, remove_context
-from teradataml.dataframe.dataframe import DataFrame
-from teradataml.dataframe.copy_to import copy_to_sql
+from teradataml import create_context, remove_context, DataFrame, copy_to_sql
 from aoa.stats import stats
 
 import os

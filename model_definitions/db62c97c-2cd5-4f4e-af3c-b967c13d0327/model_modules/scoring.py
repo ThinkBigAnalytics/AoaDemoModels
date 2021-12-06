@@ -1,11 +1,16 @@
-from teradataml import DataFrame, create_context, remove_context
-from teradataml.analytics.Transformations import OneHotEncoder
-from teradataml.analytics.Transformations import Retain
-from teradataml import valib
-from teradataml import configure
-configure.val_install_location = "VAL"
+from teradataml import (
+    valib,
+    configure,
+    DataFrame,
+    create_context,
+    remove_context,
+    OneHotEncoder,
+    Retain
+)
 
 import os
+
+configure.val_install_location = "VAL"
 
 
 def score(data_conf, model_conf, **kwargs):

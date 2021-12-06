@@ -5,8 +5,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn2pmml import sklearn2pmml
 from sklearn2pmml.pipeline import PMMLPipeline
 from sklearn_pandas import DataFrameMapper
-from teradataml import create_context, remove_context
-from teradataml.dataframe.dataframe import DataFrame
+from teradataml import create_context, remove_context, DataFrame
 from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 

@@ -1,18 +1,20 @@
-#TD/VAL libraries and VAL installation path
-from teradataml import DataFrame, create_context, remove_context
-from teradataml.analytics.Transformations import OneHotEncoder
-from teradataml.analytics.Transformations import Retain
-from teradataml import valib
-from teradataml import configure
-configure.val_install_location = "VAL"
+from teradataml import (
+    valib,
+    configure,
+    DataFrame,
+    create_context,
+    remove_context,
+    OneHotEncoder,
+    Retain
+)
 from aoa.util.artefacts import save_plot
-
 
 import os
 import json
-#import sklearn.metrics as skm
 import pandas as pd
 import numpy as np
+
+configure.val_install_location = "VAL"
 
 
 def evaluate(data_conf, model_conf, **kwargs):
