@@ -2,14 +2,12 @@ from teradataml import (
     valib,
     configure,
     DataFrame,
-    create_context,
     remove_context,
     OneHotEncoder,
     Retain
 )
-from aoa.util.artefacts import save_plot
+from aoa.util import save_plot, aoa_create_context
 
-import os
 import json
 import pandas as pd
 import numpy as np
@@ -18,21 +16,8 @@ configure.val_install_location = "VAL"
 
 
 def evaluate(data_conf, model_conf, **kwargs):
-    """Python evaluate method called by AOA framework
 
-    Parameters:
-    data_conf (dict): The dataset metadata
-    model_conf (dict): The model configuration to use
-
-    Returns:
-    None:No return
-
-    """
-    
-    create_context(host = os.environ["AOA_CONN_HOST"],
-                   username = os.environ["AOA_CONN_USERNAME"],
-                   password = os.environ["AOA_CONN_PASSWORD"],
-                   database = "AOA_DEMO")
+    aoa_create_context()
     
     ########################
     # load data & engineer #

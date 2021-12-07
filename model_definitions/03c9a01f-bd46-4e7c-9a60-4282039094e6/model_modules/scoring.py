@@ -1,7 +1,7 @@
-from teradataml import create_context, copy_to_sql, DataFrame
+from teradataml import copy_to_sql, DataFrame
 from aoa.stats import stats
+from aoa.util import aoa_create_context
 
-import os
 import joblib
 import pandas as pd
 
@@ -9,10 +9,7 @@ import pandas as pd
 def score(data_conf, model_conf, **kwargs):
     model = joblib.load("artifacts/input/model.joblib")
 
-    create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
-                   password=os.environ["AOA_CONN_PASSWORD"],
-                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
+    aoa_create_context()
 
     features_tdf = DataFrame(data_conf["table"])
 

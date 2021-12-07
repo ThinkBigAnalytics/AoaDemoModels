@@ -1,13 +1,18 @@
-from teradataml import DataFrame, create_context
+from teradataml import DataFrame
 from teradatasqlalchemy.types import INTEGER, VARCHAR, CLOB
 from sklearn.preprocessing import RobustScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from aoa.sto.util import save_metadata, cleanup_cli, check_sto_version, collect_sto_versions
 from collections import OrderedDict
+from aoa.util import (
+    save_metadata,
+    cleanup_cli,
+    check_sto_version,
+    collect_sto_versions,
+    aoa_create_context
+)
 
-import os
 import numpy as np
 import json
 import base64
@@ -19,10 +24,7 @@ def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
     model_artefacts_table = "aoa_sto_models"
 
-    create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
-                   password=os.environ["AOA_CONN_PASSWORD"],
-                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
+    aoa_create_context()
 
     # validate that the python versions match between client and server
     check_sto_version()

@@ -1,9 +1,8 @@
 from sklearn import metrics
-from teradataml import create_context, DataFrame, copy_to_sql
+from teradataml import DataFrame, copy_to_sql
 from aoa.stats import stats
-from aoa.util.artefacts import save_plot
+from aoa.util import save_plot, aoa_create_context
 
-import os
 import joblib
 import json
 import numpy as np
@@ -13,10 +12,7 @@ import pandas as pd
 def evaluate(data_conf, model_conf, **kwargs):
     model = joblib.load('artifacts/input/model.joblib')
 
-    create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
-                   password=os.environ["AOA_CONN_PASSWORD"],
-                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
+    aoa_create_context()
 
     # Read test dataset from Teradata
     # As this is for demo purposes, we simulate the test dataset changing between executions
