@@ -1,25 +1,19 @@
-#TD/VAL libraries and VAL installation path
-from teradataml import DataFrame, create_context, remove_context
-from teradataml.analytics.Transformations import OneHotEncoder
-from teradataml.analytics.Transformations import Retain
-from teradataml import valib
-from teradataml import configure
-configure.val_install_location = "VAL"
+from teradataml import (
+    valib,
+    configure,
+    DataFrame,
+    create_context,
+    remove_context,
+    OneHotEncoder,
+    Retain
+)
 
 import os
 
+configure.val_install_location = "VAL"
+
+
 def train(data_conf, model_conf, **kwargs):
-    """Python train method called by AOA framework
-
-    Parameters:
-    data_conf (dict): The dataset metadata
-    model_conf (dict): The model configuration to use
-
-    Returns:
-    None:No return
-
-    """
-
     hyperparams = model_conf["hyperParameters"]
     
     create_context(host=os.environ["AOA_CONN_HOST"],
@@ -27,9 +21,6 @@ def train(data_conf, model_conf, **kwargs):
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database="AOA_DEMO")
 
-    ########################
-    # load data & engineer #
-    ########################
     table_name = data_conf["data_table"]
     numeric_columns = data_conf["numeric_columns"]
     target_column = data_conf["target_column"]
@@ -39,7 +30,7 @@ def train(data_conf, model_conf, **kwargs):
     # categorical features to one_hot_encode using VAL transform
     cat_feature_values = {}
     for feature in categorical_columns:
-        #distinct has a spurious behaviour so using Group by
+        # distinct has a spurious behaviour so using Group by
         q = 'SELECT ' + feature + ' FROM ' + table_name + ' GROUP BY 1;'  
         df = DataFrame.from_query(q)
         cat_feature_values[feature] = list(df.dropna().get_values().flatten())
@@ -66,17 +57,14 @@ def train(data_conf, model_conf, **kwargs):
         excluded_cols.append(f_name)
     features = [col_name for col_name in df_train.columns if not col_name in excluded_cols]
 
-    ##############################    
-    # fit model to training data #
-    ##############################
+
     print("Starting training...")
     model = valib.LinReg(data=df_train,
                          columns=features,
                          response_column=target_column,
                          entrance_criterion=hyperparams["entrance_criterion"],
                          use_fstat=hyperparams["use_fstat"],
-                         use_pstat: hyperparams["use_pstat"]   
-                        )
+                         use_pstat=hyperparams["use_pstat"])
 
     print("Finished training")
 

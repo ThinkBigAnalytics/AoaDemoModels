@@ -3,6 +3,7 @@ from teradatasqlalchemy.types import INTEGER, VARCHAR, CLOB
 from sklearn import metrics
 from collections import OrderedDict
 from aoa.sto.util import save_metadata, save_evaluation_metrics, check_sto_version
+from .util import get_joined_models_df
 
 import os
 import numpy as np
@@ -13,29 +14,44 @@ import dill
 
 def evaluate(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
-    model_table = "aoa_sto_models"
+    model_artefacts_table = "aoa_sto_models"
 
     create_context(host=os.environ["AOA_CONN_HOST"],
                    username=os.environ["AOA_CONN_USERNAME"],
                    password=os.environ["AOA_CONN_PASSWORD"],
                    database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
 
+    # validate that the python versions match between client and server
     check_sto_version()
 
+    # Get the evaluation dataset. Note that we must join this dataset with the model artefacts we want to use in
+    # evaluation. To do this, we join the model artefact table to the 1st row of the data table.
+    # The util method does this for us.
+    df = get_joined_models_df(data_table=data_conf["table"],
+                              model_artefacts_table=model_artefacts_table,
+                              model_version=model_version)
+
+    # perform simple feature engineering example using map_row
+    def transform_row(row):
+        row["X1"] = row["X1"] + row["X1"] * 2.0
+        return row
+
+    df = df.map_row(lambda row: transform_row(row))
+
+    # define evaluation logic/function we want to execute on each data partition.
     def eval_partition(partition):
         rows = partition.read()
-        if rows is None:
+        if rows is None or len(rows) == 0:
             return None
 
+        # the model artefact is available on the 1st row only (see how we joined in the dataframe query)
         model_artefact = rows.loc[rows['n_row'] == 1, 'model_artefact'].iloc[0]
         model = dill.loads(base64.b64decode(model_artefact))
 
         X_test = rows[model.features]
-        y_test = rows[['Y1']]
+        y_test = rows[["Y1"]]
 
         y_pred = model.predict(X_test)
-
-        partition_id = rows.partition_ID.iloc[0]
 
         # record whatever partition level information you want like rows, data stats, metrics, explainability, etc
         partition_metadata = json.dumps({
@@ -47,20 +63,14 @@ def evaluate(data_conf, model_conf, **kwargs):
             }
         })
 
-        return np.array([[partition_id, rows.shape[0], partition_metadata]])
+        # now return a single row for this partition with the evaluation results
+        # (schema/order must match returns argument in map_partition)
+        return np.array([[rows.partition_ID.iloc[0],
+                          rows.shape[0],
+                          partition_metadata]])
 
     print("Starting evaluation...")
 
-    # we join the model artefact to the 1st row of the data table so we can load it in the partition
-    query = f"""
-    SELECT d.*, CASE WHEN n_row=1 THEN m.model_artefact ELSE null END AS model_artefact 
-        FROM (SELECT x.*, ROW_NUMBER() OVER (PARTITION BY x.partition_id ORDER BY x.partition_id) AS n_row FROM {data_conf["table"]} x) AS d
-        LEFT JOIN {model_table} m
-        ON d.partition_id = m.partition_id
-        WHERE m.model_version = '{model_version}'
-    """
-
-    df = DataFrame(query=query)
     eval_df = df.map_partition(lambda partition: eval_partition(partition),
                                data_partition_column="partition_ID",
                                returns=OrderedDict(

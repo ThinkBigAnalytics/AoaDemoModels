@@ -2,8 +2,7 @@ from xgboost import XGBClassifier
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline
 from nyoka import xgboost_to_pmml
-from teradataml import create_context
-from teradataml.dataframe.dataframe import DataFrame
+from teradataml import DataFrame, create_context
 from aoa.stats import stats
 from aoa.util.artefacts import save_plot
 
