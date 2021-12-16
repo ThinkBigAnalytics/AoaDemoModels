@@ -83,6 +83,6 @@ def evaluate(data_conf, model_conf, **kwargs):
 
     predictions_table = "{}_tmp".format(data_conf["predictions"]).lower()
     predictions_df = scores_df[["y_pred"]].rename({'y_pred': 'HasDiabetes'}, axis=1)
-    copy_to_sql(df=predictions_df, table_name=predictions_table, index=False, if_exists="replace", temporary=True)
+    copy_to_sql(df=predictions_df, table_name=predictions_table, index=False, if_exists="replace", temporary=False)
 
     stats.record_evaluation_stats(DataFrame(data_conf["table"]), DataFrame(predictions_table))

@@ -79,7 +79,7 @@ def evaluate(data_conf, model_conf, **kwargs):
                                     ('partition_metadata', CLOB())]))
 
     # persist to temporary table for computing global metrics
-    eval_df.to_sql("sto_eval_results", temporary=True)
+    eval_df.to_sql("sto_eval_results", temporary=False)
     eval_df = DataFrame("sto_eval_results")
 
     save_metadata(eval_df)

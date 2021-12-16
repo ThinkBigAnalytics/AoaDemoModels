@@ -64,6 +64,6 @@ def evaluate(data_conf, model_conf, **kwargs):
     feature_importance = feature_importance.set_index("col_name").T.to_dict(orient='records')[0]
 
     predictions_table = "{}_tmp".format(data_conf["predictions"]).lower()
-    copy_to_sql(df=y_pred_tdf, table_name=predictions_table, index=False, if_exists="replace", temporary=True)
+    copy_to_sql(df=y_pred_tdf, table_name=predictions_table, index=False, if_exists="replace", temporary=False)
 
     stats.record_evaluation_stats(test_df, DataFrame(predictions_table), feature_importance)
