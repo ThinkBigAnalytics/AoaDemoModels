@@ -1,11 +1,8 @@
 from sklearn import metrics
-from teradataml import create_context
-from teradataml.context.context import get_connection
-from teradataml.dataframe.copy_to import copy_to_sql
-from teradataml.dataframe.dataframe import DataFrame
+from teradataml import get_context, copy_to_sql, DataFrame, get_connection
 from aoa.stats import stats
+from aoa.util import aoa_create_context
 
-import os
 import json
 import itertools
 import pandas as pd
@@ -16,25 +13,20 @@ def evaluate(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
     model_id = kwargs["model_id"]
 
-    engine = create_context(host=os.environ["AOA_CONN_HOST"],
-                            username=os.environ["AOA_CONN_USERNAME"],
-                            password=os.environ["AOA_CONN_PASSWORD"])
-
-    cursor = engine.raw_connection().cursor()
-    conn = get_connection()
+    aoa_create_context()
 
     with open("artifacts/input/model.pmml", "rb") as f:
         model_bytes = f.read()
 
     # we don't want to insert this into the models that can be used yet so add to temporary table and use there
-    cursor.execute("""
+    get_context().execute("""
     CREATE VOLATILE TABLE ivsm_models_tmp(
         model_version VARCHAR(255),
         model_id VARCHAR(255),
         model BLOB(2097088000)
     ) ON COMMIT PRESERVE ROWS;
     """)
-    cursor.execute(f"INSERT INTO ivsm_models_tmp(model_version, model_id, model) "
+    get_context().execute(f"INSERT INTO ivsm_models_tmp(model_version, model_id, model) "
                    "values(?,?,?)",
                    (model_version, model_id, model_bytes))
 
@@ -47,7 +39,7 @@ def evaluate(data_conf, model_conf, **kwargs):
                     ColumnsToPreserve('PatientId', 'HasDiabetes')
                     ModelType('PMML')
             ) sc;
-    """, conn)
+    """, get_connection())
 
     y_pred = scores_df[["y_pred"]]
     y_test = scores_df[["y_test"]]

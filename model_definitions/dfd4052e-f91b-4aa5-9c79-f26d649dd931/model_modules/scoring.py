@@ -1,10 +1,8 @@
-from teradataml import create_context
 from teradatasqlalchemy.types import VARCHAR
 from collections import OrderedDict
-from aoa.sto.util import check_sto_version
+from aoa.util import check_sto_version, aoa_create_context
 from .util import get_joined_models_df
 
-import os
 import base64
 import dill
 
@@ -13,10 +11,7 @@ def score(data_conf, model_conf, **kwargs):
     model_version = kwargs["model_version"]
     model_artefacts_table = "aoa_sto_models"
 
-    create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
-                   password=os.environ["AOA_CONN_PASSWORD"],
-                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
+    aoa_create_context()
 
     # validate that the python versions match between client and server
     check_sto_version()

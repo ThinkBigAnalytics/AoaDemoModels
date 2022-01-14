@@ -3,23 +3,19 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn2pmml import sklearn2pmml
 from sklearn2pmml.pipeline import PMMLPipeline
 from sklearn_pandas import DataFrameMapper
-from teradataml import create_context, remove_context, DataFrame
+from teradataml import remove_context, DataFrame
 from aoa.stats import stats
-from aoa.util.artefacts import save_plot
+from aoa.util import save_plot, aoa_create_context
 
 import pandas as pd
 import numpy as np
 import joblib
-import os
 
 
 def train(data_conf, model_conf, **kwargs):
     hyperparams = model_conf["hyperParameters"]
 
-    create_context(host=os.environ["AOA_CONN_HOST"],
-                   username=os.environ["AOA_CONN_USERNAME"],
-                   password=os.environ["AOA_CONN_PASSWORD"],
-                   database=data_conf["schema"] if "schema" in data_conf and data_conf["schema"] != "" else None)
+    aoa_create_context()
 
     feature_names = ["center_id", "meal_id", "checkout_price", 
                      "base_price", "emailer_for_promotion", "homepage_featured",

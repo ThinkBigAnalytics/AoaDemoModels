@@ -2,37 +2,20 @@ from teradataml import (
     valib,
     configure,
     DataFrame,
-    create_context,
     remove_context,
     OneHotEncoder,
     Retain
 )
+from aoa.util import aoa_create_context
 
-import os
 
 configure.val_install_location = "VAL"
 
 
 def score(data_conf, model_conf, **kwargs):
-    """Python score method called by AOA framework batch mode
 
-    Parameters:
-    data_conf (dict): The dataset metadata
-    model_conf (dict): The model configuration to use
+    aoa_create_context()
 
-    Returns:
-    None:No return
-
-    """
-    
-    create_context(host = os.environ["AOA_CONN_HOST"],
-                   username = os.environ["AOA_CONN_USERNAME"],
-                   password = os.environ["AOA_CONN_PASSWORD"],
-                   database = "AOA_DEMO")
-    
-    ########################
-    # load data & engineer #
-    ########################
     table_name = data_conf["data_table"]
     numeric_columns = data_conf["numeric_columns"]
     target_column = data_conf["target_column"]
