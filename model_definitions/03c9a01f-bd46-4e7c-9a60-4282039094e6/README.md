@@ -87,7 +87,7 @@ Batch Scoring is supported via the `score` method in [scoring.py](model_modules/
 The following table must exist to write (append) the scores into
 
 ```sql
-CREATE MULTISET TABLE ivsm_pima_predictions, FALLBACK ,
+CREATE MULTISET TABLE byom_pima_predictions, FALLBACK ,
      NO BEFORE JOURNAL,
      NO AFTER JOURNAL,
      CHECKSUM = DEFAULT,
@@ -104,9 +104,9 @@ CREATE MULTISET TABLE ivsm_pima_predictions, FALLBACK ,
 And the following view must exist to extract the specific prediction from the json output of IVSM.
 
 ```sql
-CREATE VIEW ivsm_pima_predictions_v AS 
-    SELECT job_id, patient_id, CAST(CAST(score_result AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as HasDiabetes 
-    FROM ivsm_pima_predictions;
+CREATE VIEW byom_pima_predictions_v AS
+    SELECT job_id, patientid, CAST(CAST(json_report AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as HasDiabetes
+    FROM byom_pima_predictions
 ```
 
 RESTful scoring is supported via the `ModelScorer` class which implements a predict method which is called by the RESTful Serving Engine. An example request is  

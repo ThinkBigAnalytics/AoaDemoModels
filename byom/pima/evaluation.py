@@ -1,48 +1,68 @@
 from sklearn import metrics
-from teradataml import get_context, copy_to_sql, DataFrame, get_connection
+from teradataml import (
+    get_context,
+    DataFrame,
+    PMMLPredict,
+    configure
+)
 from aoa.stats import stats
-from aoa.util import aoa_create_context
+from aoa.util import (
+    aoa_create_context,
+    store_byom_tmp
+)
 
+import os
 import json
-import itertools
-import pandas as pd
-import matplotlib.pyplot as plt
+
+configure.byom_install_location = os.environ.get("AOA_BYOM_INSTALL_DB", "MLDB")
 
 
-def evaluate(data_conf, model_conf, **kwargs):
-    model_version = kwargs["model_version"]
-    model_id = kwargs["model_id"]
+def plot_confusion_matrix(cf):
+    import itertools
+    import matplotlib.pyplot as plt
+    plt.imshow(cf, cmap=plt.cm.Blues, interpolation='nearest')
+    plt.colorbar()
+    plt.title('Confusion Matrix')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.xticks([0, 1], ['0', '1'])
+    plt.yticks([0, 1], ['0', '1'])
 
+    thresh = cf.max() / 2.
+    for i, j in itertools.product(range(cf.shape[0]), range(cf.shape[1])):
+        plt.text(j, i, format(cf[i, j], 'd'), horizontalalignment='center',
+                 color='white' if cf[i, j] > thresh else 'black')
+
+    fig = plt.gcf()
+    fig.savefig('artifacts/output/confusion_matrix', dpi=500)
+    plt.clf()
+
+
+def evaluate(data_conf, model_conf, model_version, **kwargs):
     aoa_create_context()
 
     with open("artifacts/input/model.pmml", "rb") as f:
         model_bytes = f.read()
 
-    # we don't want to insert this into the models that can be used yet so add to temporary table and use there
-    get_context().execute("""
-    CREATE VOLATILE TABLE ivsm_models_tmp(
-        model_version VARCHAR(255),
-        model_id VARCHAR(255),
-        model BLOB(2097088000)
-    ) ON COMMIT PRESERVE ROWS;
+    model = store_byom_tmp(get_context(), "ivsm_models_tmp", model_version, model_bytes)
+
+    pmml = PMMLPredict(
+        modeldata=model,
+        newdata=DataFrame(data_conf["table"]),
+        accumulate=["PatientId", "HasDiabetes"])
+
+    pmml.result.to_sql(table_name="predictions_tmp", if_exists="replace", temporary=True)
+
+    metrics_df = DataFrame.from_query("""
+    SELECT 
+        HasDiabetes as y_test, 
+        CAST(CAST(json_report AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred
+        FROM predictions_tmp
     """)
-    get_context().execute(f"INSERT INTO ivsm_models_tmp(model_version, model_id, model) "
-                   "values(?,?,?)",
-                   (model_version, model_id, model_bytes))
+    metrics_df = metrics_df.to_pandas()
 
-    scores_df = pd.read_sql(f"""
-    SELECT PatientId, HasDiabetes as y_test, CAST(CAST(score_result AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred FROM IVSM.IVSM_SCORE(
-                ON (SELECT * FROM {data_conf["table"]}) AS DataTable
-                ON (SELECT model_id, model FROM ivsm_models_tmp WHERE model_version = '{model_version}') AS ModelTable DIMENSION
-                USING
-                    ModelID('{model_id}')
-                    ColumnsToPreserve('PatientId', 'HasDiabetes')
-                    ModelType('PMML')
-            ) sc;
-    """, get_connection())
-
-    y_pred = scores_df[["y_pred"]]
-    y_test = scores_df[["y_test"]]
+    y_pred = metrics_df[["y_pred"]]
+    y_test = metrics_df[["y_test"]]
 
     evaluation = {
         'Accuracy': '{:.2f}'.format(metrics.accuracy_score(y_test, y_pred)),
@@ -57,24 +77,8 @@ def evaluate(data_conf, model_conf, **kwargs):
     # create confusion matrix plot
     cf = metrics.confusion_matrix(y_test, y_pred)
 
-    plt.imshow(cf,cmap=plt.cm.Blues,interpolation='nearest')
-    plt.colorbar()
-    plt.title('Confusion Matrix')
-    plt.xlabel('Predicted')
-    plt.ylabel('Actual')
-    plt.xticks([0, 1], ['0','1'])
-    plt.yticks([0, 1], ['0','1'])
+    plot_confusion_matrix(cf)
 
-    thresh = cf.max() / 2.
-    for i,j in itertools.product(range(cf.shape[0]),range(cf.shape[1])):
-        plt.text(j,i,format(cf[i,j],'d'),horizontalalignment='center',color='white' if cf[i,j] >thresh else 'black')
-
-    fig = plt.gcf()
-    fig.savefig('artifacts/output/confusion_matrix', dpi=500)
-    plt.clf()
-
-    predictions_table = "{}_tmp".format(data_conf["predictions"]).lower()
-    predictions_df = scores_df[["y_pred"]].rename({'y_pred': 'HasDiabetes'}, axis=1)
-    copy_to_sql(df=predictions_df, table_name=predictions_table, index=False, if_exists="replace", temporary=True)
-
-    stats.record_evaluation_stats(DataFrame(data_conf["table"]), DataFrame(predictions_table))
+    # calculate stats if training stats exist
+    if os.path.exists("artifacts/input/data_stats.json"):
+        stats.record_evaluation_stats(DataFrame(data_conf["table"]), DataFrame("predictions_tmp"))
