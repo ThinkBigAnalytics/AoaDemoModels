@@ -6,10 +6,7 @@ from teradataml import (
     configure
 )
 from aoa.stats import stats
-from aoa.util import (
-    aoa_create_context,
-    store_byom_tmp
-)
+from aoa.util import aoa_create_context, store_byom_tmp
 
 import os
 import json
