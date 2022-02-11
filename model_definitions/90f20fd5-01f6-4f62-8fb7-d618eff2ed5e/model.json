@@ -1,0 +1,32 @@
+{
+    "id": "90f20fd5-01f6-4f62-8fb7-d618eff2ed5e",
+    "name": "GPU Python Diabetes Prediction",
+    "description": "GPU Python XGBoost for Diabetes Prediction",
+    "language": "python",
+    "automation": {
+        "training": {
+            "dockerImage": "public.ecr.aws/teradata/aoa-python-base:3.8-cuda",
+            "resources": {
+                "cpu": "500m",
+                "memory": "500Mi",
+                "gpu": "1"
+            }
+        },
+        "evaluation": {
+            "dockerImage": "public.ecr.aws/teradata/aoa-python-base:3.8-cuda",
+            "resources": {
+                "cpu": "500m",
+                "memory": "1Gi",
+                "gpu": "1"
+            }
+        },
+        "deployment": {
+            "dockerImage": "public.ecr.aws/teradata/aoa-python-base:3.8-cuda",
+            "resources": {
+                "cpu": "500m",
+                "memory": "1Gi",
+                "gpu": "1"
+            }
+        }
+    }
+}
