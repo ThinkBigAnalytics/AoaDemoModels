@@ -3,24 +3,26 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline
 from nyoka import xgboost_to_pmml
 from teradataml import DataFrame
-from aoa.stats import stats
-from aoa.util import save_plot, aoa_create_context
+from aoa import (
+    record_training_stats,
+    save_plot,
+    aoa_create_context,
+    ModelContext
+)
 
 import joblib
 
 
-def train(data_conf, model_conf, **kwargs):
-    hyperparams = model_conf["hyperParameters"]
+def train(context: ModelContext):
 
     aoa_create_context()
 
-    feature_names = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age"]
-    target_name = "HasDiabetes"
+    feature_names = context.dataset_info.feature_names
+    target_name = context.dataset_info.target_names[0]
 
     # read training dataset from Teradata and convert to pandas
-    train_df = DataFrame(data_conf["table"])
-    train_df = train_df.select([feature_names + [target_name]])
-    train_pdf = train_df.to_pandas()
+    train_df = DataFrame.from_query(context.dataset_info.sql)
+    train_pdf = train_df.to_pandas(all_rows=True)
 
     # split data into X and y
     X_train = train_pdf.drop(target_name, 1)
@@ -30,22 +32,19 @@ def train(data_conf, model_conf, **kwargs):
 
     # fit model to training data
     model = Pipeline([('scaler', MinMaxScaler()),
-                      ('xgb', XGBClassifier(eta=hyperparams["eta"],
-                                            max_depth=hyperparams["max_depth"]))])
-    # xgboost saves feature names but lets store on pipeline for easy access later
-    model.feature_names = feature_names
-    model.target_name = target_name
+                      ('xgb', XGBClassifier(eta=context.hyperparams["eta"],
+                                            max_depth=context.hyperparams["max_depth"]))])
 
     model.fit(X_train, y_train)
 
     print("Finished training")
 
     # export model artefacts
-    joblib.dump(model, "artifacts/output/model.joblib")
+    joblib.dump(model, f"{context.artefact_output_path}/model.joblib")
 
     # we can also save as pmml so it can be used for In-Vantage scoring etc.
     xgboost_to_pmml(pipeline=model, col_names=feature_names, target_name=target_name,
-                    pmml_f_name="artifacts/output/model.pmml")
+                    pmml_f_name=f"{context.artefact_output_path}/model.pmml")
 
     print("Saved trained model")
 
@@ -55,9 +54,9 @@ def train(data_conf, model_conf, **kwargs):
     save_plot("feature_importance.png")
 
     feature_importance = model["xgb"].get_booster().get_score(importance_type="weight")
-    stats.record_training_stats(train_df,
-                       features=feature_names,
-                       predictors=[target_name],
-                       categorical=[target_name],
-                       importance=feature_importance,
-                       category_labels={target_name: {0: "false", 1: "true"}})
+
+    record_training_stats(train_df,
+                          features=feature_names,
+                          predictors=[target_name],
+                          categorical=[target_name],
+                          importance=feature_importance)

@@ -115,7 +115,7 @@ RESTful scoring is supported via the `ModelScorer` class which implements a pred
         -H "Content-Type: application/json" \
         -d '{
             "data": {
-                "ndarray": [
+                "ndarray": [[
                         6,
                         148,
                         72,
@@ -124,6 +124,6 @@ RESTful scoring is supported via the `ModelScorer` class which implements a pred
                         33.6,
                         0.627,
                         50
-                ]
+                ]]
             }
         }' 

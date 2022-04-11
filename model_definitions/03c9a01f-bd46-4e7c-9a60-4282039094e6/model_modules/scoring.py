@@ -1,41 +1,58 @@
 from teradataml import copy_to_sql, DataFrame
-from aoa.stats import stats
-from aoa.util import aoa_create_context
+from aoa import (
+    record_scoring_stats,
+    aoa_create_context,
+    ModelContext
+)
 
 import joblib
 import pandas as pd
 
 
-def score(data_conf, model_conf, **kwargs):
-    model = joblib.load("artifacts/input/model.joblib")
+def score(context: ModelContext):
 
     aoa_create_context()
 
-    features_tdf = DataFrame(data_conf["table"])
+    model = joblib.load(f"{context.artefact_input_path}/model.joblib")
 
-    # convert to pandas to use locally
-    features_df = features_tdf.to_pandas()
+    feature_names = context.dataset_info.feature_names
+    target_name = context.dataset_info.target_names[0]
+
+    features_tdf = DataFrame.from_query(context.dataset_info.sql)
+    features_pdf = features_tdf.to_pandas(all_rows=True)
 
     print("Scoring")
-    y_pred = model.predict(features_df[model.feature_names])
+    predictions_pdf = model.predict(features_pdf)
 
     print("Finished Scoring")
 
-    # create result dataframe and store in Teradata
-    y_pred = pd.DataFrame(y_pred, columns=[model.target_name])
-    y_pred["PatientId"] = features_df["PatientId"].values
-    copy_to_sql(df=y_pred, table_name=data_conf["predictions"], index=False, if_exists="replace")
+    # store the predictions
+    predictions_pdf = pd.DataFrame(predictions_pdf, columns=[target_name])
+    predictions_pdf["PatientId"] = features_pdf["PatientId"].values
+    predictions_pdf["job_id"] = context.job_id
 
-    predictions_tdf = DataFrame(data_conf["predictions"])
+    copy_to_sql(df=predictions_pdf,
+                schema_name=context.dataset_info.prediction_database,
+                table_name=context.dataset_info.prediction_table,
+                index=False,
+                if_exists="append")
 
-    stats.record_scoring_stats(features_tdf, predictions_tdf)
+    # calculate stats
+    predictions_df = DataFrame.from_query(f"""
+        SELECT 
+            * 
+        FROM {context.dataset_info.prediction_database}.{context.dataset_info.prediction_table} 
+            WHERE job_id = '{context.job_id}'
+    """)
+
+    record_scoring_stats(features_tdf, predictions_df)
 
 
 # Add code required for RESTful API
 class ModelScorer(object):
 
-    def __init__(self, config=None):
-        self.model = joblib.load('artifacts/input/model.joblib')
+    def __init__(self):
+        self.model = joblib.load("artifacts/input/model.joblib")
 
     def predict(self, data):
-        return self.model.predict([data])
+        return self.model.predict(data)
