@@ -10,7 +10,7 @@ Refer to the [OfficialDocumentation](https://docs.tdaoa.com) for more informatio
 
 ## Categorical
 
-- [Python (Diabetes)](model_definitions/03c9a01f-bd46-4e7c-9a60-4282039094e6)
+- [Python (Diabetes)](model_definitions/python-diabetes)
 - [R (Diabetes)](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45)
 - [Python Partitioned Modelling](model_definitions/dfd4052e-f91b-4aa5-9c79-f26d649dd931)
 
