@@ -11,13 +11,13 @@ Refer to the [OfficialDocumentation](https://docs.tdaoa.com) for more informatio
 ## Categorical
 
 - [Python (Diabetes)](model_definitions/python-diabetes)
-- [R (Diabetes)](model_definitions/bf6a52b2-b595-4358-ac4f-24fb41a85c45)
-- [Python Partitioned Modelling](model_definitions/dfd4052e-f91b-4aa5-9c79-f26d649dd931)
+- [R (Diabetes)](model_definitions/r-diabetes)
+- [Python Partitioned Modelling](model_definitions/python-partitioned-modelling)
 
 ## Regression
 
-- [Python (Demand Forecasting)](model_definitions/b1e18b12-5ccd-4c94-b96b-c2cebf230150)
-- [VAL (Demand Forecasting)](model_definitions/db62c97c-2cd5-4f4e-af3c-b967c13d0327)
+- [Python (Demand Forecasting)](model_definitions/python-demand-forecast)
+- [VAL (Demand Forecasting)](model_definitions/python-val-forecast)
 
 
 ## Adding new Models
