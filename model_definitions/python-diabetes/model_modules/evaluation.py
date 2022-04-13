@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 
-def evaluate(context: ModelContext):
+def evaluate(context: ModelContext, **kwargs):
 
     aoa_create_context()
 

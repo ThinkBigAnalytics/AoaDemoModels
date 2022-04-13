@@ -9,13 +9,12 @@ import joblib
 import pandas as pd
 
 
-def score(context: ModelContext):
+def score(context: ModelContext, **kwargs):
 
     aoa_create_context()
 
     model = joblib.load(f"{context.artefact_input_path}/model.joblib")
 
-    feature_names = context.dataset_info.feature_names
     target_name = context.dataset_info.target_names[0]
 
     features_tdf = DataFrame.from_query(context.dataset_info.sql)

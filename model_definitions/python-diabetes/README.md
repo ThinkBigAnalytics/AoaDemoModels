@@ -15,11 +15,31 @@ df = pd.read_csv("http://nrvis.com/data/mldata/pima-indians-diabetes.csv", heade
 df.columns = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes"]
 
 copy_to_sql(df = df, table_name = "PIMA", index=True, index_label="PatientId", if_exists="replace")
+```
 
-df = DataFrame("PIMA").sample(frac=[0.8, 0.2])
-
-copy_to_sql(df = df[df.sampleid==1], table_name = "PIMA_TRAIN", index=False, if_exists="replace")
-copy_to_sql(df = df[df.sampleid==2], table_name = "PIMA_TEST", index=False, if_exists="replace")
+```sql
+CREATE TABLE PIMA_PATIENT_FEATURES AS 
+    (SELECT 
+        patientid,
+        numtimesprg, 
+        plglcconc, 
+        bloodp, 
+        skinthick, 
+        twohourserins, 
+        bmi, 
+        dipedfunc, 
+        age 
+    FROM PIMA 
+    ) WITH DATA;
+    
+    
+CREATE TABLE PIMA_PATIENT_DIAGNOSES AS 
+    (SELECT 
+        patientid,
+        hasdiabetes
+    FROM PIMA 
+    ) WITH DATA;
+    
 ```
 
 

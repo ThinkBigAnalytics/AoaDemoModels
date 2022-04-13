@@ -13,7 +13,7 @@ from aoa import (
 import joblib
 
 
-def train(context: ModelContext):
+def train(context: ModelContext, **kwargs):
 
     aoa_create_context()
 
