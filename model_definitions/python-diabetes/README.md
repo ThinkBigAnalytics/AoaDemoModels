@@ -40,6 +40,18 @@ CREATE TABLE PIMA_PATIENT_DIAGNOSES AS
     FROM PIMA 
     ) WITH DATA;
     
+    
+    
+SELECT * 
+FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
+    ON F.patientid = D.patientid
+    WHERE D.patientid MOD 5 <> 0
+    
+    
+SELECT * 
+FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
+    ON F.patientid = D.patientid
+    WHERE D.patientid MOD 5 = 0
 ```
 
 
