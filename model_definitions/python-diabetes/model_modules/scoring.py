@@ -15,13 +15,14 @@ def score(context: ModelContext, **kwargs):
 
     model = joblib.load(f"{context.artefact_input_path}/model.joblib")
 
+    feature_names = context.dataset_info.feature_names
     target_name = context.dataset_info.target_names[0]
 
     features_tdf = DataFrame.from_query(context.dataset_info.sql)
     features_pdf = features_tdf.to_pandas(all_rows=True)
 
     print("Scoring")
-    predictions_pdf = model.predict(features_pdf)
+    predictions_pdf = model.predict(features_pdf[feature_names])
 
     print("Finished Scoring")
 
@@ -30,9 +31,11 @@ def score(context: ModelContext, **kwargs):
     predictions_pdf["PatientId"] = features_pdf["PatientId"].values
     predictions_pdf["job_id"] = context.job_id
 
+    print(predictions_pdf.columns)
+
     copy_to_sql(df=predictions_pdf,
-                schema_name=context.dataset_info.prediction_database,
-                table_name=context.dataset_info.prediction_table,
+                schema_name=context.dataset_info.predictions_database,
+                table_name=context.dataset_info.predictions_table,
                 index=False,
                 if_exists="append")
 

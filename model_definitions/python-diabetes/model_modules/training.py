@@ -14,7 +14,6 @@ import joblib
 
 
 def train(context: ModelContext, **kwargs):
-
     aoa_create_context()
 
     feature_names = context.dataset_info.feature_names
@@ -25,7 +24,7 @@ def train(context: ModelContext, **kwargs):
     train_pdf = train_df.to_pandas(all_rows=True)
 
     # split data into X and y
-    X_train = train_pdf.drop(target_name, 1)
+    X_train = train_pdf[feature_names]
     y_train = train_pdf[target_name]
 
     print("Starting training...")
@@ -59,4 +58,5 @@ def train(context: ModelContext, **kwargs):
                           features=feature_names,
                           predictors=[target_name],
                           categorical=[target_name],
-                          importance=feature_importance)
+                          importance=feature_importance,
+                          context=context)
