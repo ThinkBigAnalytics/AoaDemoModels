@@ -5,8 +5,12 @@ from teradataml import (
     PMMLPredict,
     configure
 )
-from aoa.stats import stats
-from aoa.util import aoa_create_context, store_byom_tmp
+from aoa import (
+    record_evaluation_stats,
+    aoa_create_context,
+    store_byom_tmp,
+    ModelContext
+)
 
 import os
 import json
@@ -14,7 +18,7 @@ import json
 configure.byom_install_location = os.environ.get("AOA_BYOM_INSTALL_DB", "MLDB")
 
 
-def plot_confusion_matrix(cf):
+def plot_confusion_matrix(cf, img_filename):
     import itertools
     import matplotlib.pyplot as plt
     plt.imshow(cf, cmap=plt.cm.Blues, interpolation='nearest')
@@ -31,26 +35,26 @@ def plot_confusion_matrix(cf):
                  color='white' if cf[i, j] > thresh else 'black')
 
     fig = plt.gcf()
-    fig.savefig('artifacts/output/confusion_matrix', dpi=500)
+    fig.savefig(img_filename, dpi=500)
     plt.clf()
 
 
-def evaluate(data_conf, model_conf, model_version, **kwargs):
+def evaluate(context: ModelContext, **kwargs):
     aoa_create_context()
 
-    with open("artifacts/input/model.pmml", "rb") as f:
+    with open(f"{context.artefact_input_path}/model.pmml", "rb") as f:
         model_bytes = f.read()
 
-    model = store_byom_tmp(get_context(), "ivsm_models_tmp", model_version, model_bytes)
+    model = store_byom_tmp(get_context(), "byom_models_tmp", context.model_version, model_bytes)
 
     pmml = PMMLPredict(
         modeldata=model,
-        newdata=DataFrame(data_conf["table"]),
+        newdata=DataFrame.from_query(context.dataset_info.sql),
         accumulate=["PatientId", "HasDiabetes"])
 
     pmml.result.to_sql(table_name="predictions_tmp", if_exists="replace", temporary=True)
 
-    metrics_df = DataFrame.from_query("""
+    metrics_df = DataFrame.from_query(f"""
     SELECT 
         HasDiabetes as y_test, 
         CAST(CAST(json_report AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred
@@ -68,14 +72,16 @@ def evaluate(data_conf, model_conf, model_version, **kwargs):
         'f1-score': '{:.2f}'.format(metrics.f1_score(y_test, y_pred))
     }
 
-    with open("artifacts/output/metrics.json", "w+") as f:
+    with open(f"{context.artefact_output_path}/metrics.json", "w+") as f:
         json.dump(evaluation, f)
 
     # create confusion matrix plot
     cf = metrics.confusion_matrix(y_test, y_pred)
 
-    plot_confusion_matrix(cf)
+    plot_confusion_matrix(cf, f"{context.artefact_output_path}/confusion_matrix")
 
     # calculate stats if training stats exist
-    if os.path.exists("artifacts/input/data_stats.json"):
-        stats.record_evaluation_stats(DataFrame(data_conf["table"]), DataFrame("predictions_tmp"))
+    if os.path.exists(f"{context.artefact_input_path}/data_stats.json"):
+        record_evaluation_stats(features_df=DataFrame.from_query(context.dataset_info.sql),
+                                predicted_df=DataFrame("predictions_tmp"),
+                                context=context)

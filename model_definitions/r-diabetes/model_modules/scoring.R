@@ -10,20 +10,6 @@ LoadPackages <- function() {
     library("tdplyr")
 }
 
-Connect2Vantage <- function() {
-    # Create Teradata Vantage connection using tdplyr
-    con <- td_create_context(host = Sys.getenv("AOA_CONN_HOST"),
-                             uid = Sys.getenv("AOA_CONN_USERNAME"),
-                             pwd = Sys.getenv("AOA_CONN_PASSWORD"),
-                             dType = 'native'
-    )
-
-    # Set connection context
-    td_set_context(con)
-
-    con
-}
-
 score.restful <- function(model, data, ...) {
     print("Scoring model...")
     probs <- predict(model, data, na.action = na.pass, type = "response")
@@ -38,20 +24,17 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
     suppressPackageStartupMessages(LoadPackages())
 
     # Connect to Teradata Vantage
-    con <- Connect2Vantage()
+    con <- aoa_create_context()
 
-    # Create tibble from table in Teradata Vantage
-    if ("schema" %in% data_conf) {
-        table_name <- in_schema(data_conf$schema, data_conf$table)
-    } else {
-        table_name <- data_conf$table
-    }
-    table <- tbl(con, table_name)
+    table <- tbl(con, sql(data_conf$sql))
 
     # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
-    data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>%
-      mutate(NumTimesPrg = as.integer(NumTimesPrg), PlGlcConc = as.integer(PlGlcConc), BloodP = as.integer(BloodP), SkinThick = as.integer(SkinThick), TwoHourSerIns = as.integer(TwoHourSerIns), HasDiabetes = as.integer(HasDiabetes)) %>%
-      as.data.frame()
+    data <- table %>% mutate(NumTimesPrg = as.integer(NumTimesPrg),
+                                PlGlcConc = as.integer(PlGlcConc),
+                                BloodP = as.integer(BloodP),
+                                SkinThick = as.integer(SkinThick),
+                                TwoHourSerIns = as.integer(TwoHourSerIns),
+                                HasDiabetes = as.integer(HasDiabetes)) %>% as.data.frame()
 
     # The model object will be obtain from the environment as it has already been initialised using 'initialise_model'
     probs <- predict(model, data, na.action = na.pass, type = "response")
