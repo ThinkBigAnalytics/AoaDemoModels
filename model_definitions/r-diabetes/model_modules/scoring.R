@@ -46,9 +46,9 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
     patientIds <- table %>% select("PatientId") %>% mutate(PatientId = as.integer(PatientId)) %>% as.data.frame()
     score_df$PatiendId <- patientIds$PatientId
 
-
+    # dbplyr::in_schema(data_conf$predictions$database, data_conf$predictions$table)
     copy_to(con, score_df,
-            name=dbplyr::in_schema(data_conf$predictions$database, data_conf$predictions$table),
+            name=dbplyr::in_schema(data_conf$predictions$database, "pima_predictions"),
             overwrite=TRUE)
     print("Saved batch predictions...")
 }
