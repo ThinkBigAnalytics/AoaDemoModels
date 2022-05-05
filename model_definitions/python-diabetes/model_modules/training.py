@@ -50,7 +50,7 @@ def train(context: ModelContext, **kwargs):
     from xgboost import plot_importance
     model["xgb"].get_booster().feature_names = feature_names
     plot_importance(model["xgb"].get_booster(), max_num_features=10)
-    save_plot("feature_importance.png")
+    save_plot("feature_importance.png", context)
 
     feature_importance = model["xgb"].get_booster().get_score(importance_type="weight")
 

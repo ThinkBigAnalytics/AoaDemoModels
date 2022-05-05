@@ -43,7 +43,7 @@ def score(context: ModelContext, **kwargs):
     predictions_df = DataFrame.from_query(f"""
         SELECT 
             * 
-        FROM {context.dataset_info.prediction_database}.{context.dataset_info.prediction_table} 
+        FROM {context.dataset_info.get_predictions_metadata_fqtn()} 
             WHERE job_id = '{context.job_id}'
     """)
 
