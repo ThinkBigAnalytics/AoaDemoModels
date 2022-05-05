@@ -30,11 +30,10 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
 
     # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
     data <- table %>% mutate(NumTimesPrg = as.integer(NumTimesPrg),
-                                PlGlcConc = as.integer(PlGlcConc),
-                                BloodP = as.integer(BloodP),
-                                SkinThick = as.integer(SkinThick),
-                                TwoHourSerIns = as.integer(TwoHourSerIns),
-                                HasDiabetes = as.integer(HasDiabetes)) %>% as.data.frame()
+                             PlGlcConc = as.integer(PlGlcConc),
+                             BloodP = as.integer(BloodP),
+                             SkinThick = as.integer(SkinThick),
+                             TwoHourSerIns = as.integer(TwoHourSerIns)) %>% as.data.frame()
 
     # The model object will be obtain from the environment as it has already been initialised using 'initialise_model'
     probs <- predict(model, data, na.action = na.pass, type = "response")
@@ -46,12 +45,11 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
     colnames(score_df) <- c("Prediction")
     patientIds <- table %>% select("PatientId") %>% mutate(PatientId = as.integer(PatientId)) %>% as.data.frame()
     score_df$PatiendId <- patientIds$PatientId
-    if ("schema" %in% data_conf) {
-        predictions_table_name <- SQL(sprintf("%s.%s", data_conf$schema, data_conf$predictions))
-    } else {
-        predictions_table_name <- data_conf$predictions
-    }
-    copy_to(con, score_df, name=predictions_table_name, overwrite=TRUE)
+
+
+    copy_to(con, score_df,
+            name=dbplyr::in_schema(data_conf$predictions$database, data_conf$predictions$table),
+            overwrite=TRUE)
     print("Saved batch predictions...")
 }
 

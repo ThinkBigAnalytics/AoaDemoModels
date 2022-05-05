@@ -45,10 +45,10 @@ def evaluate(context: ModelContext, **kwargs):
         json.dump(evaluation, f)
 
     metrics.plot_confusion_matrix(model, X_test, y_test)
-    save_plot('Confusion Matrix', context=context)
+    save_plot('Confusion Matrix')
 
     metrics.plot_roc_curve(model, X_test, y_test)
-    save_plot('ROC Curve', context=context)
+    save_plot('ROC Curve')
 
     # xgboost has its own feature importance plot support but lets use shap as explainability example
     import shap
@@ -58,7 +58,7 @@ def evaluate(context: ModelContext, **kwargs):
 
     shap.summary_plot(shap_values, X_test, feature_names=feature_names,
                       show=False, plot_size=(12, 8), plot_type='bar')
-    save_plot('SHAP Feature Importance', context=context)
+    save_plot('SHAP Feature Importance')
 
     feature_importance = pd.DataFrame(list(zip(feature_names, np.abs(shap_values).mean(0))),
                                       columns=['col_name', 'feature_importance_vals'])
