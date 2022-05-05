@@ -13,10 +13,11 @@ def score(context: ModelContext, **kwargs):
 
     aoa_create_context()
 
-    model = joblib.load(f"{context.artefact_input_path}/model.joblib")
+    model = joblib.load(f"{context.artifact_input_path}/model.joblib")
 
     feature_names = context.dataset_info.feature_names
     target_name = context.dataset_info.target_names[0]
+    entity_key = context.dataset_info.entity_key
 
     features_tdf = DataFrame.from_query(context.dataset_info.sql)
     features_pdf = features_tdf.to_pandas(all_rows=True)
@@ -28,10 +29,14 @@ def score(context: ModelContext, **kwargs):
 
     # store the predictions
     predictions_pdf = pd.DataFrame(predictions_pdf, columns=[target_name])
-    predictions_pdf["PatientId"] = features_pdf["PatientId"].values
+    predictions_pdf[entity_key] = features_pdf[entity_key].values
+    # add job_id column so we know which execution this is from if appended to predictions table
     predictions_pdf["job_id"] = context.job_id
 
-    print(predictions_pdf.columns)
+    # teradataml doesn't match column names on append.. and so to match / use same table schema as for byom predict
+    # example (see README.md), we must add empty json_report column and change column order manually (v17.0.0.6)
+    predictions_pdf["json_report"] = ""
+    predictions_pdf = predictions_pdf[["job_id", entity_key, target_name, "json_report"]]
 
     copy_to_sql(df=predictions_pdf,
                 schema_name=context.dataset_info.predictions_database,

@@ -42,7 +42,7 @@ def plot_confusion_matrix(cf, img_filename):
 def evaluate(context: ModelContext, **kwargs):
     aoa_create_context()
 
-    with open(f"{context.artefact_input_path}/model.pmml", "rb") as f:
+    with open(f"{context.artifact_input_path}/model.pmml", "rb") as f:
         model_bytes = f.read()
 
     model = store_byom_tmp(get_context(), "byom_models_tmp", context.model_version, model_bytes)
@@ -72,16 +72,16 @@ def evaluate(context: ModelContext, **kwargs):
         'f1-score': '{:.2f}'.format(metrics.f1_score(y_test, y_pred))
     }
 
-    with open(f"{context.artefact_output_path}/metrics.json", "w+") as f:
+    with open(f"{context.artifact_output_path}/metrics.json", "w+") as f:
         json.dump(evaluation, f)
 
     # create confusion matrix plot
     cf = metrics.confusion_matrix(y_test, y_pred)
 
-    plot_confusion_matrix(cf, f"{context.artefact_output_path}/confusion_matrix")
+    plot_confusion_matrix(cf, f"{context.artifact_output_path}/confusion_matrix")
 
     # calculate stats if training stats exist
-    if os.path.exists(f"{context.artefact_input_path}/data_stats.json"):
+    if os.path.exists(f"{context.artifact_input_path}/data_stats.json"):
         record_evaluation_stats(features_df=DataFrame.from_query(context.dataset_info.sql),
                                 predicted_df=DataFrame("predictions_tmp"),
                                 context=context)

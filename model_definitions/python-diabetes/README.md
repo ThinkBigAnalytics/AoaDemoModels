@@ -55,31 +55,6 @@ FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
 ```
 
 
-The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv).
-This dataset is available in Teradata Vantage and already configured in the demo environment. For reference, the values which are required
-
-Training
-```json
-{
-    "table": "<training dataset>"
-}
-```
-Evaluation
-
-```json
-{
-    "table": "<test dataset>"
-}
-```
-
-Batch Scoring
-```json
- {
-     "table": "<score dataset>",
-     "predictions": "<ouput predictions dataset>"
- }
- ```
-
 
 # Training
 The [training.py](model_modules/training.py) produces the following artifacts
@@ -119,16 +94,17 @@ Batch Scoring is supported via the `score` method in [scoring.py](model_modules/
 The following table must exist to write (append) the scores into
 
 ```sql
-CREATE MULTISET TABLE byom_pima_predictions, FALLBACK ,
+REATE MULTISET TABLE pima_predictions, FALLBACK ,
      NO BEFORE JOURNAL,
      NO AFTER JOURNAL,
      CHECKSUM = DEFAULT,
      DEFAULT MERGEBLOCKRATIO,
      MAP = TD_MAP1
      (
-        job_id VARCHAR(255),
-        patient_id BIGINT, 
-        score_result CLOB(2097088000) CHARACTER SET LATIN
+        job_id VARCHAR(255), -- comes from airflow on job execution
+        PatientId BIGINT,    -- entity key as it is in the source data
+        HasDiabetes BIGINT,   -- if model automatically extracts target 
+        json_report CLOB(1048544000) CHARACTER SET UNICODE  -- output of 
      )
      PRIMARY INDEX ( job_id );
 ```

@@ -17,7 +17,7 @@ def evaluate(context: ModelContext, **kwargs):
 
     aoa_create_context()
 
-    model = joblib.load(f"{context.artefact_input_path}/model.joblib")
+    model = joblib.load(f"{context.artifact_input_path}/model.joblib")
 
     feature_names = context.dataset_info.feature_names
     target_name = context.dataset_info.target_names[0]
@@ -41,14 +41,14 @@ def evaluate(context: ModelContext, **kwargs):
         'f1-score': '{:.2f}'.format(metrics.f1_score(y_test, y_pred))
     }
 
-    with open(f"{context.artefact_output_path}/metrics.json", "w+") as f:
+    with open(f"{context.artifact_output_path}/metrics.json", "w+") as f:
         json.dump(evaluation, f)
 
     metrics.plot_confusion_matrix(model, X_test, y_test)
-    save_plot('Confusion Matrix', context)
+    save_plot('Confusion Matrix', context=context)
 
     metrics.plot_roc_curve(model, X_test, y_test)
-    save_plot('ROC Curve', context)
+    save_plot('ROC Curve', context=context)
 
     # xgboost has its own feature importance plot support but lets use shap as explainability example
     import shap
@@ -58,7 +58,7 @@ def evaluate(context: ModelContext, **kwargs):
 
     shap.summary_plot(shap_values, X_test, feature_names=feature_names,
                       show=False, plot_size=(12, 8), plot_type='bar')
-    save_plot('SHAP Feature Importance', context)
+    save_plot('SHAP Feature Importance', context=context)
 
     feature_importance = pd.DataFrame(list(zip(feature_names, np.abs(shap_values).mean(0))),
                                       columns=['col_name', 'feature_importance_vals'])

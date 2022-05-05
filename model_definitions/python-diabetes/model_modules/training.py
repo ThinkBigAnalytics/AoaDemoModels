@@ -39,18 +39,18 @@ def train(context: ModelContext, **kwargs):
     print("Finished training")
 
     # export model artefacts
-    joblib.dump(model, f"{context.artefact_output_path}/model.joblib")
+    joblib.dump(model, f"{context.artifact_output_path}/model.joblib")
 
     # we can also save as pmml so it can be used for In-Vantage scoring etc.
     xgboost_to_pmml(pipeline=model, col_names=feature_names, target_name=target_name,
-                    pmml_f_name=f"{context.artefact_output_path}/model.pmml")
+                    pmml_f_name=f"{context.artifact_output_path}/model.pmml")
 
     print("Saved trained model")
 
     from xgboost import plot_importance
     model["xgb"].get_booster().feature_names = feature_names
     plot_importance(model["xgb"].get_booster(), max_num_features=10)
-    save_plot("feature_importance.png", context)
+    save_plot("feature_importance.png", context=context)
 
     feature_importance = model["xgb"].get_booster().get_score(importance_type="weight")
 
