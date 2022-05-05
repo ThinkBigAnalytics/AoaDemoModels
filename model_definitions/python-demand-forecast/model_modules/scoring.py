@@ -38,5 +38,4 @@ class ModelScorer(object):
         self.model = joblib.load('artifacts/input/model.joblib')
 
     def predict(self, data):
-        data_df = pd.DataFrame([data], columns=self.model.feature_names)
-        return self.model.predict(data_df)
+        return self.model.predict(data)
