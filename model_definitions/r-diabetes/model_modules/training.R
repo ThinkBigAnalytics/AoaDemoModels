@@ -15,12 +15,15 @@ train <- function(data_conf, model_conf, ...) {
     table <- tbl(con, sql(data_conf$sql))
 
     # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
-    data <- table %>% mutate(NumTimesPrg = as.integer(NumTimesPrg),
-                                PlGlcConc = as.integer(PlGlcConc),
-                                BloodP = as.integer(BloodP),
-                                SkinThick = as.integer(SkinThick),
-                                TwoHourSerIns = as.integer(TwoHourSerIns),
-                                HasDiabetes = as.integer(HasDiabetes)) %>% as.data.frame()
+    # select both the feature and target columns (ignorning e.g. entity key)
+    columns <- unlist(c(data_conf$featureNames, data_conf$targetNames), use.name = TRUE)
+    data <- table %>% select(all_of(columns)) %>% mutate(
+                       NumTimesPrg = as.integer(NumTimesPrg),
+                       PlGlcConc = as.integer(PlGlcConc),
+                       BloodP = as.integer(BloodP),
+                       SkinThick = as.integer(SkinThick),
+                       TwoHourSerIns = as.integer(TwoHourSerIns),
+                       HasDiabetes = as.integer(HasDiabetes)) %>% as.data.frame()
 
     # Load hyperparameters from model configuration
     hyperparams <- model_conf[["hyperParameters"]]

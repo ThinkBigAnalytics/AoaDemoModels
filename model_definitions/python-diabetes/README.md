@@ -122,16 +122,26 @@ RESTful scoring is supported via the `ModelScorer` class which implements a pred
     curl -X POST http://<service-name>/predict \
         -H "Content-Type: application/json" \
         -d '{
-            "data": {
-                "ndarray": [[
-                        6,
-                        148,
-                        72,
-                        35,
-                        0,
-                        33.6,
-                        0.627,
-                        50
-                ]]
-            }
+          "data": {
+            "ndarray": [[
+              6,
+              148,
+              72,
+              35,
+              0,
+              33.6,
+              0.627,
+              50
+            ]],
+            "names":[
+              "NumTimesPrg",
+              "PlGlcConc",
+              "BloodP",
+              "SkinThick",
+              "TwoHourSerIns",
+              "BMI",
+              "DiPedFunc",
+              "Age"
+            ]
+          }
         }' 
