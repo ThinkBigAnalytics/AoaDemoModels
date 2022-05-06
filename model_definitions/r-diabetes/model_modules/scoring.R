@@ -48,7 +48,7 @@ score.batch <- function(data_conf, model_conf, model_version, ...) {
 
     # dbplyr::in_schema(data_conf$predictions$database, data_conf$predictions$table)
     copy_to(con, score_df,
-            name=dbplyr::in_schema(data_conf$predictions$database, "pima_predictions"),
+            name=dbplyr::in_schema(data_conf$predictions$database, "pima_predictions_r"),
             overwrite=TRUE)
     print("Saved batch predictions...")
 }
