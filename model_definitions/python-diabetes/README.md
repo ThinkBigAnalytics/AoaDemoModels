@@ -15,38 +15,45 @@ df = pd.read_csv("http://nrvis.com/data/mldata/pima-indians-diabetes.csv", heade
 df.columns = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes"]
 
 copy_to_sql(df = df, table_name = "PIMA", index=True, index_label="PatientId", if_exists="replace")
-
-df = DataFrame("PIMA").sample(frac=[0.8, 0.2])
-
-copy_to_sql(df = df[df.sampleid==1], table_name = "PIMA_TRAIN", index=False, if_exists="replace")
-copy_to_sql(df = df[df.sampleid==2], table_name = "PIMA_TEST", index=False, if_exists="replace")
 ```
 
-
-The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv).
-This dataset is available in Teradata Vantage and already configured in the demo environment. For reference, the values which are required
-
-Training
-```json
-{
-    "table": "<training dataset>"
-}
+```sql
+CREATE TABLE PIMA_PATIENT_FEATURES AS 
+    (SELECT 
+        patientid,
+        numtimesprg, 
+        plglcconc, 
+        bloodp, 
+        skinthick, 
+        twohourserins, 
+        bmi, 
+        dipedfunc, 
+        age 
+    FROM PIMA 
+    ) WITH DATA;
+    
+    
+CREATE TABLE PIMA_PATIENT_DIAGNOSES AS 
+    (SELECT 
+        patientid,
+        hasdiabetes
+    FROM PIMA 
+    ) WITH DATA;
+    
+    
+    
+SELECT * 
+FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
+    ON F.patientid = D.patientid
+    WHERE D.patientid MOD 5 <> 0
+    
+    
+SELECT * 
+FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
+    ON F.patientid = D.patientid
+    WHERE D.patientid MOD 5 = 0
 ```
-Evaluation
 
-```json
-{
-    "table": "<test dataset>"
-}
-```
-
-Batch Scoring
-```json
- {
-     "table": "<score dataset>",
-     "predictions": "<ouput predictions dataset>"
- }
- ```
 
 
 # Training
@@ -87,16 +94,17 @@ Batch Scoring is supported via the `score` method in [scoring.py](model_modules/
 The following table must exist to write (append) the scores into
 
 ```sql
-CREATE MULTISET TABLE byom_pima_predictions, FALLBACK ,
+REATE MULTISET TABLE pima_predictions, FALLBACK ,
      NO BEFORE JOURNAL,
      NO AFTER JOURNAL,
      CHECKSUM = DEFAULT,
      DEFAULT MERGEBLOCKRATIO,
      MAP = TD_MAP1
      (
-        job_id VARCHAR(255),
-        patient_id BIGINT, 
-        score_result CLOB(2097088000) CHARACTER SET LATIN
+        job_id VARCHAR(255), -- comes from airflow on job execution
+        PatientId BIGINT,    -- entity key as it is in the source data
+        HasDiabetes BIGINT,   -- if model automatically extracts target 
+        json_report CLOB(1048544000) CHARACTER SET UNICODE  -- output of 
      )
      PRIMARY INDEX ( job_id );
 ```
@@ -114,16 +122,26 @@ RESTful scoring is supported via the `ModelScorer` class which implements a pred
     curl -X POST http://<service-name>/predict \
         -H "Content-Type: application/json" \
         -d '{
-            "data": {
-                "ndarray": [
-                        6,
-                        148,
-                        72,
-                        35,
-                        0,
-                        33.6,
-                        0.627,
-                        50
-                ]
-            }
+          "data": {
+            "ndarray": [[
+              6,
+              148,
+              72,
+              35,
+              0,
+              33.6,
+              0.627,
+              50
+            ]],
+            "names":[
+              "NumTimesPrg",
+              "PlGlcConc",
+              "BloodP",
+              "SkinThick",
+              "TwoHourSerIns",
+              "BMI",
+              "DiPedFunc",
+              "Age"
+            ]
+          }
         }' 

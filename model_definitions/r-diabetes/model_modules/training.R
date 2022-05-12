@@ -8,41 +8,27 @@ LoadPackages <- function() {
 
 suppressPackageStartupMessages(LoadPackages())
 
-Connect2Vantage <- function() {
-    # Create Vantage connection using tdplyr
-    con <- td_create_context(host = Sys.getenv("AOA_CONN_HOST"),
-                             uid = Sys.getenv("AOA_CONN_USERNAME"),
-                             pwd = Sys.getenv("AOA_CONN_PASSWORD"),
-                             dType = 'native'
-    )
-
-    # Set connection context
-    td_set_context(con)
-
-    con
-}
-
 train <- function(data_conf, model_conf, ...) {
-    print("Training model...")
-
     # Connect to Vantage
-    con <- Connect2Vantage()
+    con <- aoa_create_context()
 
-    # Create tibble from table in Vantage
-    if ("schema" %in% data_conf) {
-        table_name <- in_schema(data_conf$schema, data_conf$table)
-    } else {
-        table_name <- data_conf$table
-    }
-    table <- tbl(con, table_name)
+    table <- tbl(con, sql(data_conf$sql))
 
     # Create dataframe from tibble, selecting the necessary columns and mutating integer64 to integers
-    data <- table %>% select(c("NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes")) %>%
-      mutate(NumTimesPrg = as.integer(NumTimesPrg), PlGlcConc = as.integer(PlGlcConc), BloodP = as.integer(BloodP), SkinThick = as.integer(SkinThick), TwoHourSerIns = as.integer(TwoHourSerIns), HasDiabetes = as.integer(HasDiabetes)) %>%
-      as.data.frame()
+    # select both the feature and target columns (ignorning e.g. entity key)
+    columns <- unlist(c(data_conf$featureNames, data_conf$targetNames), use.name = TRUE)
+    data <- table %>% select(all_of(columns)) %>% mutate(
+                       NumTimesPrg = as.integer(NumTimesPrg),
+                       PlGlcConc = as.integer(PlGlcConc),
+                       BloodP = as.integer(BloodP),
+                       SkinThick = as.integer(SkinThick),
+                       TwoHourSerIns = as.integer(TwoHourSerIns),
+                       HasDiabetes = as.integer(HasDiabetes)) %>% as.data.frame()
 
     # Load hyperparameters from model configuration
     hyperparams <- model_conf[["hyperParameters"]]
+
+    print("Training model...")
 
     # Train model
     model <- gbm(HasDiabetes~.,
