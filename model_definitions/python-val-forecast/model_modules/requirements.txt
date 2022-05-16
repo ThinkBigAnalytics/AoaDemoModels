@@ -1,4 +1,4 @@
-scikit-learn>=0.22.2
-matplotlib>=2.2.2
+scikit-learn==0.24.2
+matplotlib==3.3.1
 teradataml>=17.0.0.3
-aoa>=5.0.0
+aoa>=6.0.0rc60.24.2
