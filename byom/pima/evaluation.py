@@ -58,8 +58,8 @@ def evaluate(context: ModelContext, **kwargs):
 
     metrics_df = DataFrame.from_query(f"""
     SELECT 
-        {target_name} as y_test, 
-        {context.dataset_info.predictions_byom_target_column_sql} as y_pred
+        HasDiabetes as y_test, 
+        CAST(CAST(json_report AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred
         FROM predictions_tmp
     """)
     metrics_df = metrics_df.to_pandas()
