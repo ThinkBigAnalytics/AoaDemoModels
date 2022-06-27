@@ -29,7 +29,7 @@ def score(context: ModelContext, **kwargs):
 
     # store the predictions
     predictions_pdf = pd.DataFrame(predictions_pdf, columns=[target_name])
-    predictions_pdf[entity_key] = features_pdf[entity_key].values
+    predictions_pdf[entity_key] = features_pdf.index.values
     # add job_id column so we know which execution this is from if appended to predictions table
     predictions_pdf["job_id"] = context.job_id
 
