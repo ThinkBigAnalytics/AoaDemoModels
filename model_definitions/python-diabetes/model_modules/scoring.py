@@ -52,6 +52,8 @@ def score(context: ModelContext, **kwargs):
                 index=False,
                 if_exists="append")
 
+    print("Saved predictions in Teradata")
+
     # calculate stats
     predictions_df = DataFrame.from_query(f"""
         SELECT 
