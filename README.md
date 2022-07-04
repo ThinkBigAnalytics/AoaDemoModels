@@ -10,17 +10,15 @@ Please refer to the [Official Documentation](https://docs.teradata.com/r/Teradat
 
 ####  Git
 
+`Git` models are those models where we manage all the code for training evaluation and scoring. We provide notebooks for the Python example.
+
 - [Python Diabetes Prediction](model_definitions/python-diabetes)
 - [R Diabetes Prediction](model_definitions/r-diabetes)
 
 #### BYOM
+
+`BYOM` is related to [Teradata BYOM](https://docs.teradata.com/r/Teradata-VantageTM-Bring-Your-Own-Model-User-Guide/May-2022/Bring-Your-Own-Model) where we use an open model format such as `PMML` or `ONNX`. In this example, we provide a notebook to produce the `PMML` model artefact along with examples for how to query it dynamically in Teradata. 
+
 - [Diabetes Prediction](byom/pima)
 
 
-## Running Models Locally
-
-Use the aoa cli (see [here](https://pypi.org/project/aoa/))
-
-```
-aoa run -h
-```
