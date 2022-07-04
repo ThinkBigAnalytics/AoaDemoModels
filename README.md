@@ -2,31 +2,20 @@
 
 # Models
 
-This repository contains the example / demo models for Teradata AnalyticOps (ModelOps). The goal of these examples is to provide a simple reference implementation for users and not to provide a detailed data science example for each use case. We provide both Python and R examples along with Classification and Regression model types.
+This repository contains the example Diabetes Prediction model code for ModelOps. We provide a number of demo projects and associated repositories. The goal of these examples is to provide a simple reference implementation for users and not to provide a detailed data science example for each use case. 
 
-Refer to the [OfficialDocumentation](https://docs.tdaoa.com) for more information.
+Please refer to the [Official Documentation](https://docs.teradata.com/r/Teradata-VantageTM-ModelOps-User-Guide/June-2022) for more information.
 
 ## Available Models
 
-## Categorical
+####  Git
 
-- [Python (Diabetes)](model_definitions/python-diabetes)
-- [R (Diabetes)](model_definitions/r-diabetes)
-- [Python Partitioned Modelling](model_definitions/python-partitioned-modelling)
+- [Python Diabetes Prediction](model_definitions/python-diabetes)
+- [R Diabetes Prediction](model_definitions/r-diabetes)
 
-## Regression
+#### BYOM
+- [Diabetes Prediction](byom/pima)
 
-- [Python (Demand Forecasting)](model_definitions/python-demand-forecast)
-- [VAL (Demand Forecasting)](model_definitions/python-val-forecast)
-
-
-## Adding new Models
-
-Use the aoa cli (see [here](https://pypi.org/project/aoa/))
-
-```
-aoa add
-```
 
 ## Running Models Locally
 
