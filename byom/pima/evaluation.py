@@ -42,24 +42,53 @@ def plot_confusion_matrix(cf, img_filename):
 def evaluate(context: ModelContext, **kwargs):
     aoa_create_context()
 
-    with open(f"{context.artifact_input_path}/model.pmml", "rb") as f:
+    
+    # this evaluation.py can hanlde both onnx and pmml. usually, you would only need to support one but for 
+    # demo purposes, we will show with both as we produce both onnx and pmml in this notebook.
+    
+    import glob
+    for file_name in glob.glob(f"{context.artifact_input_path}/model.*"):
+        model_type = file_name.split(".")[-1]
+    
+    with open(f"{context.artifact_input_path}/model.{model_type}", "rb") as f:
         model_bytes = f.read()
-
+        
     model = store_byom_tmp(get_context(), "byom_models_tmp", context.model_version, model_bytes)
 
     target_name = context.dataset_info.target_names[0]
 
-    pmml = PMMLPredict(
-        modeldata=model,
-        newdata=DataFrame.from_query(context.dataset_info.sql),
-        accumulate=[context.dataset_info.entity_key, target_name])
+    if model_type.upper() == "ONNX":
+        byom_target_sql = "CAST(CAST(json_report AS JSON).JSONExtractValue('$.output_label[0]') AS INT)"
+        mldb = os.environ.get("AOA_BYOM_INSTALL_DB", "MLDB")
 
-    pmml.result.to_sql(table_name="predictions_tmp", if_exists="replace", temporary=True)
+        query = f"""
+            SELECT sc.{context.dataset_info.entity_key}, {target_name}, sc.json_report
+                FROM {mldb}.ONNXPredict(
+                    ON ({context.dataset_info.sql}) AS DataTable
+                    ON (SELECT model_version as model_id, model FROM byom_models_tmp) AS ModelTable DIMENSION
+                    USING
+                        Accumulate('{context.dataset_info.entity_key}', '{target_name}')
+            ) sc;
+        """
+
+        predictions_df = DataFrame.from_query(query)
+        
+    elif model_type.upper() == "PMML":
+        byom_target_sql = "CAST(CAST(json_report AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT)"
+        
+        pmml = PMMLPredict(
+            modeldata=model,
+            newdata=DataFrame.from_query(context.dataset_info.sql),
+            accumulate=[context.dataset_info.entity_key, target_name])
+        
+        predictions_df = pmml.result
+
+    predictions_df.to_sql(table_name="predictions_tmp", if_exists="replace", temporary=True)
 
     metrics_df = DataFrame.from_query(f"""
     SELECT 
         HasDiabetes as y_test, 
-        CAST(CAST(json_report AS JSON).JSONExtractValue('$.predicted_HasDiabetes') AS INT) as y_pred
+        {byom_target_sql} as y_pred
         FROM predictions_tmp
     """)
     metrics_df = metrics_df.to_pandas()

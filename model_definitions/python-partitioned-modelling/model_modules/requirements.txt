@@ -1,4 +1,0 @@
-dill==0.2.8.2
-scikit-learn==0.20.3
-teradataml>=17.0.0.2
-aoa==6.0.0

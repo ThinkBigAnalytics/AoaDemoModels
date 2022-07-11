@@ -2,31 +2,54 @@
 ## Overview
 PIMA Diabetes demo model using R
 
-## Datasets
-The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv).
-This dataset is available in Teradata Vantage and already configured in the demo environment.
+# Datasets
+The dataset required to train or evaluate this model is the PIMA Indians Diabetes dataset available [here](http://nrvis.com/data/mldata/pima-indians-diabetes.csv). The teradataml code to import it is
 
-Training
-```json
-{
-    "table": "<training dataset>"
-}
-```
-Evaluation
+```python
+import pandas as pd
+from teradataml import copy_to_sql
 
-```json
-{
-    "table": "<test dataset>"
-}
+df = pd.read_csv("http://nrvis.com/data/mldata/pima-indians-diabetes.csv", header=None)
+df.columns = ["NumTimesPrg", "PlGlcConc", "BloodP", "SkinThick", "TwoHourSerIns", "BMI", "DiPedFunc", "Age", "HasDiabetes"]
+
+copy_to_sql(df = df, table_name = "PIMA", index=True, index_label="PatientId", if_exists="replace")
 ```
 
-Batch Scoring
-```json
- {
-     "table": "<score dataset>",
-     "predictions": "<ouput predictions dataset>"
- }
- ```
+```sql
+CREATE TABLE PIMA_PATIENT_FEATURES AS 
+    (SELECT 
+        patientid,
+        numtimesprg, 
+        plglcconc, 
+        bloodp, 
+        skinthick, 
+        twohourserins, 
+        bmi, 
+        dipedfunc, 
+        age 
+    FROM PIMA 
+    ) WITH DATA;
+    
+    
+CREATE TABLE PIMA_PATIENT_DIAGNOSES AS 
+    (SELECT 
+        patientid,
+        hasdiabetes
+    FROM PIMA 
+    ) WITH DATA;
+    
+       
+SELECT * 
+FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
+    ON F.patientid = D.patientid
+    WHERE D.patientid MOD 5 <> 0
+    
+    
+SELECT * 
+FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
+    ON F.patientid = D.patientid
+    WHERE D.patientid MOD 5 = 0
+```
 
     
 ## Training

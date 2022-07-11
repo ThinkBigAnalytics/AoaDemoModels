@@ -1,6 +1,0 @@
-{
-    "id": "db62c97c-2cd5-4f4e-af3c-b967c13d0327",
-    "name": "VAL Demand Forecasting",
-    "description": "Demand forecasting example using Vantage Analytics Library (VAL)",
-    "language": "python"
-}
