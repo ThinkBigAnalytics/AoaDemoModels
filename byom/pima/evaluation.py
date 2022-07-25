@@ -114,5 +114,5 @@ def evaluate(context: ModelContext, **kwargs):
     # calculate stats if training stats exist
     if os.path.exists(f"{context.artifact_input_path}/data_stats.json"):
         record_evaluation_stats(features_df=DataFrame.from_query(context.dataset_info.sql),
-                                predicted_df=DataFrame("predictions_tmp"),
+                                predicted_df=DataFrame.from_query("SELECT * FROM predictions_tmp"),
                                 context=context)
