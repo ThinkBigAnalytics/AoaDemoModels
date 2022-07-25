@@ -68,6 +68,6 @@ def evaluate(context: ModelContext, **kwargs):
     copy_to_sql(df=y_pred_tdf, table_name=predictions_table, index=False, if_exists="replace", temporary=True)
 
     record_evaluation_stats(features_df=test_df,
-                            predicted_df=DataFrame(predictions_table),
+                            predicted_df=DataFrame.from_query(f"SELECT * FROM {predictions_table}"),
                             importance=feature_importance,
                             context=context)
