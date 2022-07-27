@@ -50,6 +50,9 @@ The [training.py](model_modules/training.py) produces the following artifacts
 - model.joblib     (sklearn pipeline with scalers and xgboost model)
 - model.pmml       (pmml version of the xgboost model and sklearn pipeline)
 
+We also use save a global explainability plots from xgboost which help understand the importance and contribution of each feature.
+
+
 # Evaluation
 Evaluation is defined in the `evaluate` method in [scoring.py](model_modules/scoring.py) and it returns the following metrics
 
@@ -73,11 +76,11 @@ This demo mode supports two types of scoring
 
  - Batch
  - RESTful
- - In-Vantage (IVSM)
+ - In-Vantage (PMMLPredict)
 
 In-Vantage scoring is supported via the PMML model we produce during scoring.
 
-Batch Scoring is supported via the `score` method in [scoring.py](model_modules/scoring.py). As Evaluation is batch score + compare, the scoring logic is already validated with the evaluation step. The results of batch scoring are stored in the predictions table defined in the dataset template under `scoring` scope. 
+Batch Scoring is supported via the `score` method in [scoring.py](model_modules/scoring.py).  
 
 The following table must exist to write (append) the scores into
 
