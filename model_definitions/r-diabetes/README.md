@@ -1,5 +1,4 @@
-# R Diabetes Prediction
-## Overview
+# Overview
 PIMA Diabetes demo model using R
 
 # Datasets
@@ -37,43 +36,47 @@ CREATE TABLE PIMA_PATIENT_DIAGNOSES AS
         hasdiabetes
     FROM PIMA 
     ) WITH DATA;
-    
-       
-SELECT * 
-FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
-    ON F.patientid = D.patientid
-    WHERE D.patientid MOD 5 <> 0
-    
-    
-SELECT * 
-FROM PIMA_PATIENT_FEATURES F JOIN PIMA_PATIENT_DIAGNOSES D
-    ON F.patientid = D.patientid
-    WHERE D.patientid MOD 5 = 0
 ```
 
     
-## Training
+# Training
 The [training.R](model_modules/training.R) produces the following artifacts
 
 - model.rds     (gbm parameters)
 
-## Evaluation
-Evaluation is also performed in [scoring.R](model_modules/scoring.R) by the function `evaluate` and it returns the following metrics
+# Evaluation
+Evaluation is defined in the `evaluate` method in [scoring.R](model_modules/scoring.R) and it returns the following metrics
 
-    accuracy: <acc>
+- Accuracy
+- Recall
+- Precision
+- f1-score
 
-## Scoring
-The [scoring.R](model_modules/scoring.R) loads the model and metadata and accepts the dataframe for prediction.
+We produce a number of plots for each evaluation also
 
-### Batch mode
-In this example, the values to score are in the table 'PIMA_TEST' at Teradata Vantage. The results are saved in the table 'PIMA_PREDICTIONS'. When batch deploying, this custom values should be specified:
-   
-   | key | value |
-   |----------|-------------|
-   | table | PIMA_TEST |
-   | predictions | PIMA_PREDICTIONS |
+- confusion matrix
 
-### RESTful Sample Request
+# Scoring
+This demo mode supports two types of scoring
+
+ - Batch
+ - RESTful
+
+Batch Scoring is supported via the `score` method in [scoring.R](model_modules/scoring.R).  
+
+The following table must exist to write (append) the scores into
+
+```sql
+CREATE MULTISET TABLE pima_patient_predictions (
+    job_id VARCHAR(255), -- comes from airflow on job execution
+    PatientId BIGINT,    -- entity key as it is in the source data
+    HasDiabetes BIGINT,   -- if model automatically extracts target 
+    json_report CLOB(1048544000) CHARACTER SET UNICODE  -- output of 
+ )
+ PRIMARY INDEX ( job_id );
+```
+
+RESTful scoring is supported via the `score.restful` function in [scoring.R](model_modules/scoring.R) which implements a predict method which is called by the RESTful Serving Engine. An example request is  
 
     curl -X POST http://localhost:5000/predict \
             -H "Content-Type: application/json" \
