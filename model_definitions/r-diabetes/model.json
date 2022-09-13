@@ -8,19 +8,19 @@
     "training": {
       "resources": {
         "cpu": "1",
-        "memory": "1Gi"
+        "memory": "1g"
       }
     },
     "evaluation": {
       "resources": {
         "cpu": "1",
-        "memory": "1Gi"
+        "memory": "1g"
       }
     },
     "deployment": {
       "resources": {
         "cpu": "1",
-        "memory": "1Gi"
+        "memory": "1g"
       }
     }
   }
