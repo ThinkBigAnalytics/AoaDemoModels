@@ -56,7 +56,7 @@ def train(context: ModelContext, **kwargs):
 
     record_training_stats(train_df,
                           features=feature_names,
-                          predictors=[target_name],
+                          targets=[target_name],
                           categorical=[target_name],
                           importance=feature_importance,
                           context=context)
