@@ -370,7 +370,7 @@
       }
     }
   },
-  "predictors": {
+  "targets": {
     "hasdiabetes": {
       "type": "categorical",
       "group": "default",
