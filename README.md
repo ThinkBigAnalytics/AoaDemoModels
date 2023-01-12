@@ -4,7 +4,7 @@
 
 This repository contains the example Diabetes Prediction model code for [Vantage ModelOps](https://docs.teradata.com/r/Teradata-VantageTM-ModelOps-User-Guide/June-2022). We provide a number of demo projects and associated repositories. The goal of these examples is to provide a simple reference implementation for users and not to provide a detailed data science example for each use case. 
 
-Please refer to the [Official Documentation](https://docs.teradata.com/r/Teradata-VantageTM-ModelOps-User-Guide/June-2022) for more information.
+Please refer to the [Official Documentation](https://docs.teradata.com/r/Enterprise_VMware_IntelliFlex/Teradata-VantageTM-ModelOps-User-Guide) for more information.
 
 ## Available Models
 
